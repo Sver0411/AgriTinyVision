@@ -1,0 +1,37 @@
+{
+  "dataset": "PlantVillage raw/color grouped subset",
+  "version": "7f7ecc7e1eaca78107e3affe7cb5abd9427e139a",
+  "source": "https://github.com/spMohanty/PlantVillage-Dataset/tree/7f7ecc7e1eaca78107e3affe7cb5abd9427e139a",
+  "download_config": {
+    "dataset": "PlantVillage",
+    "root": "data/raw/plantvillage_color",
+    "raw_manifest": "data/manifests/plantvillage_raw.json",
+    "manifest": "data/manifests/plantvillage_split.json",
+    "label_mapping": "configs/label_mapping.yaml",
+    "seed": 41,
+    "max_per_class": 240,
+    "download_workers": 8,
+    "revision": null,
+    "source_classes": [
+      "Apple___healthy",
+      "Apple___Apple_scab",
+      "Apple___Cedar_apple_rust",
+      "Pepper,_bell___healthy",
+      "Pepper,_bell___Bacterial_spot",
+      "Potato___healthy",
+      "Potato___Early_blight",
+      "Potato___Late_blight",
+      "Tomato___healthy",
+      "Tomato___Early_blight",
+      "Tomato___Late_blight",
+      "Tomato___Leaf_Mold"
+    ]
+  },
+  "grouping_sha256": "3b4b253683c6911744959a3870a92509b1faa1ee34e9f8585e21d0fe6337a25b",
+  "unmatched_candidates_skipped": 411,
+  "group_limitations": "Original leaf identity only; plant and capture-session IDs unavailable.",
+  "split_method": "leaf/source groups + exact SHA256 + connected pHash <=4 components; GroupShuffleSplit",
+  "seed": 41,
+  "dataset_hash": "8e56079582fff6ce5adeff87b27481bc254ae0bfc21575f4ed936a9d40a12185",
+  "train_split_hash": "bbfb5866489c64df6c9ea93d41368bf4ae776b6c77903f228019c6322a1c92a3"
+}

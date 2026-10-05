@@ -1,0 +1,77 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "suspect_recall": 1.0,
+  "recall": 1.0,
+  "specificity": 1.0,
+  "f1": 1.0,
+  "roc_auc": 1.0,
+  "pr_auc": 1.0,
+  "pr_auc_definition": "average_precision (step integral)",
+  "false_positive_rate": 0.0,
+  "false_negative_rate": 0.0,
+  "confusion_matrix": [
+    [
+      130,
+      0
+    ],
+    [
+      0,
+      287
+    ]
+  ],
+  "samples": 417,
+  "decision_threshold": 0.2,
+  "split": "test",
+  "threshold_source": "validation",
+  "backend": "PyTorch cuda",
+  "model_sha256": "f4f987a6e847ac2487568ddbb56a2aa7037a0f6dc9019865a1e7ca7a345d3d5f",
+  "seconds": 5.862058999999135,
+  "evaluation_role": "final evaluation; no test-set tuning",
+  "system_gate": {
+    "coverage": 0.9976019184652278,
+    "unknown_count": 1,
+    "quality_reasons": {},
+    "normal_count": 130,
+    "suspect_count": 286,
+    "suspect_as_normal": 0,
+    "suspect_unknown": 1,
+    "accepted_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "suspect_recall": 1.0,
+      "recall": 1.0,
+      "specificity": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "pr_auc_definition": "average_precision (step integral)",
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.0,
+      "confusion_matrix": [
+        [
+          130,
+          0
+        ],
+        [
+          0,
+          286
+        ]
+      ],
+      "samples": 416,
+      "decision_threshold": 0.2
+    },
+    "quality_config": {
+      "version": "laplacian-gray-v1",
+      "metric_size": 160,
+      "min_dimension": 32,
+      "blur_min": 20.0,
+      "brightness_min": 25.0,
+      "brightness_max": 235.0,
+      "contrast_min": 12.0,
+      "min_confidence": 0.6
+    },
+    "ood_detection": "not implemented",
+    "plant_content_detection": "not implemented"
+  }
+}

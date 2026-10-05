@@ -1,0 +1,18 @@
+{
+  "source_split": "train",
+  "source_path": "data\\raw\\plantvillage_color\\Apple___healthy\\7a13d83d-7511-41c5-9fd5-9fd18d3cf3b1___RS_HL 5685.JPG",
+  "layout": "NHWC float32 normalized little endian",
+  "fp32_probability": 0.0025958786718547344,
+  "quality": {
+    "passed": true,
+    "reasons": [],
+    "metrics": {
+      "brightness": 108.67261505126953,
+      "contrast": 67.84233093261719,
+      "laplacian_variance": 916.6077270507812
+    },
+    "version": "laplacian-gray-v1"
+  },
+  "sha256": "9ce2ec80469490a865022159320f5805f161ad2331edf9f650092b0eafe24ec1",
+  "hardware_status": "PENDING HARDWARE VALIDATION"
+}

@@ -12,6 +12,11 @@ from .utils import commit, now, read_json, sha256, write_json
 
 def validate_metadata(metadata, schema="docs/metadata.schema.json"):
     validate(metadata, read_json(schema))
+    if metadata["input_width"] != metadata["input_height"]:
+        raise ValueError("v0.1 requires square RGB input")
+    primary = "tinyvision.espdl" if metadata["espdl_export"] == "SUCCESS" else "tinyvision.onnx"
+    if metadata["sha256"] != metadata["artifact_sha256"][primary]:
+        raise ValueError("Primary model hash is inconsistent")
 
 
 def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0", output=None):
@@ -25,7 +30,11 @@ def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0
     if out.exists() and any(out.iterdir()):
         raise ValueError("Refusing to overwrite an existing release")
     validation = read_json(str(onnx_path) + ".validation.json")
-    if not validation["passed"] or validation["sha256"] != sha256(onnx_path):
+    if (
+        not validation["passed"]
+        or validation["sha256"] != sha256(onnx_path)
+        or validation.get("checkpoint_sha256") != sha256(checkpoint)
+    ):
         raise ValueError("ONNX numerical validation missing or stale")
     test = read_json(metrics_path)
     if (
@@ -54,7 +63,8 @@ def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0
         "model_name": "AgriTinyVision",
         "version": version,
         "git_commit": commit(),
-        "training_git_commit": env.get("git_commit"),
+        "training_git_commit": env.get("git_commit") or env.get("source_snapshot_commit"),
+        "training_provenance_note": env.get("git_detection_note"),
         "input_width": c["input_size"],
         "input_height": c["input_size"],
         "channels": 3,

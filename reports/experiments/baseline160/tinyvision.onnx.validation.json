@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "max_absolute_error": 1.049041748046875e-05,
+  "inputs_checked": 4,
+  "atol": 0.0001,
+  "rtol": 0.001,
+  "sha256": "350c32d88d19eb16dca7d905036d2c99a716a3938b91f52715349e43ee6ab909",
+  "bytes": 8878502,
+  "compatibility": {
+    "operators": {
+      "Conv": 52,
+      "Constant": 70,
+      "Clip": 35,
+      "Add": 10,
+      "GlobalAveragePool": 1,
+      "Flatten": 1,
+      "Gemm": 1
+    },
+    "unsupported": [],
+    "grouped_conv_issues": [],
+    "source": "https://github.com/espressif/esp-dl/blob/master/operator_support_state.md",
+    "target": "esp32s3",
+    "opset": 18,
+    "static_review_passed": true,
+    "deployment_status": "PENDING ESP-PPQ conversion and hardware validation"
+  },
+  "checkpoint_sha256": "1a6fb3630a96ab9ffcc10b45cee4217052fcf83f7ef17a37c4f245a95835ae13",
+  "checkpoint_binding_max_absolute_error": 1.049041748046875e-05
+}

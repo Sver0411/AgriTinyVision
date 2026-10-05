@@ -5,7 +5,7 @@ import numpy as np
 from scipy.fft import dctn
 
 from .. import CLASSES
-from ..utils import now, read_json, sha256, write_json
+from ..utils import load_yaml, now, read_json, sha256, write_json
 from .dataset import open_rgb, safe_path
 
 
@@ -17,12 +17,15 @@ def perceptual_hash(im):
 
 
 def audit(manifest, root, output="reports/dataset_audit", near_distance=4):
+    mapping = load_yaml("configs/label_mapping.yaml")["mapping"]
     rows = read_json(manifest)["samples"] if isinstance(manifest, (str, Path)) else manifest["samples"]
     errors, sizes, hashes, phashes = [], Counter(), defaultdict(list), []
     for i, r in enumerate(rows):
         try:
             if r.get("label") not in CLASSES:
                 raise ValueError("invalid_label")
+            if "source_label" in r and mapping.get(r["source_label"]) != r["label"]:
+                raise ValueError("source_label_mapping_mismatch")
             if not r.get("group_id"):
                 raise ValueError("missing_group_id")
             p = safe_path(root, r["path"])

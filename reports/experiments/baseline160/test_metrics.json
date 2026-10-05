@@ -1,0 +1,77 @@
+{
+  "accuracy": 0.9976019184652278,
+  "precision": 0.9965277777777778,
+  "suspect_recall": 1.0,
+  "recall": 1.0,
+  "specificity": 0.9923076923076923,
+  "f1": 0.9982608695652174,
+  "roc_auc": 0.9999463950683463,
+  "pr_auc": 0.9999757611749835,
+  "pr_auc_definition": "average_precision (step integral)",
+  "false_positive_rate": 0.007692307692307693,
+  "false_negative_rate": 0.0,
+  "confusion_matrix": [
+    [
+      129,
+      1
+    ],
+    [
+      0,
+      287
+    ]
+  ],
+  "samples": 417,
+  "decision_threshold": 0.3,
+  "split": "test",
+  "threshold_source": "validation",
+  "backend": "PyTorch cuda",
+  "model_sha256": "1a6fb3630a96ab9ffcc10b45cee4217052fcf83f7ef17a37c4f245a95835ae13",
+  "seconds": 5.7310804999997345,
+  "evaluation_role": "final evaluation; no test-set tuning",
+  "system_gate": {
+    "coverage": 1.0,
+    "unknown_count": 0,
+    "quality_reasons": {},
+    "normal_count": 129,
+    "suspect_count": 288,
+    "suspect_as_normal": 0,
+    "suspect_unknown": 0,
+    "accepted_metrics": {
+      "accuracy": 0.9976019184652278,
+      "precision": 0.9965277777777778,
+      "suspect_recall": 1.0,
+      "recall": 1.0,
+      "specificity": 0.9923076923076923,
+      "f1": 0.9982608695652174,
+      "roc_auc": 0.9999463950683463,
+      "pr_auc": 0.9999757611749835,
+      "pr_auc_definition": "average_precision (step integral)",
+      "false_positive_rate": 0.007692307692307693,
+      "false_negative_rate": 0.0,
+      "confusion_matrix": [
+        [
+          129,
+          1
+        ],
+        [
+          0,
+          287
+        ]
+      ],
+      "samples": 417,
+      "decision_threshold": 0.3
+    },
+    "quality_config": {
+      "version": "laplacian-gray-v1",
+      "metric_size": 160,
+      "min_dimension": 32,
+      "blur_min": 20.0,
+      "brightness_min": 25.0,
+      "brightness_max": 235.0,
+      "contrast_min": 12.0,
+      "min_confidence": 0.6
+    },
+    "ood_detection": "not implemented",
+    "plant_content_detection": "not implemented"
+  }
+}

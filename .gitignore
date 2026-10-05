@@ -24,3 +24,11 @@ releases/*
 *.zip
 *.whl
 tools/
+reports/*.log
+firmware_example/build/
+firmware_example/managed_components/
+firmware_example/dependencies.lock
+firmware_example/sdkconfig
+firmware_example/sdkconfig.old
+firmware_example/main/fixture_input.bin
+firmware_example/main/fixture_config.h

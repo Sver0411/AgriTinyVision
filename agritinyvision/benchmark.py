@@ -49,6 +49,8 @@ def compute(model, size):
     import torch
     from torch import nn
 
+    torch.set_num_threads(4)
+
     count = [0]
 
     def hook(module, inputs, output):

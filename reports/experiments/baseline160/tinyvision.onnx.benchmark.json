@@ -1,0 +1,14 @@
+{
+  "benchmark_scope": "DESKTOP CPU ONLY; never ESP32 latency",
+  "hardware_status": "PENDING HARDWARE VALIDATION",
+  "os": "Windows-11-10.0.22621-SP0",
+  "processor": "AMD64 Family 25 Model 116 Stepping 1, AuthenticAMD",
+  "onnxruntime": "1.30.0",
+  "provider": "CPUExecutionProvider",
+  "threads": 4,
+  "iterations": 100,
+  "median_ms": 1.099150000300142,
+  "p95_ms": 1.62713999980042,
+  "model_bytes": 8878502,
+  "sha256": "350c32d88d19eb16dca7d905036d2c99a716a3938b91f52715349e43ee6ab909"
+}

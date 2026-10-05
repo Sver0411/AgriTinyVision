@@ -93,8 +93,35 @@ def export(checkpoint, output=None):
     model, cp = load_checkpoint(checkpoint)
     out = output or str(Path(checkpoint).parent / "tinyvision.onnx")
     report = export_model(model, cp["config"]["input_size"], out)
+    report["checkpoint_sha256"] = sha256(checkpoint)
+    write_json(str(out) + ".validation.json", report)
     print(report, flush=True)
     return out
+
+
+def validate_checkpoint_onnx(checkpoint, path):
+    """Bind an existing reference ONNX to its exact trained checkpoint, without rewriting it."""
+    from .utils import read_json
+
+    torch.set_num_threads(4)
+    model, cp = load_checkpoint(checkpoint)
+    size = cp["config"]["input_size"]
+    c = load_yaml("configs/export.yaml")
+    session = ort.InferenceSession(str(path), providers=["CPUExecutionProvider"])
+    x = torch.randn(1, 3, size, size, generator=torch.Generator().manual_seed(41))
+    errors = []
+    for sample in (x, torch.zeros_like(x), torch.ones_like(x), x * 0.3):
+        with torch.inference_mode():
+            expected = model(sample).numpy()
+        actual = session.run(None, {"image": sample.numpy()})[0]
+        np.testing.assert_allclose(expected, actual, atol=c["validation_atol"], rtol=c["validation_rtol"])
+        errors.append(float(np.max(np.abs(expected - actual))))
+    report = read_json(str(path) + ".validation.json")
+    if report["sha256"] != sha256(path):
+        raise ValueError("Existing validation report is stale")
+    report.update(checkpoint_sha256=sha256(checkpoint), checkpoint_binding_max_absolute_error=max(errors))
+    write_json(str(path) + ".validation.json", report)
+    return report
 
 
 def preflight(config_path, output="reports/operator_preflight.onnx"):

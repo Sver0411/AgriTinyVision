@@ -1,0 +1,10 @@
+{
+  "idf": "5.4.4",
+  "esp_dl": "3.3.13",
+  "target": "esp32s3",
+  "compiled": true,
+  "firmware_bytes": 3838640,
+  "firmware_sha256": "9717d3e4e44fae1d5323ee4b557d703f8416c620945988044fc44888232be316",
+  "hardware_status": "PENDING HARDWARE VALIDATION",
+  "initial_failure": "CMake aligned embedding cmake_dir omitted; corrected to official utility path and rebuilt"
+}

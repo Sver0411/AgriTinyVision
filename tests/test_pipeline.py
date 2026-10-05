@@ -184,7 +184,10 @@ def release_fixture(tmp_path, monkeypatch):
     cp.write_bytes(b"Synthetic test fixture only")
     model = tmp_path / "fixture.onnx"
     model.write_bytes(b"Synthetic ONNX transport fixture only")
-    write_json(str(model) + ".validation.json", {"passed": True, "sha256": sha256(model)})
+    write_json(
+        str(model) + ".validation.json",
+        {"passed": True, "sha256": sha256(model), "checkpoint_sha256": sha256(cp)},
+    )
     config = {"input_size": 160}
     monkeypatch.setattr(
         train_module, "load_checkpoint", lambda *args, **kwargs: (None, {"config": config, "threshold": 0.3})

@@ -7,8 +7,10 @@ def metrics(labels, scores, threshold):
     if len(y) == 0 or y.shape != p.shape or not np.isfinite(p).all() or not np.isin(y, [0, 1]).all():
         raise ValueError("Invalid binary evaluation inputs")
     tn, fp, fn, tp = confusion_matrix(y, p >= threshold, labels=[0, 1]).ravel()
+
     def div(a, b):
         return float(a / b) if b else None
+
     precision, recall = div(tp, tp + fp), div(tp, tp + fn)
     return {
         "accuracy": div(tp + tn, len(y)),

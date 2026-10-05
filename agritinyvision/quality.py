@@ -53,6 +53,8 @@ def decide(suspect_probability, threshold, quality, min_confidence):
 
 def load_quality(path="configs/quality.yaml"):
     c = load_yaml(path)
+    if c.get("version") != QUALITY_GATE_VERSION:
+        raise ValueError("Unsupported quality-gate version")
     if (
         not 0.5 <= c["min_confidence"] <= 1
         or not 0 <= c["brightness_min"] < c["brightness_max"] <= 255

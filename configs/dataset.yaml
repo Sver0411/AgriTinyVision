@@ -7,7 +7,7 @@ seed: 41
 max_per_class: 240
 download_workers: 8
 # First execution resolves and persists an immutable upstream commit.
-revision: null
+revision: 7f7ecc7e1eaca78107e3affe7cb5abd9427e139a
 source_classes:
   - Apple___healthy
   - Apple___Apple_scab

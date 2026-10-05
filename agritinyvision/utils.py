@@ -44,7 +44,9 @@ def load_yaml(path):
 def commit():
     try:
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+            ["git", "-c", f"safe.directory={Path.cwd().as_posix()}", "rev-parse", "HEAD"],
+            stderr=subprocess.DEVNULL,
+            text=True,
         ).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
@@ -67,6 +69,10 @@ def validate_config(c):
         "width_mult",
         "workers",
         "patience",
+        "weight_decay",
+        "scheduler",
+        "amp",
+        "deterministic",
     }
     missing = required - c.keys()
     if missing:
@@ -79,6 +85,10 @@ def validate_config(c):
         raise ValueError("torchvision ImageNet weights require width_mult=1.0")
     if c["optimizer"] not in ("adamw", "sgd"):
         raise ValueError("Unsupported optimizer")
+    if c["scheduler"] != "cosine" or c["weight_decay"] < 0 or c["patience"] < 1:
+        raise ValueError("Invalid scheduler, weight decay or early stopping patience")
+    if any(not isinstance(c[k], bool) for k in ("pretrained", "amp", "deterministic")):
+        raise ValueError("pretrained, amp and deterministic must be YAML booleans")
     if c["epochs"] < 1 or c["batch_size"] < 1 or c["learning_rate"] <= 0 or c["workers"] < 0:
         raise ValueError("Invalid training scalar")
     t = c["threshold"]
@@ -90,6 +100,8 @@ def validate_config(c):
     a = c["augmentation"]
     if not 0 < a["crop_min"] <= 1 or not 0 <= a["rotation"] <= 20:
         raise ValueError("Augmentation exceeds mild field-image bounds")
+    if not 0 <= a["horizontal_flip"] <= 1:
+        raise ValueError("Invalid horizontal_flip probability")
     if any(not 0 <= a[k] <= 0.3 for k in ("brightness", "contrast", "saturation")):
         raise ValueError("Color augmentation must be mild")
     return c

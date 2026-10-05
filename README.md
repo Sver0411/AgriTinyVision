@@ -13,7 +13,7 @@ Camera → Image Quality Gate → TinyVision → Gateway Decision Engine
 
 ## 当前状态
 
-工程及真实首轮结果见 [reports/FIRST_RUN.md](reports/FIRST_RUN.md)。任何缺失的实验或硬件测量都明确标记 PENDING；不使用空模型伪装成功。公开数据结果不能证明真实农场病害检测有效。
+已在 RTX 4060 完成 160/224 两个 baseline、最终 test 评估、ONNX 数值验证、ESP32-S3 INT8 .espdl 转换与完整 test 仿真，ESP-IDF firmware 示例编译通过。**尚未运行 ESP32 真机**。真实首轮结果见 [reports/FIRST_RUN.md](reports/FIRST_RUN.md)。任何缺失的硬件测量都明确标记 PENDING；公开数据结果不能证明真实农场病害检测有效。
 
 ## 环境与安装
 
@@ -41,6 +41,8 @@ python -m agritinyvision audit
 python -m agritinyvision preflight --config configs/train_mobilenetv2_160.yaml
 python -m agritinyvision train --config configs/train_mobilenetv2_160.yaml --output runs/baseline160
 python -m agritinyvision train --config configs/train_mobilenetv2_224.yaml --output runs/baseline224
+# 在任何 test 评估之前冻结候选
+python scripts/select_candidate.py
 ```
 
 脚本只下载原图到 Git 忽略的 `data/raw/`。`data/manifests/` 保留路径、source label、二分类映射、真实 leaf ID、SHA256 和 split。审计检测路径越界、缺失/空/损坏图片、非法标签、SHA256 重复、64-bit DCT pHash 近重复风险（距离 ≤4），把 leaf group 与重复/近重复连通分量合并后做确定性 GroupShuffleSplit。不是简单随机切图片。真实 plant ID、拍摄序列/场景 ID 不可用；leaf ID 和 pHash 不能彻底消除所有泄漏，限制必须保留。
@@ -94,3 +96,5 @@ python -m ruff check agritinyvision scripts tests
 ```
 
 CI 使用合成小图测试，不跑完整训练、不下载农业数据。代码 MIT；外部图像及预训练权重适用各自条款，仓库代码许可证不重新许可这些数据。
+
+锁定首轮依赖时，先安装上面的 CUDA PyTorch，再运行 `python -m pip install -r requirements-lock.txt`。Linux 的 CUDA/驱动版本可能不同，应使用匹配平台的 wheel 并重新运行 doctor；不能把 Windows 环境报告当成另一台机器已验证。

@@ -1,6 +1,6 @@
 # Dataset audit
 
-- created_at: 2026-10-05T16:57:14.674462+00:00
+- created_at: 2026-10-05T17:00:07.505401+00:00
 - total_images: 2792
 - labels: {'NORMAL': 872, 'SUSPECT': 1920}
 - class_ratios: {'NORMAL': 0.3123209169054441, 'SUSPECT': 0.6876790830945558}
