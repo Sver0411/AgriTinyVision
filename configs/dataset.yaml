@@ -1,0 +1,23 @@
+dataset: PlantVillage
+root: data/raw/plantvillage_color
+raw_manifest: data/manifests/plantvillage_raw.json
+manifest: data/manifests/plantvillage_split.json
+label_mapping: configs/label_mapping.yaml
+seed: 41
+max_per_class: 240
+download_workers: 8
+# First execution resolves and persists an immutable upstream commit.
+revision: null
+source_classes:
+  - Apple___healthy
+  - Apple___Apple_scab
+  - Apple___Cedar_apple_rust
+  - Pepper,_bell___healthy
+  - Pepper,_bell___Bacterial_spot
+  - Potato___healthy
+  - Potato___Early_blight
+  - Potato___Late_blight
+  - Tomato___healthy
+  - Tomato___Early_blight
+  - Tomato___Late_blight
+  - Tomato___Leaf_Mold

@@ -1,0 +1,2 @@
+# Install CUDA torch/torchvision first using the platform-specific PyTorch index.
+-e .[dev]

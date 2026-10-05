@@ -1,0 +1,30 @@
+model: mobilenet_v2
+input_size: 224
+width_mult: 1.0
+pretrained: true
+seed: 41
+manifest: data/manifests/plantvillage_split.json
+dataset_root: data/raw/plantvillage_color
+epochs: 8
+batch_size: 32
+workers: 2
+optimizer: adamw
+learning_rate: 0.0003
+weight_decay: 0.0001
+scheduler: cosine
+patience: 3
+amp: true
+deterministic: true
+augmentation:
+  crop_min: 0.8
+  horizontal_flip: 0.5
+  rotation: 10
+  brightness: 0.15
+  contrast: 0.15
+  saturation: 0.1
+threshold:
+  min: 0.20
+  max: 0.80
+  step: 0.05
+  target_recall: 0.95
+  max_fpr: 0.35

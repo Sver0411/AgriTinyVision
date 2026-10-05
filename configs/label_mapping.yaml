@@ -1,0 +1,40 @@
+# Explicit source labels only. Unknown classes fail instead of becoming SUSPECT.
+mapping:
+  Apple___healthy: NORMAL
+  Apple___Apple_scab: SUSPECT
+  Apple___Black_rot: SUSPECT
+  Apple___Cedar_apple_rust: SUSPECT
+  Blueberry___healthy: NORMAL
+  Cherry_(including_sour)___healthy: NORMAL
+  Cherry_(including_sour)___Powdery_mildew: SUSPECT
+  Corn_(maize)___healthy: NORMAL
+  Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot: SUSPECT
+  Corn_(maize)___Common_rust_: SUSPECT
+  Corn_(maize)___Northern_Leaf_Blight: SUSPECT
+  Grape___healthy: NORMAL
+  Grape___Black_rot: SUSPECT
+  Grape___Esca_(Black_Measles): SUSPECT
+  Grape___Leaf_blight_(Isariopsis_Leaf_Spot): SUSPECT
+  Orange___Haunglongbing_(Citrus_greening): SUSPECT
+  Peach___healthy: NORMAL
+  Peach___Bacterial_spot: SUSPECT
+  Pepper,_bell___healthy: NORMAL
+  Pepper,_bell___Bacterial_spot: SUSPECT
+  Potato___healthy: NORMAL
+  Potato___Early_blight: SUSPECT
+  Potato___Late_blight: SUSPECT
+  Raspberry___healthy: NORMAL
+  Soybean___healthy: NORMAL
+  Squash___Powdery_mildew: SUSPECT
+  Strawberry___healthy: NORMAL
+  Strawberry___Leaf_scorch: SUSPECT
+  Tomato___healthy: NORMAL
+  Tomato___Bacterial_spot: SUSPECT
+  Tomato___Early_blight: SUSPECT
+  Tomato___Late_blight: SUSPECT
+  Tomato___Leaf_Mold: SUSPECT
+  Tomato___Septoria_leaf_spot: SUSPECT
+  Tomato___Spider_mites Two-spotted_spider_mite: SUSPECT
+  Tomato___Target_Spot: SUSPECT
+  Tomato___Tomato_Yellow_Leaf_Curl_Virus: SUSPECT
+  Tomato___Tomato_mosaic_virus: SUSPECT

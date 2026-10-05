@@ -1,0 +1,10 @@
+Using device: NVIDIA GeForce RTX 4060 Laptop GPU
+Downloading: "https://download.pytorch.org/models/mobilenet_v2-b0353104.pth" to D:\File\AgriTinyVision\.cache\torch\hub\checkpoints\mobilenet_v2-b0353104.pth
+
+  0%|          | 0.00/13.6M [00:00<?, ?B/s]
+  1%|          | 128k/13.6M [00:00<00:15, 929kB/s]
+  5%|��         | 640k/13.6M [00:00<00:04, 2.90MB/s]
+ 21%|����        | 2.88M/13.6M [00:00<00:01, 11.2MB/s]
+ 50%|����������     | 6.75M/13.6M [00:00<00:00, 19.4MB/s]
+ 89%|������������������ | 12.0M/13.6M [00:00<00:00, 29.8MB/s]
+100%|��������������������| 13.6M/13.6M [00:00<00:00, 22.6MB/s]

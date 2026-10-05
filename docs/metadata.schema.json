@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgriTinyVision release metadata v0.1",
+  "type": "object",
+  "required": ["model_name", "version", "git_commit", "input_width", "input_height", "channels", "classes", "decision_threshold", "quality_gate_version", "quality_gate", "quantization", "target", "dataset_version", "dataset_hash", "train_split_hash", "created_at", "sha256", "artifact_sha256", "espdl_export", "hardware_status", "preprocessing"],
+  "properties": {
+    "model_name": {"const": "AgriTinyVision"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "git_commit": {"type": ["string", "null"], "pattern": "^[a-f0-9]{40}$"},
+    "input_width": {"enum": [160, 192, 224]},
+    "input_height": {"enum": [160, 192, 224]},
+    "channels": {"const": 3},
+    "classes": {"const": ["NORMAL", "SUSPECT"]},
+    "decision_threshold": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+    "quality_gate_version": {"const": "laplacian-gray-v1"},
+    "quality_gate": {"type": "object", "required": ["metric_size", "min_dimension", "blur_min", "brightness_min", "brightness_max", "contrast_min", "min_confidence"]},
+    "quantization": {"enum": ["fp32", "int8"]},
+    "target": {"const": "esp32s3"},
+    "dataset_version": {"type": "string", "minLength": 1},
+    "dataset_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "train_split_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "created_at": {"type": "string", "minLength": 10},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "artifact_sha256": {"type": "object", "required": ["tinyvision.onnx"], "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+    "espdl_export": {"enum": ["SUCCESS", "PENDING"]},
+    "hardware_status": {"const": "PENDING HARDWARE VALIDATION"},
+    "preprocessing": {"type": "object", "required": ["color", "resize", "range", "mean", "std", "onnx_layout", "output", "positive_index", "espdl_layout", "espdl_quantization"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"espdl_export": {"const": "SUCCESS"}}}, "then": {"properties": {"quantization": {"const": "int8"}, "artifact_sha256": {"required": ["tinyvision.espdl"]}}}},
+    {"if": {"properties": {"espdl_export": {"const": "PENDING"}}}, "then": {"properties": {"quantization": {"const": "fp32"}}}}
+  ]
+}

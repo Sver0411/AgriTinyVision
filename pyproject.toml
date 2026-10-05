@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agritinyvision"
+version = "0.1.0"
+description = "Reproducible agricultural Tiny Vision model pipeline for Gateway A ESP32-S3"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = ["torch>=2.5,<3", "torchvision>=0.20,<1", "numpy>=1.26,<3", "Pillow>=10,<13", "PyYAML>=6,<7", "scikit-learn>=1.4,<2", "onnx>=1.17,<2", "onnxruntime>=1.20,<2", "jsonschema>=4.22,<5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "ruff>=0.9"]
+esp = ["esp-ppq"]
+
+[project.scripts]
+agritinyvision = "agritinyvision.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["agritinyvision*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
