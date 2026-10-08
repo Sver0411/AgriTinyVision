@@ -4,7 +4,7 @@
 
 AgriTinyVision is the companion model project to [Smart-Agriculture-Edge-AI](https://github.com/Sver0411/Smart-Agriculture-Edge-AI). It uses an RTX GPU to train and evaluate compact image classifiers, then quantizes and packages a candidate for Gateway A, an ESP32-S3 N16R8 with 16 MB of flash and 8 MB of PSRAM.
 
-The first release answers one narrow question: **does this plant image show something that deserves a closer look?** It is not a disease diagnosis system.
+The v0.1 goal is to answer one narrow question: **does this plant image show something that deserves a closer look?** It is not a disease diagnosis system.
 
 ```text
 Plant image → image-quality gate → Tiny Vision model → Gateway decision engine
