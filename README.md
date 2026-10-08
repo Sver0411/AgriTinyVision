@@ -1,100 +1,168 @@
 # AgriTinyVision
 
-`Sver0411/Smart-Agriculture-Edge-AI` 的配套视觉模型项目。唯一长期职责：使用 RTX GPU 训练、评估、压缩和导出可部署到 Gateway A **ESP32-S3 N16R8（16 MB Flash / 8 MB PSRAM）** 的 Tiny Vision 模型。
+**A small vision model pipeline for offline crop anomaly triage on ESP32-S3.**
 
-**Project North Star — Do Not Drift**：本项目不是高精度农业病害诊断平台、YOLO 实时检测项目、Web Dashboard、云端农业管理系统或视频监控系统。第一版只回答：植物在视觉上是否有值得进一步检查的异常？
+AgriTinyVision is the companion model project to [Smart-Agriculture-Edge-AI](https://github.com/Sver0411/Smart-Agriculture-Edge-AI). It uses an RTX GPU to train and evaluate compact image classifiers, then quantizes and packages a candidate for Gateway A, an ESP32-S3 N16R8 with 16 MB of flash and 8 MB of PSRAM.
+
+The first release answers one narrow question: **does this plant image show something that deserves a closer look?** It is not a disease diagnosis system.
 
 ```text
-农业图像 → Tiny Vision → NORMAL / SUSPECT / UNKNOWN
-Camera → Image Quality Gate → TinyVision → Gateway Decision Engine
+Plant image → image-quality gate → Tiny Vision model → Gateway decision engine
+                                      NORMAL / SUSPECT
+                           Input or quality failure → UNKNOWN
 ```
 
-模型只有 `NORMAL`、`SUSPECT` 两个训练类别。`UNKNOWN` 是推理状态：质量失败、输入异常或置信度不足时拒绝判断。没有互联网时，为 Gateway A 提供最低限度的视觉异常分流能力。水泵、风扇、LoRa、Gateway failover、云同步属于主项目；高精度病害分类、分割、严重程度和趋势识别属于未来 Server Vision，不在 v0.1 实现。
+NORMAL and SUSPECT are the model's two trained classes. UNKNOWN is an inference outcome for unreadable or poor-quality input, invalid output, or insufficient confidence. It is not a third class. The gateway can use the result to request another image or further inspection.
 
-## 当前状态
+This repository focuses on the model pipeline. Gateway actuators, pumps, fans, LoRa, failover, and cloud synchronization belong to the companion project. Fine-grained disease classification, segmentation, severity estimation, and trend analysis are future server-side work and are outside the v0.1 scope.
 
-已在 RTX 4060 完成 160/224 两个 baseline、最终 test 评估、ONNX 数值验证、ESP32-S3 INT8 .espdl 转换与完整 test 仿真，ESP-IDF firmware 示例编译通过。**尚未运行 ESP32 真机**。真实首轮结果见 [reports/FIRST_RUN.md](reports/FIRST_RUN.md)。任何缺失的硬件测量都明确标记 PENDING；公开数据结果不能证明真实农场病害检测有效。
+## Project status
 
-## 环境与安装
+The first end-to-end run was completed on an RTX 4060 Laptop GPU. It includes 160×160 and 224×224 baselines, a frozen test evaluation, PyTorch-to-ONNX numerical checks, ESP32-S3 INT8 conversion to ESP-DL format, host-side quantized graph simulation, and a successful ESP-IDF firmware example build.
 
-Python 3.10+，Windows/Linux。独立虚拟环境，CUDA 版 PyTorch 与 GPU 驱动必须匹配。首轮使用 Python 3.12、PyTorch 2.11.0+cu128；可复現版本会保存在 `requirements-lock.txt`。
+**The model has not yet been run on an ESP32 board.** Device memory, latency, camera preprocessing, and power measurements remain pending hardware validation. The [first-run report](reports/FIRST_RUN.md) records the experiments, results, and limitations.
 
-```bash
+The selected v0.1 candidate is the 160×160 MobileNetV2. It was frozen before final test evaluation: both input sizes had similar validation results, while the 160×160 model uses roughly half the convolution and linear MACs. The later test results are reported below for transparency; they did not change the selection.
+
+| Model | Test accuracy | SUSPECT recall | FNR | Artifact or evaluation |
+| --- | ---: | ---: | ---: | --- |
+| MobileNetV2 160 FP32 | 99.76% | 100.00% | 0.00% | 8,878,502-byte ONNX |
+| MobileNetV2 160 INT8 | 99.52% | 99.65% | 0.35% | 2,438,752-byte ESP-DL model; host simulation |
+| MobileNetV2 224 FP32 | 100.00% | 100.00% | 0.00% | 8,878,502-byte ONNX |
+| MobileNetV2 224 INT8 | 100.00% | 100.00% | 0.00% | 2,511,296-byte ESP-DL model; host simulation |
+
+These figures come from a curated PlantVillage subset, not field footage. They measure this training and export pipeline; they do not establish real-world disease-detection performance.
+
+## Environment and installation
+
+Python 3.10 or newer is required. The workflow supports Windows and Linux. Training and GPU evaluation use CUDA by default and do not silently fall back to CPU. If CPU execution is necessary, pass the explicit --allow-cpu option. The ONNX Runtime benchmark runs on a desktop CPU and says nothing about ESP32 inference speed.
+
+The first run used Python 3.12.15, PyTorch 2.11.0+cu128, and an RTX 4060 Laptop GPU on Windows 11. Install a PyTorch build that matches your operating system, CUDA runtime, and driver.
+
+~~~bash
 python -m venv .venv
-# Windows: .venv\Scripts\activate ; Linux: source .venv/bin/activate
+# Windows
+.venv\Scripts\activate
+# Linux
+source .venv/bin/activate
+
 python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 python -m pip install -e '.[dev]'
 python -m pip install esp-ppq
 python -m agritinyvision.doctor --output reports/environment.json
-```
+~~~
 
-训练和 GPU 评估默认要求 CUDA，不会静默退回 CPU。确有需要时显式传 `--allow-cpu`。ONNX Runtime benchmark 固定为 **Desktop CPU**，绝不表示 MCU 速度。
+To reproduce the locked environment, install the appropriate CUDA PyTorch wheel first, then install the versions in requirements-lock.txt. On a different platform, choose a compatible PyTorch wheel and rerun the environment check; one machine's environment report does not validate another machine.
 
-## 数据、审计及训练
+## Data preparation and audit
 
-[PlantVillage 官方源](https://github.com/spMohanty/PlantVillage-Dataset) 的 raw/color 原图。下载脚本固定 commit、使用官方叶片映射，只选映射明确的图片；不使用 grayscale/segmented 等同叶片变体。首轮子集为苹果、甜椒、马铃薯、番茄 12 个源标签，最高每源标签 240 张，总计 2,792 张；并非完整 PlantVillage 数据集。映射在 `configs/label_mapping.yaml`，新标签必须显式映射，不能默认当作病害。
+The first experiment uses a capped subset of raw/color images from the [official PlantVillage dataset](https://github.com/spMohanty/PlantVillage-Dataset). It covers apples, bell peppers, potatoes, and tomatoes across 12 source labels, with at most 240 images per source label: 2,792 images total. This is not the full PlantVillage dataset. Grayscale and segmented variants are excluded. The source commit and explicit source-label mapping are recorded in the repository.
 
-```bash
+~~~bash
 python scripts/download_plantvillage.py
 python -m agritinyvision prepare-data
 python -m agritinyvision audit
+~~~
+
+The downloader places original images in data/raw/, which is ignored by Git. Manifests in data/manifests/ record file paths, source labels, binary labels, leaf IDs, SHA-256 hashes, and split assignments. The audit checks for path traversal, missing or corrupt files, invalid labels, exact duplicates, and perceptual near-duplicates.
+
+Splitting is group-based, not a random split of individual images. Images connected by a leaf ID or duplicate/near-duplicate relationship are grouped before a deterministic GroupShuffleSplit. The dataset does not provide reliable plant, capture-session, or scene IDs, and leaf IDs plus perceptual hashes cannot rule out every form of leakage. That limitation remains.
+
+New source labels must be mapped explicitly in configs/label_mapping.yaml. Unmapped labels are not automatically treated as diseased.
+
+## Training
+
+The baseline is torchvision MobileNetV2 1.0 with ImageNet IMAGENET1K_V1 pretrained weights and full-parameter fine-tuning. The 160×160 and 224×224 runs use the same split, seed, and epoch budget. A pretrained: false setting supports training from scratch; narrower MobileNetV2 variants must be trained from scratch because torchvision does not provide matching pretrained weights.
+
+Augmentation is applied only to training images: moderate random crops, horizontal flips, small rotations, and brightness, contrast, and saturation changes. Validation, test, and calibration images use deterministic RGB square resizing, scaling to 0–1, and ImageNet mean/std normalization.
+
+~~~bash
 python -m agritinyvision preflight --config configs/train_mobilenetv2_160.yaml
 python -m agritinyvision train --config configs/train_mobilenetv2_160.yaml --output runs/baseline160
 python -m agritinyvision train --config configs/train_mobilenetv2_224.yaml --output runs/baseline224
-# 在任何 test 评估之前冻结候选
+
+# Freeze the candidate before any final test evaluation.
 python scripts/select_candidate.py
-```
+~~~
 
-脚本只下载原图到 Git 忽略的 `data/raw/`。`data/manifests/` 保留路径、source label、二分类映射、真实 leaf ID、SHA256 和 split。审计检测路径越界、缺失/空/损坏图片、非法标签、SHA256 重复、64-bit DCT pHash 近重复风险（距离 ≤4），把 leaf group 与重复/近重复连通分量合并后做确定性 GroupShuffleSplit。不是简单随机切图片。真实 plant ID、拍摄序列/场景 ID 不可用；leaf ID 和 pHash 不能彻底消除所有泄漏，限制必须保留。
+Each run stores its configuration, environment, training history, best and last checkpoints, validation metrics, and threshold search. Provenance includes the source snapshot, data and training-split hashes, seed, optimizer, scheduler, AMP settings, GPU, CUDA version, training time, and peak VRAM.
 
-主 baseline 是 torchvision **MobileNetV2 1.0，ImageNet IMAGENET1K_V1 预训练**，微调所有参数；160 与 224 比较使用相同 split/seed/epoch 预算。配置 `pretrained: false` 支持从头训练；较窄的 MobileNetV2 需从头训练，torchvision 没有对应预训练权重。增强只作用 train：适度随机裁剪、翻转、小旋转、亮度/对比度/饱和度变化。val/test/calibration 无随机增强，统一 RGB square bilinear resize → 0..1 → ImageNet mean/std。
+Training supports AdamW or SGD with a cosine scheduler and validation-based early stopping. Resume a run with:
 
-每次实验保存 config、environment、history、best/last checkpoint、val metrics、阈值搜索；包括 git commit、数据版本/hash、train split hash、seed、optimizer/scheduler/AMP、GPU、CUDA、训练时长和峰值 VRAM。AdamW / SGD，cosine scheduler，验证集早停。`train --resume runs/baseline160/last.pt --config ...` 恢复 optimizer/scheduler/scaler 和 RNG，要求 config 与 manifest 完全相同。确定性为 best effort；不支持的 deterministic kernel 会警告。只加载可信来源的 PyTorch checkpoint。
+~~~bash
+python -m agritinyvision train --resume runs/baseline160/last.pt --config configs/train_mobilenetv2_160.yaml
+~~~
 
-## 评估与 UNKNOWN
+Resume requires the configuration and data manifest to match. Deterministic execution is best-effort; unsupported deterministic kernels produce a warning. Load PyTorch checkpoints only from sources you trust.
 
-```bash
+## Evaluation and inference
+
+~~~bash
 python -m agritinyvision evaluate --checkpoint runs/baseline160/best.pt
 python -m agritinyvision infer --checkpoint runs/baseline160/best.pt --image /path/to/leaf.jpg
-```
+~~~
 
-在 **validation** 上搜索 0.20..0.80，步长 0.05；优先满足 SUSPECT Recall ≥0.95 且 FPR ≤0.35，再选 F1。达不到约束时明确记录 constraints_met=false，并以召回优先降级。checkpoint 选择基于该规则，不以最高 accuracy 为唯一标准。test 只做冻结模型的最终评估；不得根据 test 反复调整训练、阈值或质量门。evaluate 拒绝覆盖已有最终报告。
+The SUSPECT decision threshold is selected on the validation set by searching 0.20–0.80 in 0.05 increments. The selection first seeks SUSPECT recall of at least 0.95 and a false-positive rate no greater than 0.35, then chooses the best F1 among thresholds that meet those constraints. If no threshold meets both, the run records that fact and falls back with recall as the priority. Candidate selection does not use accuracy as its only criterion.
 
-报告 Accuracy、Precision、SUSPECT Recall、Specificity、F1、ROC-AUC、PR-AUC（average precision）、Confusion Matrix、FPR、**FNR**。二分类 raw metrics 与经过质量门后的系统覆盖率、UNKNOWN、accepted metrics 分开报告，不能通过拒绝难例夸大整体准确率。
+After the candidate and threshold are frozen, the test set is used for final evaluation only. Do not use test results to tune training, thresholds, or the quality gate. The evaluate command refuses to overwrite an existing final report.
 
-独立质量门 (`configs/quality.yaml`) 在固定 160×160 灰度上计算 Laplacian variance、brightness、contrast；读取失败/小尺寸也返回 UNKNOWN。通过后，softmax 最大概率低于 min_confidence 时返回 UNKNOWN，否则按 SUSPECT 概率和验证阈值映射。这些默认质量/置信度阈值只是暂定启发式，尚未做现场校准；**不是完整 OOD detection，也不能保证画面包含植物**。无植物、未知域可能高置信通过，Gateway 不得把这种结果作为病害确诊。
+Reports include accuracy, precision, SUSPECT recall, specificity, F1, ROC-AUC, PR-AUC (average precision), confusion matrix, false-positive rate (FPR), and false-negative rate (FNR). Raw binary-classification metrics are reported separately from system coverage, UNKNOWN rate, and metrics on accepted inputs. This prevents a system from appearing more accurate merely by rejecting difficult images.
 
-## 导出、量化、发布
+The independent quality gate in configs/quality.yaml checks Laplacian variance, brightness, and contrast on a fixed 160×160 grayscale image. Decode failures and images that are too small also return UNKNOWN. After the quality check, the confidence gate returns UNKNOWN when the model's maximum softmax probability is below min_confidence; otherwise the SUSPECT probability is compared with the frozen validation threshold.
 
-```bash
+These quality and confidence thresholds are provisional heuristics that still need field calibration. They are not a complete out-of-distribution detector and cannot confirm that an image contains a plant. An unfamiliar or plant-free image may still receive a high-confidence prediction. Gateway software must not treat that prediction as a disease diagnosis.
+
+## Export, quantization, and release
+
+~~~bash
 python -m agritinyvision export --checkpoint runs/baseline160/best.pt --format onnx
-python -m agritinyvision quantize --checkpoint runs/baseline160/best.pt --model runs/baseline160/tinyvision.onnx
-# 可选 Desktop ORT INT8 比较，不能用于 MCU 部署
-python -m agritinyvision quantize --checkpoint runs/baseline160/best.pt --model runs/baseline160/tinyvision.onnx --backend onnx
-python -m agritinyvision evaluate --checkpoint runs/baseline160/best.pt --model runs/baseline160/tinyvision.int8.onnx
+
+python -m agritinyvision quantize \
+  --checkpoint runs/baseline160/best.pt \
+  --model runs/baseline160/tinyvision.onnx
+
+# Optional desktop ONNX Runtime INT8 comparison; this is not an MCU deployment.
+python -m agritinyvision quantize \
+  --checkpoint runs/baseline160/best.pt \
+  --model runs/baseline160/tinyvision.onnx \
+  --backend onnx
+
+python -m agritinyvision evaluate \
+  --checkpoint runs/baseline160/best.pt \
+  --model runs/baseline160/tinyvision.int8.onnx
+
 python -m agritinyvision benchmark --model runs/baseline160/tinyvision.onnx
-python -m agritinyvision release --checkpoint runs/baseline160/best.pt --onnx runs/baseline160/tinyvision.onnx --metrics runs/baseline160/test_metrics.json --espdl runs/baseline160/tinyvision.espdl
-```
 
-ONNX 固定 batch=1、NCHW、float32、opset 18、输出 two logits；至少四个相同输入与 PyTorch 做数值比对。预检核查 [ESP-DL 官方支持算子及限制](https://github.com/espressif/esp-dl/blob/master/operator_support_state.md)，并不等于已证实整图在 8 MB PSRAM 中可运行。保留 torchvision ReLU6（ONNX Clip），不在导出时静默改为 ReLU。
+python -m agritinyvision release \
+  --checkpoint runs/baseline160/best.pt \
+  --onnx runs/baseline160/tinyvision.onnx \
+  --metrics runs/baseline160/test_metrics.json \
+  --espdl runs/baseline160/tinyvision.espdl
+~~~
 
-官方路线 [PyTorch → ONNX → ESP-PPQ → .espdl](https://docs.espressif.com/projects/esp-dl/en/latest/tutorials/how_to_quantize_model.html)，target=`esp32s3`，默认 `w8a8`，只用 train 的分层 round-robin 256 张图校准。量化失败保留真实 traceback；量化成功后在完整 test 上做 ESP-PPQ graph simulation，保持 FP32 validation 选定阈值。任何 host simulation 不等于 ESP32 真机。INT8 损失大时依次考虑更多代表性校准数据、QAT、mixed precision，必须用 validation 诊断，不能用 test 做优化搜索。
+The ONNX reference has batch size 1, NCHW float32 input, opset 18, and two logits. Export validation compares at least four identical inputs against PyTorch. A static preflight checks operators against the [ESP-DL support list](https://github.com/espressif/esp-dl/blob/master/operator_support_state.md); this does not prove the full model will fit in 8 MB of PSRAM. The export preserves torchvision's ReLU6 behavior as ONNX Clip.
 
-release 校验模型 hash、最终 test metrics、ONNX 数值报告、ESP-DL 转换报告、metadata schema。未成功生成 .espdl 时可省略 `--espdl` 制作 **ESP-DL export: PENDING** 的研究包；不会生成假的空文件。模型文件和完整 checkpoint 不进 Git，最终模型只作为 GitHub Release artifact 发布。见 [集成契约](docs/INTEGRATION_CONTRACT.md)。
+The deployment conversion path is PyTorch → ONNX → ESP-PPQ → ESP-DL. It targets esp32s3 with w8a8 quantization. Calibration uses 256 stratified, round-robin training images without random augmentation. Quantized graph simulation runs across the full test set, while retaining the threshold chosen on FP32 validation. A successful conversion or host-side simulation still does not confirm that the model runs on the physical board.
 
-## 硬件及真实农业边界
+If conversion fails, the original error is preserved. If no ESP-DL file was produced, the release command can create a research bundle with ESP-DL export marked PENDING; it never creates a placeholder model. Release validation checks model hashes, frozen test metrics, ONNX numerical checks, the ESP-DL conversion report, and the metadata schema.
 
-`firmware_example/` 准备 ESP-IDF / ESP-DL / ESP32-S3 集成。model load time、inference latency、internal RAM、PSRAM、Flash、camera preprocessing latency、power 全部 **PENDING HARDWARE VALIDATION**，不可引用 PC benchmark 代替。
+Full checkpoints and model binaries are excluded from Git. Model artifacts are intended to be distributed as GitHub Release assets. See the [Gateway A integration contract](docs/INTEGRATION_CONTRACT.md) for tensor layout, preprocessing, inference states, and hardware acceptance criteria.
 
-公开病害数据常有干净背景、受控光照、物种限制、dataset bias 和 domain shift。首轮证明的是训练/量化/导出流水线，不证明现场病害识别。未来必须用 Gateway A 实际摄像头现场数据微调、独立验证及阈值重校准。
+## Hardware and field limitations
 
-## 测试
+firmware_example/ prepares the ESP-IDF, ESP-DL, and ESP32-S3 integration. The firmware example compiles, but it has not been run on hardware. Model load time, inference latency, internal RAM, PSRAM, system flash usage, camera preprocessing latency, and power consumption are all **PENDING HARDWARE VALIDATION**. A desktop benchmark cannot stand in for these measurements.
 
-```bash
+PlantVillage images have clean backgrounds and controlled capture conditions and cover only four crops in this subset. Dataset bias and domain shift limit what the reported scores can tell us. The first run validates the training, quantization, and export workflow; it does not validate disease recognition on a farm. Field camera data, independent validation, and threshold recalibration are required before making field-performance claims.
+
+## Tests
+
+~~~bash
 python -m pytest -q
 python -m ruff check agritinyvision scripts tests
-```
+~~~
 
-CI 使用合成小图测试，不跑完整训练、不下载农业数据。代码 MIT；外部图像及预训练权重适用各自条款，仓库代码许可证不重新许可这些数据。
+CI uses small synthetic images. It does not download crop data or run a full training job. The first-run report records 36 passing tests, along with the environment and firmware build results.
 
-锁定首轮依赖时，先安装上面的 CUDA PyTorch，再运行 `python -m pip install -r requirements-lock.txt`。Linux 的 CUDA/驱动版本可能不同，应使用匹配平台的 wheel 并重新运行 doctor；不能把 Windows 环境报告当成另一台机器已验证。
+## License
+
+The code is licensed under the MIT License. Dataset images, pretrained weights, and other external materials remain subject to their respective terms; the repository's code license does not relicense those materials.
