@@ -1,0 +1,35 @@
+{
+  "compiled": true,
+  "mode": "fixture",
+  "target": "esp32s3",
+  "idf": "5.4.4",
+  "esp_dl": "3.3.13",
+  "project_version": "0.2.0",
+  "firmware_bytes": 3838720,
+  "firmware_bin_sha256": "12c5ab270471c57d49381415043c97a54ba9d18e622d78fab1d10434d29e9357",
+  "firmware_elf_sha256": "a22a02b5b581b7b5cb75be3a5ea74441ba01bb851da456a8a96fdf7c8e8fa262",
+  "sdkconfig_sha256": "6a384d0105f8054512d01861a0fa575794cd9b881e50f5ad3825128003777c87",
+  "model_bytes": 2438752,
+  "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+  "configured_flash_size": "16MB",
+  "flash_payloads": [
+    {
+      "offset": "0x0",
+      "bytes": 20928,
+      "sha256": "804eb80d2da3846ba8be54895ac32df215f9f9f515a9ba98a31cb297b676ac2e"
+    },
+    {
+      "offset": "0x10000",
+      "bytes": 3838720,
+      "sha256": "12c5ab270471c57d49381415043c97a54ba9d18e622d78fab1d10434d29e9357"
+    },
+    {
+      "offset": "0x8000",
+      "bytes": 3072,
+      "sha256": "fabcbebf733457e9706b46544b2a1cb9672a8e1ce626f5dc7d7e6fb4738d5b0e"
+    }
+  ],
+  "compiled_flash_payload_bytes": 3862720,
+  "hardware_status": "PENDING",
+  "build_directory": "D:\\File\\AgriTinyVision\\firmware_example\\build"
+}

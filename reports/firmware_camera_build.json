@@ -1,0 +1,36 @@
+{
+  "compiled": true,
+  "mode": "camera",
+  "transport": "USB Serial/JTAG",
+  "target": "esp32s3",
+  "idf": "5.4.4",
+  "esp_dl": "3.3.13",
+  "project_version": "0.2.0",
+  "firmware_bytes": 3574960,
+  "firmware_bin_sha256": "2586ff920c200bebb9240c2f7635d31b878776daab0c2279eb5244380db42e96",
+  "firmware_elf_sha256": "bab257fda4b57c0f922cc86a8ec76e9037135208c3ba7adda93957eb6711f622",
+  "sdkconfig_sha256": "dbf73d48743f6b415f754a8307d9bb0b21ca17dab84b0419477dcb4a0bf6135c",
+  "model_bytes": 2438752,
+  "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+  "configured_flash_size": "16MB",
+  "flash_payloads": [
+    {
+      "offset": "0x0",
+      "bytes": 20928,
+      "sha256": "13abd907ec828f948c4e6eb5627c1da02f0781530ea95e302290618d6475cd75"
+    },
+    {
+      "offset": "0x10000",
+      "bytes": 3574960,
+      "sha256": "2586ff920c200bebb9240c2f7635d31b878776daab0c2279eb5244380db42e96"
+    },
+    {
+      "offset": "0x8000",
+      "bytes": 3072,
+      "sha256": "fabcbebf733457e9706b46544b2a1cb9672a8e1ce626f5dc7d7e6fb4738d5b0e"
+    }
+  ],
+  "compiled_flash_payload_bytes": 3598960,
+  "hardware_status": "PENDING",
+  "build_directory": "D:\\File\\AgriTinyVision\\build-camera"
+}

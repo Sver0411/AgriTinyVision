@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "evidence": "ESP32-S3 hardware",
+  "port": "COM3",
+  "board_mac": "30:30:f9:3d:a2:40",
+  "cpu_hz": 160000000,
+  "psram_hz": 80000000,
+  "flash_bytes": 16777216,
+  "psram_bytes": 8388608,
+  "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+  "state": "NORMAL",
+  "suspect_probability_logged": 0.000553,
+  "fp32_reference_logged": 0.002596,
+  "model_load_us": 463037,
+  "inference_us": 537003,
+  "internal_min_free": 253663,
+  "psram_current_free": 5222988,
+  "psram_min_free": 5217864,
+  "raw_log": "runs\\hardware\\fixture_boot_20261102.log"
+}

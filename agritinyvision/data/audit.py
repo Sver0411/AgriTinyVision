@@ -62,6 +62,33 @@ def audit(manifest, root, output="reports/dataset_audit", near_distance=4):
                 leaks.append({"kind": kind, "indices": list(indices), "splits": sorted(splits)})
     labels = Counter(r.get("label", "INVALID") for r in rows)
     splits = Counter(r.get("split", "unsplit") for r in rows)
+    source_classes = sorted({r["source_label"] for r in rows if r.get("source_label")})
+    source_counts = {
+        s: dict(
+            Counter(
+                r["source_label"] for r in rows if r.get("split", "unsplit") == s and r.get("source_label")
+            )
+        )
+        for s in dict.fromkeys(["train", "val", "test", *splits])
+    }
+    warnings = []
+    missing_source_metadata = sum(not r.get("source_label") for r in rows)
+    if missing_source_metadata:
+        warnings.append(
+            f"source_label unavailable for {missing_source_metadata} images; source coverage is incomplete"
+        )
+    missing_sources = []
+    if any(s in splits for s in ("train", "val", "test")):
+        missing_sources = [
+            {"split": s, "source_label": label}
+            for s in ("train", "val", "test")
+            for label in source_classes
+            if not source_counts[s].get(label)
+        ]
+    else:
+        warnings.append("Unsplit manifest: train/val/test source coverage check is pending")
+    if missing_sources:
+        warnings.append("FAIL: a participating source class is absent from train, val or test")
     result = {
         "created_at": now(),
         "total_images": len(rows),
@@ -71,6 +98,11 @@ def audit(manifest, root, output="reports/dataset_audit", near_distance=4):
         "split_labels": {
             s: dict(Counter(r["label"] for r in rows if r.get("split", "unsplit") == s)) for s in splits
         },
+        "source_classes": source_classes,
+        "split_source_labels": source_counts,
+        "missing_split_source_labels": missing_sources,
+        "warnings": warnings,
+        "source_coverage_rule": "Any participating source class absent from train/val/test fails a split audit; unsplit or missing metadata warns.",
         "dimensions": dict(sizes),
         "invalid_images": errors,
         "invalid_count": len(errors),
@@ -79,7 +111,7 @@ def audit(manifest, root, output="reports/dataset_audit", near_distance=4):
         "near_hash": "64-bit DCT pHash",
         "near_distance": near_distance,
         "cross_split_leaks": leaks,
-        "passed": not errors and not leaks,
+        "passed": not errors and not leaks and not missing_sources,
         "limitation": "pHash is a heuristic; leaf IDs do not guarantee independent plant/scene/capture-session IDs.",
     }
     if output:
@@ -95,7 +127,13 @@ def audit(manifest, root, output="reports/dataset_audit", near_distance=4):
                     "duplicate_hash_groups",
                     "invalid_images",
                     "cross_split_leaks",
+                    "split_source_labels",
                 )
+            )
+            + "\n\n## Source classes by frozen split\n\n| Source class | train | val | test |\n| --- | ---: | ---: | ---: |\n"
+            + "\n".join(
+                f"| {label} | {source_counts['train'].get(label, 0)} | {source_counts['val'].get(label, 0)} | {source_counts['test'].get(label, 0)} |"
+                for label in source_classes
             )
             + "\n\nDetailed offending indices are in the JSON report.\n",
             encoding="utf-8",

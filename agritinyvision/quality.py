@@ -1,4 +1,5 @@
 import math
+from decimal import Decimal
 
 import numpy as np
 
@@ -6,6 +7,18 @@ from .data.dataset import open_rgb
 from .utils import load_yaml
 
 QUALITY_GATE_VERSION = "laplacian-gray-v1"
+ABSTENTION_POLICY = "threshold-centered-v1"
+
+
+def abstention_bounds(threshold, margin):
+    if not math.isfinite(threshold) or not 0 < threshold < 1:
+        raise ValueError("Invalid decision threshold")
+    if not math.isfinite(margin) or not 0 <= margin <= min(threshold, 1 - threshold):
+        raise ValueError("Invalid abstention margin")
+    # Decimal configuration arithmetic avoids 0.30 - 0.10 falling below 0.20.
+    # Export these same float32 constants to firmware; do not recompute them there.
+    t, m = Decimal(str(threshold)), Decimal(str(margin))
+    return float(np.float32(float(t - m))), float(np.float32(float(t + m)))
 
 
 def quality_gate(image, config):
@@ -34,20 +47,27 @@ def quality_gate(image, config):
         return {"passed": False, "reasons": ["invalid_input"], "error": str(e)}
 
 
-def decide(suspect_probability, threshold, quality, min_confidence):
+def decide(suspect_probability, threshold, quality, abstention_margin):
     if not quality["passed"]:
         return {"state": "UNKNOWN", "reason": "quality_gate", "quality": quality}
-    p = float(suspect_probability)
+    try:
+        p = float(suspect_probability)
+    except (TypeError, ValueError):
+        return {"state": "UNKNOWN", "reason": "invalid_model_output"}
     if not math.isfinite(p) or not 0 <= p <= 1:
         return {"state": "UNKNOWN", "reason": "invalid_model_output"}
-    confidence = max(p, 1 - p)
-    if confidence < min_confidence:
-        return {"state": "UNKNOWN", "reason": "insufficient_confidence", "confidence": confidence}
+    lower, upper = abstention_bounds(threshold, abstention_margin)
+    decision_p = float(np.float32(p))
+    state = "NORMAL" if decision_p < lower else "UNKNOWN" if decision_p < upper else "SUSPECT"
     return {
-        "state": "SUSPECT" if p >= threshold else "NORMAL",
+        "state": state,
+        "reason": "decision_boundary" if state == "UNKNOWN" else "threshold_interval",
         "suspect_probability": p,
-        "confidence": confidence,
         "decision_threshold": threshold,
+        "abstention_margin": abstention_margin,
+        "normal_upper_bound": lower,
+        "suspect_lower_bound": upper,
+        "abstention_policy": ABSTENTION_POLICY,
     }
 
 
@@ -56,7 +76,9 @@ def load_quality(path="configs/quality.yaml"):
     if c.get("version") != QUALITY_GATE_VERSION:
         raise ValueError("Unsupported quality-gate version")
     if (
-        not 0.5 <= c["min_confidence"] <= 1
+        "min_confidence" in c
+        or not math.isfinite(c["abstention_margin"])
+        or not 0 <= c["abstention_margin"] < 0.5
         or not 0 <= c["brightness_min"] < c["brightness_max"] <= 255
         or c["contrast_min"] < 0
         or c["blur_min"] < 0

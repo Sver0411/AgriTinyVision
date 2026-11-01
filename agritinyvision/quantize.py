@@ -12,7 +12,58 @@ from .data.transforms import preprocessing
 from .export_onnx import inspect_operators
 from .threshold import metrics
 from .train import load_checkpoint
-from .utils import load_yaml, now, sha256, write_json
+from .utils import load_yaml, now, read_json, sha256, write_json
+
+
+def validate_quantization_report(model_path, checkpoint, threshold):
+    report = read_json(str(model_path) + ".quantization.json")
+    validation = report.get("validation_metrics", {})
+    if (
+        not report.get("status", "").startswith("SUCCESS")
+        or report.get("sha256") != sha256(model_path)
+        or report.get("checkpoint_sha256") != sha256(checkpoint)
+        or report.get("quantization_selection_split") != "validation"
+        or report.get("decision_threshold_source") != "validation"
+        or validation.get("split") != "val"
+        or validation.get("threshold_source") != "validation"
+        or validation.get("decision_threshold") != threshold
+        or validation.get("model_sha256") != sha256(model_path)
+        or "test_metrics" in report
+    ):
+        raise ValueError(
+            "Quantized candidate needs matching validation-only provenance; test selection is forbidden"
+        )
+    return report
+
+
+def predict_quantized(model_path, loader, dev, report):
+    """Read an already frozen artifact; never recalibrate while evaluating test."""
+    labels, scores = [], []
+    if report["backend"] == "espdl":
+        from esp_ppq import TorchExecutor
+        from esp_ppq.api import load_native_graph
+
+        native = Path(str(model_path) + ".native")
+        if report.get("simulation_graph_sha256") != sha256(native):
+            raise ValueError("Quantized simulation graph missing or changed")
+        # Native PPQ files use pickle. Load only locally produced trusted graphs.
+        executor = TorchExecutor(graph=load_native_graph(str(native)), device=str(dev))
+        for x, y in loader:
+            with torch.inference_mode():
+                result = executor.forward(x.to(dev))[0]
+                scores.extend(result.float().softmax(1)[:, 1].cpu().tolist())
+                labels.extend(y.tolist())
+        backend = "ESP-PPQ quantized graph simulation; not ESP32 hardware"
+    else:
+        import onnxruntime as ort
+
+        session = ort.InferenceSession(str(model_path), providers=["CPUExecutionProvider"])
+        for x, y in loader:
+            logits = session.run(None, {session.get_inputs()[0].name: x.numpy()})[0]
+            scores.extend(torch.from_numpy(logits).float().softmax(1)[:, 1].tolist())
+            labels.extend(y.tolist())
+        backend = "ONNX Runtime INT8 CPU; desktop only"
+    return labels, scores, backend
 
 
 def calibration_indices(dataset, count, seed):
@@ -31,8 +82,19 @@ def calibration_indices(dataset, count, seed):
     return indices
 
 
-def quantize(model_path, checkpoint, backend="espdl", output=None, allow_cpu=False):
+def quantize(model_path, checkpoint, backend="espdl", output=None, allow_cpu=False, evaluation_split="val"):
+    if evaluation_split != "val":
+        raise ValueError(
+            "Quantization development can evaluate only val; use evaluate --final for frozen test"
+        )
     _, cp = load_checkpoint(checkpoint)
+    numerical = read_json(str(model_path) + ".validation.json")
+    if (
+        not numerical.get("passed")
+        or numerical.get("sha256") != sha256(model_path)
+        or numerical.get("checkpoint_sha256") != sha256(checkpoint)
+    ):
+        raise ValueError("Quantization needs ONNX numerical validation matching the frozen checkpoint")
     c = cp["config"]
     if sha256(c["manifest"]) != cp["manifest_sha256"]:
         raise ValueError("Calibration manifest differs from training")
@@ -50,6 +112,9 @@ def quantize(model_path, checkpoint, backend="espdl", output=None, allow_cpu=Fal
         "backend": backend,
         "target": "esp32s3" if backend == "espdl" else "desktop ONNX Runtime only",
         "source_sha256": sha256(model_path),
+        "checkpoint_sha256": sha256(checkpoint),
+        "decision_threshold_source": "validation",
+        "quantization_selection_split": "validation",
         "calibration_split": "train",
         "calibration_samples": len(indices),
         "calibration_paths": [dataset.rows[i]["path"] for i in indices],
@@ -92,8 +157,9 @@ def quantize(model_path, checkpoint, backend="espdl", output=None, allow_cpu=Fal
             from .doctor import device
 
             dev = device(allow_cpu)
-            from esp_ppq import QuantizationSettingFactory, TorchExecutor
-            from esp_ppq.api import espdl_quantize_onnx
+            from esp_ppq import QuantizationSettingFactory
+            from esp_ppq.api import espdl_quantize_onnx, export_ppq_graph
+            from esp_ppq.core import TargetPlatform
 
             review = inspect_operators(model_path)
             if not review["static_review_passed"]:
@@ -121,19 +187,24 @@ def quantize(model_path, checkpoint, backend="espdl", output=None, allow_cpu=Fal
             )
             if not out.is_file() or out.stat().st_size == 0:
                 raise RuntimeError("ESP-PPQ returned without a nonempty .espdl artifact")
-            executor = TorchExecutor(graph=graph, device=str(dev))
-            test = ManifestDataset(c["manifest"], c["dataset_root"], "test", preprocessing(c["input_size"]))
-            labels, scores = [], []
-            for x, y in DataLoader(test, batch_size=1, shuffle=False):
-                with torch.inference_mode():
-                    result = executor.forward(x.to(dev))[0]
-                    scores.extend(result.float().softmax(1)[:, 1].cpu().tolist())
-                    labels.extend(y.tolist())
-            report["test_metrics"] = metrics(labels, scores, cp["threshold"])
-            report["test_metrics"]["backend"] = "ESP-PPQ quantized graph simulation; not ESP32 hardware"
-            report["test_metrics"]["threshold_source"] = "FP32 validation; frozen before test"
+            native = Path(str(out) + ".native")
+            if native.exists():
+                raise ValueError("Refusing to overwrite a saved quantized graph")
+            export_ppq_graph(graph, TargetPlatform.NATIVE, str(native))
+            report["simulation_graph_sha256"] = sha256(native)
             report["status"] = "SUCCESS (conversion and host simulation)"
         report.update(sha256=sha256(out), bytes=out.stat().st_size)
+        validation = ManifestDataset(c["manifest"], c["dataset_root"], "val", preprocessing(c["input_size"]))
+        labels, scores, evaluation_backend = predict_quantized(
+            out,
+            DataLoader(validation, batch_size=1, shuffle=False),
+            dev if backend == "espdl" else "cpu",
+            report,
+        )
+        report["validation_metrics"] = metrics(labels, scores, cp["threshold"])
+        report["validation_metrics"].update(
+            split="val", threshold_source="validation", backend=evaluation_backend, model_sha256=sha256(out)
+        )
         write_json(str(out) + ".quantization.json", report)
         print(report, flush=True)
         return out

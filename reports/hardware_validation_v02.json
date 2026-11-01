@@ -1,0 +1,525 @@
+{
+  "status": "PASS",
+  "evidence": "hardware",
+  "checks": {
+    "fixture": true,
+    "protocol_and_quality": true,
+    "camera_100": true,
+    "stability_500": true,
+    "at_least_5_minutes": true,
+    "responses_without_errors": true,
+    "no_restarts_during_runs": true,
+    "same_firmware": true,
+    "same_frozen_model": true
+  },
+  "fixture": {
+    "status": "PASS",
+    "evidence": "ESP32-S3 hardware",
+    "port": "COM3",
+    "board_mac": "30:30:f9:3d:a2:40",
+    "cpu_hz": 160000000,
+    "psram_hz": 80000000,
+    "flash_bytes": 16777216,
+    "psram_bytes": 8388608,
+    "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+    "state": "NORMAL",
+    "suspect_probability_logged": 0.000553,
+    "fp32_reference_logged": 0.002596,
+    "model_load_us": 463037,
+    "inference_us": 537003,
+    "internal_min_free": 253663,
+    "psram_current_free": 5222988,
+    "psram_min_free": 5217864,
+    "raw_log": "runs\\hardware\\fixture_boot_20261102.log"
+  },
+  "protocol_checks": 15,
+  "reference_comparison": {
+    "purpose": "independent deployment consistency comparison",
+    "evidence": "hardware",
+    "rgb_sha256": "4fef2286428d6e1aaddbbba9c4c606e38d7e5855fdd1bc9a06bf2d186bc104cb",
+    "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+    "onnx_sha256": "350c32d88d19eb16dca7d905036d2c99a716a3938b91f52715349e43ee6ab909",
+    "fp32_suspect_probability": 0.0025958786718547344,
+    "device_results": [
+      {
+        "sequence": 2,
+        "suspect_probability": 0.000552778597921133,
+        "difference_from_fp32": -0.0020431000739336014
+      }
+    ],
+    "decision_threshold": 0.300000011920929
+  },
+  "runs": {
+    "single": {
+      "directory": "runs\\hardware\\fixed_single\\20261102_010811_453728",
+      "summary": {
+        "evidence": "hardware",
+        "frames": 1,
+        "attempts": 1,
+        "success_rate": 1.0,
+        "states": {
+          "NORMAL": 1
+        },
+        "accepted_classifications": 1,
+        "quality_rejections": 0,
+        "errors": {},
+        "duration_s": 1.3189995000138879,
+        "actual_fps": 0.7581504011104409,
+        "boot_ids": [
+          "1ce5ce9538820f5d"
+        ],
+        "memory": {
+          "free_internal": {
+            "first": 286587.0,
+            "last": 286587.0,
+            "minimum": 286587.0,
+            "maximum": 286587.0
+          },
+          "free_psram": {
+            "first": 5046852.0,
+            "last": 5046852.0,
+            "minimum": 5046852.0,
+            "maximum": 5046852.0
+          },
+          "min_free_internal": {
+            "first": 236259.0,
+            "last": 236259.0,
+            "minimum": 236259.0,
+            "maximum": 236259.0
+          },
+          "min_free_psram": {
+            "first": 5041728.0,
+            "last": 5041728.0,
+            "minimum": 5041728.0,
+            "maximum": 5041728.0
+          }
+        },
+        "hardware_validation": "RECORDED"
+      },
+      "latency": {
+        "transfer_ms": {
+          "count": 1,
+          "p50": 355.0074999802746,
+          "p95": 355.0074999802746,
+          "min": 355.0074999802746,
+          "max": 355.0074999802746
+        },
+        "quality_us": {
+          "count": 1,
+          "p50": 125363.0,
+          "p95": 125363.0,
+          "min": 125363.0,
+          "max": 125363.0
+        },
+        "preprocess_us": {
+          "count": 1,
+          "p50": 96966.0,
+          "p95": 96966.0,
+          "min": 96966.0,
+          "max": 96966.0
+        },
+        "inference_us": {
+          "count": 1,
+          "p50": 536848.0,
+          "p95": 536848.0,
+          "min": 536848.0,
+          "max": 536848.0
+        },
+        "total_us": {
+          "count": 1,
+          "p50": 759849.0,
+          "p95": 759849.0,
+          "min": 759849.0,
+          "max": 759849.0
+        },
+        "end_to_end_ms": {
+          "count": 1,
+          "p50": 1113.889799977187,
+          "p95": 1113.889799977187,
+          "min": 1113.889799977187,
+          "max": 1113.889799977187
+        }
+      },
+      "device": {
+        "chip": "ESP32-S3",
+        "board": "ESP32-S3 N16R8",
+        "boot_id": "1ce5ce9538820f5d",
+        "firmware_version": "0.2.0",
+        "model_version": "0.1.0",
+        "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+        "idf_version": "v5.4.4",
+        "deployment_sha256": "f32296c1196da61aff1430481e66c9dd938db57e8d98565c926f415dc7dfc167",
+        "esp_dl_version": "3.3.13",
+        "transport": "USB Serial/JTAG",
+        "rx_buffer_bytes": 98304,
+        "uart_baudrate": 921600,
+        "model_loaded": true,
+        "model_error": null,
+        "model_load_us": 655036,
+        "model_bytes": 2438752,
+        "dtype": "int8",
+        "input_shape": [
+          1,
+          160,
+          160,
+          3
+        ],
+        "output_shape": [
+          1,
+          2
+        ],
+        "input_exponent": -6,
+        "output_exponent": -4,
+        "decision_threshold": 0.300000011920929,
+        "normal_upper_bound": 0.20000000298023224,
+        "suspect_lower_bound": 0.4000000059604645,
+        "abstention_policy": "threshold-centered-v1",
+        "quality_gate_version": "laplacian-gray-v1",
+        "confidence_definition": "assigned_class_probability; UNKNOWN=null",
+        "reset_reason": 11,
+        "flash_chip_bytes": 16777216,
+        "app_partition_bytes": 6291456,
+        "app_image_bytes": 3574960,
+        "firmware_sha256": "bab257fda4b57c0f922cc86a8ec76e9037135208c3ba7adda93957eb6711f622",
+        "firmware_hash_kind": "app_elf_sha256",
+        "free_internal": 285067,
+        "free_psram": 5046916,
+        "min_free_internal": 236259,
+        "min_free_psram": 5046916
+      },
+      "input": {
+        "port": "COM3",
+        "baudrate": 921600,
+        "camera": 0,
+        "rotation": 0,
+        "mirror": false,
+        "fps": 1.0,
+        "timeout": 30.0,
+        "output": "runs/hardware/fixed_single",
+        "headless": true,
+        "frames": 1,
+        "duration": 0,
+        "image": "data\\raw\\plantvillage_color\\Apple___healthy\\7a13d83d-7511-41c5-9fd5-9fd18d3cf3b1___RS_HL 5685.JPG",
+        "list_ports": false,
+        "check_camera": false,
+        "report": null
+      },
+      "saturation_fraction_p50": 0.0011328125,
+      "saturation_fraction_p95": 0.0011328125
+    },
+    "camera_100": {
+      "directory": "runs\\hardware\\live_100\\20261102_010902_703181",
+      "summary": {
+        "evidence": "hardware",
+        "frames": 100,
+        "attempts": 100,
+        "success_rate": 1.0,
+        "states": {
+          "SUSPECT": 100
+        },
+        "accepted_classifications": 100,
+        "quality_rejections": 0,
+        "errors": {},
+        "duration_s": 111.0888328999863,
+        "actual_fps": 0.9001804896989996,
+        "boot_ids": [
+          "1ce5ce9538820f5d"
+        ],
+        "memory": {
+          "free_internal": {
+            "first": 286447.0,
+            "last": 286447.0,
+            "minimum": 286447.0,
+            "maximum": 286447.0
+          },
+          "free_psram": {
+            "first": 5046852.0,
+            "last": 5046852.0,
+            "minimum": 5046852.0,
+            "maximum": 5046852.0
+          },
+          "min_free_internal": {
+            "first": 236259.0,
+            "last": 236259.0,
+            "minimum": 236259.0,
+            "maximum": 236259.0
+          },
+          "min_free_psram": {
+            "first": 5041728.0,
+            "last": 5041728.0,
+            "minimum": 5041728.0,
+            "maximum": 5041728.0
+          }
+        },
+        "hardware_validation": "RECORDED"
+      },
+      "latency": {
+        "transfer_ms": {
+          "count": 100,
+          "p50": 255.53215001127683,
+          "p95": 361.7903299717,
+          "min": 249.6833000332117,
+          "max": 364.37490000389516
+        },
+        "quality_us": {
+          "count": 100,
+          "p50": 124898.0,
+          "p95": 124950.25,
+          "min": 124327.0,
+          "max": 125187.0
+        },
+        "preprocess_us": {
+          "count": 100,
+          "p50": 96939.0,
+          "p95": 96952.0,
+          "min": 96852.0,
+          "max": 96958.0
+        },
+        "inference_us": {
+          "count": 100,
+          "p50": 527853.0,
+          "p95": 527866.05,
+          "min": 527812.0,
+          "max": 527882.0
+        },
+        "total_us": {
+          "count": 100,
+          "p50": 750357.0,
+          "p95": 750408.35,
+          "min": 749697.0,
+          "max": 750625.0
+        },
+        "end_to_end_ms": {
+          "count": 100,
+          "p50": 1011.861900013173,
+          "p95": 1117.3937900282908,
+          "min": 1003.6995999980718,
+          "max": 1120.2819000463933
+        }
+      },
+      "device": {
+        "chip": "ESP32-S3",
+        "board": "ESP32-S3 N16R8",
+        "boot_id": "1ce5ce9538820f5d",
+        "firmware_version": "0.2.0",
+        "model_version": "0.1.0",
+        "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+        "idf_version": "v5.4.4",
+        "deployment_sha256": "f32296c1196da61aff1430481e66c9dd938db57e8d98565c926f415dc7dfc167",
+        "esp_dl_version": "3.3.13",
+        "transport": "USB Serial/JTAG",
+        "rx_buffer_bytes": 98304,
+        "uart_baudrate": 921600,
+        "model_loaded": true,
+        "model_error": null,
+        "model_load_us": 655036,
+        "model_bytes": 2438752,
+        "dtype": "int8",
+        "input_shape": [
+          1,
+          160,
+          160,
+          3
+        ],
+        "output_shape": [
+          1,
+          2
+        ],
+        "input_exponent": -6,
+        "output_exponent": -4,
+        "decision_threshold": 0.300000011920929,
+        "normal_upper_bound": 0.20000000298023224,
+        "suspect_lower_bound": 0.4000000059604645,
+        "abstention_policy": "threshold-centered-v1",
+        "quality_gate_version": "laplacian-gray-v1",
+        "confidence_definition": "assigned_class_probability; UNKNOWN=null",
+        "reset_reason": 11,
+        "flash_chip_bytes": 16777216,
+        "app_partition_bytes": 6291456,
+        "app_image_bytes": 3574960,
+        "firmware_sha256": "bab257fda4b57c0f922cc86a8ec76e9037135208c3ba7adda93957eb6711f622",
+        "firmware_hash_kind": "app_elf_sha256",
+        "free_internal": 284611,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728
+      },
+      "input": {
+        "port": "COM3",
+        "baudrate": 921600,
+        "camera": 0,
+        "rotation": 0,
+        "mirror": false,
+        "fps": 1.0,
+        "timeout": 30.0,
+        "output": "runs/hardware/live_100",
+        "headless": true,
+        "frames": 100,
+        "duration": 0,
+        "image": null,
+        "list_ports": false,
+        "check_camera": false,
+        "report": null
+      },
+      "saturation_fraction_p50": 0.043958333333333335,
+      "saturation_fraction_p95": 0.22616015625
+    },
+    "stability_500": {
+      "directory": "runs\\hardware\\stability_500\\20261102_011116_861385",
+      "summary": {
+        "evidence": "hardware",
+        "frames": 500,
+        "attempts": 500,
+        "success_rate": 1.0,
+        "states": {
+          "NORMAL": 500
+        },
+        "accepted_classifications": 500,
+        "quality_rejections": 0,
+        "errors": {},
+        "duration_s": 536.4605446999776,
+        "actual_fps": 0.9320349929548526,
+        "boot_ids": [
+          "1ce5ce9538820f5d"
+        ],
+        "memory": {
+          "free_internal": {
+            "first": 286447.0,
+            "last": 286447.0,
+            "minimum": 286447.0,
+            "maximum": 286447.0
+          },
+          "free_psram": {
+            "first": 5046852.0,
+            "last": 5046852.0,
+            "minimum": 5046852.0,
+            "maximum": 5046852.0
+          },
+          "min_free_internal": {
+            "first": 236259.0,
+            "last": 236259.0,
+            "minimum": 236259.0,
+            "maximum": 236259.0
+          },
+          "min_free_psram": {
+            "first": 5041728.0,
+            "last": 5041728.0,
+            "minimum": 5041728.0,
+            "maximum": 5041728.0
+          }
+        },
+        "hardware_validation": "RECORDED"
+      },
+      "latency": {
+        "transfer_ms": {
+          "count": 500,
+          "p50": 353.8989500084426,
+          "p95": 357.33244504081085,
+          "min": 245.44169998262078,
+          "max": 358.545100025367
+        },
+        "quality_us": {
+          "count": 500,
+          "p50": 125371.0,
+          "p95": 125373.0,
+          "min": 125361.0,
+          "max": 125384.0
+        },
+        "preprocess_us": {
+          "count": 500,
+          "p50": 96959.0,
+          "p95": 96968.0,
+          "min": 96957.0,
+          "max": 96969.0
+        },
+        "inference_us": {
+          "count": 500,
+          "p50": 527840.0,
+          "p95": 527850.0,
+          "min": 527825.0,
+          "max": 527870.0
+        },
+        "total_us": {
+          "count": 500,
+          "p50": 750842.0,
+          "p95": 750854.15,
+          "min": 750829.0,
+          "max": 750870.0
+        },
+        "end_to_end_ms": {
+          "count": 500,
+          "p50": 1107.1746999805328,
+          "p95": 1114.935490017524,
+          "min": 1000.7654000073671,
+          "max": 1119.8221999802627
+        }
+      },
+      "device": {
+        "chip": "ESP32-S3",
+        "board": "ESP32-S3 N16R8",
+        "boot_id": "1ce5ce9538820f5d",
+        "firmware_version": "0.2.0",
+        "model_version": "0.1.0",
+        "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+        "idf_version": "v5.4.4",
+        "deployment_sha256": "f32296c1196da61aff1430481e66c9dd938db57e8d98565c926f415dc7dfc167",
+        "esp_dl_version": "3.3.13",
+        "transport": "USB Serial/JTAG",
+        "rx_buffer_bytes": 98304,
+        "uart_baudrate": 921600,
+        "model_loaded": true,
+        "model_error": null,
+        "model_load_us": 655036,
+        "model_bytes": 2438752,
+        "dtype": "int8",
+        "input_shape": [
+          1,
+          160,
+          160,
+          3
+        ],
+        "output_shape": [
+          1,
+          2
+        ],
+        "input_exponent": -6,
+        "output_exponent": -4,
+        "decision_threshold": 0.300000011920929,
+        "normal_upper_bound": 0.20000000298023224,
+        "suspect_lower_bound": 0.4000000059604645,
+        "abstention_policy": "threshold-centered-v1",
+        "quality_gate_version": "laplacian-gray-v1",
+        "confidence_definition": "assigned_class_probability; UNKNOWN=null",
+        "reset_reason": 11,
+        "flash_chip_bytes": 16777216,
+        "app_partition_bytes": 6291456,
+        "app_image_bytes": 3574960,
+        "firmware_sha256": "bab257fda4b57c0f922cc86a8ec76e9037135208c3ba7adda93957eb6711f622",
+        "firmware_hash_kind": "app_elf_sha256",
+        "free_internal": 284611,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728
+      },
+      "input": {
+        "port": "COM3",
+        "baudrate": 921600,
+        "camera": 0,
+        "rotation": 0,
+        "mirror": false,
+        "fps": 1.0,
+        "timeout": 30.0,
+        "output": "runs/hardware/stability_500",
+        "headless": true,
+        "frames": 500,
+        "duration": 300.0,
+        "image": "data\\raw\\plantvillage_color\\Apple___healthy\\7a13d83d-7511-41c5-9fd5-9fd18d3cf3b1___RS_HL 5685.JPG",
+        "list_ports": false,
+        "check_camera": false,
+        "report": null
+      },
+      "saturation_fraction_p50": 0.0011328125,
+      "saturation_fraction_p95": 0.0011328125
+    }
+  }
+}

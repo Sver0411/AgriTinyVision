@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AgriTinyVision release metadata v0.1",
   "type": "object",
-  "required": ["model_name", "version", "git_commit", "input_width", "input_height", "channels", "classes", "decision_threshold", "quality_gate_version", "quality_gate", "quantization", "target", "dataset_version", "dataset_hash", "train_split_hash", "created_at", "sha256", "artifact_sha256", "espdl_export", "hardware_status", "preprocessing"],
+  "required": ["model_name", "version", "git_commit", "input_width", "input_height", "channels", "classes", "decision_threshold", "decision_threshold_source", "quantization_selection_split", "final_metrics_split", "state_logic", "quality_gate_version", "quality_gate", "quantization", "target", "dataset_version", "dataset_hash", "train_split_hash", "created_at", "sha256", "artifact_sha256", "espdl_export", "hardware_status", "preprocessing"],
   "properties": {
     "model_name": {"const": "AgriTinyVision"},
     "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
@@ -12,8 +12,27 @@
     "channels": {"const": 3},
     "classes": {"const": ["NORMAL", "SUSPECT"]},
     "decision_threshold": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+    "decision_threshold_source": {"const": "validation"},
+    "quantization_selection_split": {"enum": ["validation", "not_applicable"]},
+    "final_metrics_split": {"const": "test"},
+    "state_logic": {
+      "type": "object",
+      "required": ["policy", "normal_upper_bound", "suspect_lower_bound", "comparison_dtype", "margin_source"],
+      "properties": {
+        "policy": {"const": "threshold-centered-v1"},
+        "normal_upper_bound": {"type": "number", "minimum": 0, "maximum": 1},
+        "suspect_lower_bound": {"type": "number", "minimum": 0, "maximum": 1},
+        "comparison_dtype": {"const": "float32"},
+        "margin_source": {"type": "string", "minLength": 1}
+      }
+    },
     "quality_gate_version": {"const": "laplacian-gray-v1"},
-    "quality_gate": {"type": "object", "required": ["metric_size", "min_dimension", "blur_min", "brightness_min", "brightness_max", "contrast_min", "min_confidence"]},
+    "quality_gate": {
+      "type": "object",
+      "required": ["metric_size", "min_dimension", "blur_min", "brightness_min", "brightness_max", "contrast_min", "abstention_margin"],
+      "properties": {"abstention_margin": {"type": "number", "minimum": 0, "exclusiveMaximum": 0.5}},
+      "not": {"required": ["min_confidence"]}
+    },
     "quantization": {"enum": ["fp32", "int8"]},
     "target": {"const": "esp32s3"},
     "dataset_version": {"type": "string", "minLength": 1},
@@ -27,7 +46,7 @@
     "preprocessing": {"type": "object", "required": ["color", "resize", "range", "mean", "std", "onnx_layout", "output", "positive_index", "espdl_layout", "espdl_quantization"]}
   },
   "allOf": [
-    {"if": {"properties": {"espdl_export": {"const": "SUCCESS"}}}, "then": {"properties": {"quantization": {"const": "int8"}, "artifact_sha256": {"required": ["tinyvision.espdl"]}}}},
+    {"if": {"properties": {"espdl_export": {"const": "SUCCESS"}}}, "then": {"properties": {"quantization": {"const": "int8"}, "quantization_selection_split": {"const": "validation"}, "artifact_sha256": {"required": ["tinyvision.espdl"]}}}},
     {"if": {"properties": {"espdl_export": {"const": "PENDING"}}}, "then": {"properties": {"quantization": {"const": "fp32"}}}}
   ]
 }

@@ -2,7 +2,6 @@
 #include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_timer.h"
-#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -51,10 +50,12 @@ extern "C" void app_main(void)
     const float normal_logit = dl::dequantize(out[0], DL_SCALE(output->exponent));
     const float suspect_logit = dl::dequantize(out[1], DL_SCALE(output->exponent));
     const float probability = 1.0f / (1.0f + std::exp(normal_logit - suspect_logit));
-    const bool confident = std::max(probability, 1.0f - probability) >= FIXTURE_MIN_CONFIDENCE;
-    const char *state = !FIXTURE_QUALITY_PASSED || !std::isfinite(probability) || !confident
-                            ? "UNKNOWN" : probability >= FIXTURE_THRESHOLD ? "SUSPECT" : "NORMAL";
+    // Identical float32 probability/bounds as Python; do not recompute threshold +/- margin.
+    const char *state = !FIXTURE_QUALITY_PASSED || !std::isfinite(probability) || probability < 0.0f || probability > 1.0f
+                            ? "UNKNOWN" : probability < FIXTURE_NORMAL_UPPER_BOUND ? "NORMAL"
+                            : probability < FIXTURE_SUSPECT_LOWER_BOUND ? "UNKNOWN" : "SUSPECT";
     ESP_LOGI(TAG, "fixture result=%s p_suspect=%f fp32_reference=%f", state, probability, FIXTURE_FP32_PROBABILITY);
+    ESP_LOGI(TAG, "python_fp32_probability_difference=%f", probability - FIXTURE_FP32_PROBABILITY);
     ESP_LOGI(TAG, "measured on THIS device: load_us=%lld inference_us=%lld", load_us, inference_us);
     ESP_LOGI(TAG, "internal_min_free=%u psram_current_free=%u psram_min_free=%u",
              (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL),

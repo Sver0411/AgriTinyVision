@@ -1,0 +1,28 @@
+{
+  "purpose": "Random tiny graph and synthetic images only; no trained model, agriculture metrics or MCU evidence",
+  "status": "PASSED",
+  "split_visits": [
+    "train",
+    "val",
+    "test",
+    "train",
+    "val",
+    "test"
+  ],
+  "backends": {
+    "onnx": {
+      "conversion": "PASSED",
+      "validation_split": "val",
+      "final_split": "test",
+      "artifact_sha256": "5eaae6c2c52f8875e2cec5a17f0c6ac41b76d85a04f704bf5c708bb8fdf7b1f6",
+      "simulation_graph_sha256": null
+    },
+    "espdl": {
+      "conversion": "PASSED",
+      "validation_split": "val",
+      "final_split": "test",
+      "artifact_sha256": "7f8f9ad1ce38de338b2f2d8dd2b695af76fc25c957f357cf2276072a1d6e8704",
+      "simulation_graph_sha256": "753ecf29523da1f2046699b93d4fd1ff986d6471d41c5a0d09dc80389147b471"
+    }
+  }
+}

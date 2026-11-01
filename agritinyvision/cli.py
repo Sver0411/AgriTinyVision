@@ -27,6 +27,11 @@ def main():
     e.add_argument("--model", help="Optional ONNX FP32/INT8 artifact for final host evaluation")
     e.add_argument("--output")
     e.add_argument("--allow-cpu", action="store_true")
+    e.add_argument(
+        "--final", action="store_true", help="Explicit test evaluation after all candidate choices are frozen"
+    )
+    e.add_argument("--frozen-checkpoint-sha256")
+    e.add_argument("--frozen-model-sha256")
     ex = sub.add_parser("export")
     ex.add_argument("--checkpoint", required=True)
     ex.add_argument("--format", choices=["onnx"], default="onnx")
@@ -39,6 +44,12 @@ def main():
     q.add_argument("--backend", choices=["espdl", "onnx"], default="espdl")
     q.add_argument("--output")
     q.add_argument("--allow-cpu", action="store_true")
+    q.add_argument(
+        "--evaluation-split",
+        choices=["val", "test"],
+        default="val",
+        help="Development quantization accepts val only; test uses evaluate --final",
+    )
     b = sub.add_parser("benchmark")
     b.add_argument("--model", required=True)
     b.add_argument("--iterations", type=int, default=100)
@@ -48,6 +59,7 @@ def main():
     r.add_argument("--onnx", required=True)
     r.add_argument("--metrics", required=True)
     r.add_argument("--espdl")
+    r.add_argument("--quantized-metrics", help="Separate final test report for the frozen quantized artifact")
     r.add_argument("--version", default="0.1.0")
     r.add_argument("--output")
     i = sub.add_parser("infer")
@@ -79,7 +91,15 @@ def main():
         elif args.command == "evaluate":
             from .evaluate import evaluate
 
-            evaluate(args.checkpoint, args.model, args.allow_cpu, args.output)
+            evaluate(
+                args.checkpoint,
+                args.model,
+                args.allow_cpu,
+                args.output,
+                args.final,
+                args.frozen_checkpoint_sha256,
+                args.frozen_model_sha256,
+            )
         elif args.command == "export":
             from .export_onnx import export
 
@@ -91,7 +111,16 @@ def main():
         elif args.command == "quantize":
             from .quantize import quantize
 
-            print(quantize(args.model, args.checkpoint, args.backend, args.output, args.allow_cpu))
+            print(
+                quantize(
+                    args.model,
+                    args.checkpoint,
+                    args.backend,
+                    args.output,
+                    args.allow_cpu,
+                    args.evaluation_split,
+                )
+            )
         elif args.command == "benchmark":
             from .benchmark import benchmark
 
@@ -99,7 +128,17 @@ def main():
         elif args.command == "release":
             from .release import release
 
-            print(release(args.checkpoint, args.onnx, args.metrics, args.espdl, args.version, args.output))
+            print(
+                release(
+                    args.checkpoint,
+                    args.onnx,
+                    args.metrics,
+                    args.espdl,
+                    args.version,
+                    args.output,
+                    args.quantized_metrics,
+                )
+            )
         elif args.command == "infer":
             import torch
 
@@ -119,7 +158,7 @@ def main():
                 x = preprocessing(cp["config"]["input_size"])(open_rgb(args.image)).unsqueeze(0).to(dev)
                 with torch.inference_mode():
                     score = model(x).softmax(1)[0, 1].item()
-                answer = decide(score, cp["threshold"], gate, q["min_confidence"])
+                answer = decide(score, cp["threshold"], gate, q["abstention_margin"])
             print(json.dumps(answer, indent=2))
     except (ValueError, RuntimeError, FileNotFoundError, ImportError) as e:
         print(f"ERROR: {e}", file=sys.stderr)

@@ -120,7 +120,7 @@ def test_preprocessing_rgb_and_normalization(size):
 def test_quality_unknown(color, reason):
     gate = quality_gate(Image.new("RGB", (160, 160), color), load_quality())
     assert reason in gate["reasons"]
-    assert decide(0.99, 0.3, gate, 0.6)["state"] == "UNKNOWN"
+    assert decide(0.99, 0.3, gate, 0.1)["state"] == "UNKNOWN"
 
 
 def test_quality_valid_and_missing(tmp_path):
@@ -131,10 +131,10 @@ def test_quality_valid_and_missing(tmp_path):
 
 @pytest.mark.parametrize(
     "p,state",
-    [(0.01, "NORMAL"), (0.9, "SUSPECT"), (0.5, "UNKNOWN"), (float("nan"), "UNKNOWN"), (1.1, "UNKNOWN")],
+    [(0.01, "NORMAL"), (0.9, "SUSPECT"), (0.3, "UNKNOWN"), (float("nan"), "UNKNOWN"), (1.1, "UNKNOWN")],
 )
 def test_threshold_states(p, state):
-    assert decide(p, 0.3, {"passed": True}, 0.6)["state"] == state
+    assert decide(p, 0.3, {"passed": True}, 0.1)["state"] == state
 
 
 def test_metrics_and_validation_only_threshold():
@@ -210,6 +210,11 @@ def release_fixture(tmp_path, monkeypatch):
             "threshold_source": "validation",
             "decision_threshold": 0.3,
             "model_sha256": sha256(cp),
+            "decision_threshold_source": "validation",
+            "final_metrics_split": "test",
+            "frozen_checkpoint_sha256": sha256(cp),
+            "frozen_model_sha256": sha256(cp),
+            "system_gate": {"quality_config": load_quality()},
         },
     )
     return cp, model, test
@@ -224,6 +229,9 @@ def test_release_pending_has_no_fake_espdl(tmp_path, monkeypatch):
     metadata = json.loads((out / "metadata.json").read_text())
     validate_metadata(metadata)
     assert metadata["espdl_export"] == "PENDING"
+    assert metadata["decision_threshold_source"] == "validation"
+    assert metadata["final_metrics_split"] == "test"
+    assert metadata["quality_gate"]["abstention_margin"] == 0.1
     assert (out / "labels.txt").read_text().splitlines() == ["NORMAL", "SUSPECT"]
     metadata["classes"] = ["NORMAL", "SUSPECT", "UNKNOWN"]
     with pytest.raises(Exception):

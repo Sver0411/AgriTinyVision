@@ -1,0 +1,418 @@
+{
+  "evidence": "hardware",
+  "port": "COM3",
+  "tests": [
+    {
+      "name": "handshake_hash_tensors_ping",
+      "status": "PASS"
+    },
+    {
+      "name": "quality_black",
+      "status": "PASS",
+      "result": {
+        "sequence": 3,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "UNKNOWN",
+        "reason": "blur;exposure;low_contrast;",
+        "normal_probability": null,
+        "suspect_probability": null,
+        "confidence": null,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": false,
+        "brightness": 0,
+        "contrast": 0,
+        "laplacian_variance": 0,
+        "quality_us": 99933,
+        "preprocess_us": null,
+        "inference_us": null,
+        "saturated_values": null,
+        "free_internal": 286431,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 100458,
+        "transfer_ms": 356.20889998972416,
+        "end_to_end_ms": 356.3059999723919
+      },
+      "python_quality": {
+        "passed": false,
+        "reasons": [
+          "blur",
+          "exposure",
+          "low_contrast"
+        ],
+        "metrics": {
+          "brightness": 0.0,
+          "contrast": 0.0,
+          "laplacian_variance": 0.0
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "quality_white",
+      "status": "PASS",
+      "result": {
+        "sequence": 4,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "UNKNOWN",
+        "reason": "blur;exposure;low_contrast;",
+        "normal_probability": null,
+        "suspect_probability": null,
+        "confidence": null,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": false,
+        "brightness": 255,
+        "contrast": 0,
+        "laplacian_variance": 0,
+        "quality_us": 112141,
+        "preprocess_us": null,
+        "inference_us": null,
+        "saturated_values": null,
+        "free_internal": 286431,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 112636,
+        "transfer_ms": 260.4340999969281,
+        "end_to_end_ms": 369.8298999806866
+      },
+      "python_quality": {
+        "passed": false,
+        "reasons": [
+          "blur",
+          "exposure",
+          "low_contrast"
+        ],
+        "metrics": {
+          "brightness": 255.0,
+          "contrast": 0.0,
+          "laplacian_variance": 0.0
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "quality_flat",
+      "status": "PASS",
+      "result": {
+        "sequence": 5,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "UNKNOWN",
+        "reason": "blur;low_contrast;",
+        "normal_probability": null,
+        "suspect_probability": null,
+        "confidence": null,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": false,
+        "brightness": 128,
+        "contrast": 0,
+        "laplacian_variance": 0,
+        "quality_us": 112237,
+        "preprocess_us": null,
+        "inference_us": null,
+        "saturated_values": null,
+        "free_internal": 286447,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 112732,
+        "transfer_ms": 353.00840000854805,
+        "end_to_end_ms": 459.2216999735683
+      },
+      "python_quality": {
+        "passed": false,
+        "reasons": [
+          "blur",
+          "low_contrast"
+        ],
+        "metrics": {
+          "brightness": 128.0,
+          "contrast": 0.0,
+          "laplacian_variance": 0.0
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "quality_gradient",
+      "status": "PASS",
+      "result": {
+        "sequence": 6,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "UNKNOWN",
+        "reason": "blur;",
+        "normal_probability": null,
+        "suspect_probability": null,
+        "confidence": null,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": false,
+        "brightness": 127.0125006556511,
+        "contrast": 74.0604477936414,
+        "laplacian_variance": 0.7910963096628415,
+        "quality_us": 123378,
+        "preprocess_us": null,
+        "inference_us": null,
+        "saturated_values": null,
+        "free_internal": 286447,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 123870,
+        "transfer_ms": 352.4290999630466,
+        "end_to_end_ms": 461.14859997760504
+      },
+      "python_quality": {
+        "passed": false,
+        "reasons": [
+          "blur"
+        ],
+        "metrics": {
+          "brightness": 127.01249694824219,
+          "contrast": 74.0604476928711,
+          "laplacian_variance": 0.7910962700843811
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "quality_checker",
+      "status": "PASS",
+      "result": {
+        "sequence": 7,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "NORMAL",
+        "reason": "threshold_interval",
+        "normal_probability": 0.9808759689331055,
+        "suspect_probability": 0.01912403479218483,
+        "confidence": 0.9808759689331055,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": true,
+        "brightness": 127.5,
+        "contrast": 127.5,
+        "laplacian_variance": 1040400,
+        "quality_us": 118419,
+        "preprocess_us": 96578,
+        "inference_us": 527821,
+        "saturated_values": 64000,
+        "free_internal": 286447,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 743496,
+        "transfer_ms": 259.67879995005205,
+        "end_to_end_ms": 1016.0090999561362
+      },
+      "python_quality": {
+        "passed": true,
+        "reasons": [],
+        "metrics": {
+          "brightness": 127.5,
+          "contrast": 127.5,
+          "laplacian_variance": 1040400.0625
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "quality_noise",
+      "status": "PASS",
+      "result": {
+        "sequence": 8,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "NORMAL",
+        "reason": "threshold_interval",
+        "normal_probability": 0.9980732798576355,
+        "suspect_probability": 0.00192673469427973,
+        "confidence": 0.9980732798576355,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": true,
+        "brightness": 127.65061385221779,
+        "contrast": 49.65129654016225,
+        "laplacian_variance": 48971.1124171589,
+        "quality_us": 126413,
+        "preprocess_us": 96912,
+        "inference_us": 527869,
+        "saturated_values": 8665,
+        "free_internal": 286447,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 751865,
+        "transfer_ms": 352.98229998443276,
+        "end_to_end_ms": 1111.6027999669313
+      },
+      "python_quality": {
+        "passed": true,
+        "reasons": [],
+        "metrics": {
+          "brightness": 127.65060424804688,
+          "contrast": 49.65129470825195,
+          "laplacian_variance": 48971.109375
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "quality_train_fixture",
+      "status": "PASS",
+      "result": {
+        "sequence": 9,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "NORMAL",
+        "reason": "threshold_interval",
+        "normal_probability": 0.999447226524353,
+        "suspect_probability": 0.000552778597921133,
+        "confidence": 0.999447226524353,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": true,
+        "brightness": 108.67857026963495,
+        "contrast": 67.49476602128995,
+        "laplacian_variance": 545.6097237335863,
+        "quality_us": 125363,
+        "preprocess_us": 96967,
+        "inference_us": 527847,
+        "saturated_values": 87,
+        "free_internal": 286447,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 750847,
+        "transfer_ms": 354.873200005386,
+        "end_to_end_ms": 1010.9687999938615
+      },
+      "python_quality": {
+        "passed": true,
+        "reasons": [],
+        "metrics": {
+          "brightness": 108.67857360839844,
+          "contrast": 67.49476623535156,
+          "laplacian_variance": 545.6097412109375
+        },
+        "version": "laplacian-gray-v1"
+      }
+    },
+    {
+      "name": "retained_fixture_output_parity",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate",
+      "status": "PASS",
+      "device_error": "ESP32 duplicate_or_old_sequence: Frame already consumed"
+    },
+    {
+      "name": "payload_crc",
+      "status": "PASS",
+      "device_error": "ESP32 payload_crc: UNKNOWN: integrity check failed"
+    },
+    {
+      "name": "dimensions",
+      "status": "PASS",
+      "device_error": "ESP32 frame_format: UNKNOWN: dimensions, format or length rejected"
+    },
+    {
+      "name": "oversized",
+      "status": "PASS",
+      "device_error": "ESP32 frame_format: UNKNOWN: dimensions, format or length rejected"
+    },
+    {
+      "name": "partial_timeout",
+      "status": "PASS",
+      "device_error": "ESP32 timeout: Partial frame expired; send HELLO"
+    },
+    {
+      "name": "reconnect_recovery",
+      "status": "PASS",
+      "result": {
+        "sequence": 2,
+        "boot_id": "1ce5ce9538820f5d",
+        "state": "NORMAL",
+        "reason": "threshold_interval",
+        "normal_probability": 0.999447226524353,
+        "suspect_probability": 0.000552778597921133,
+        "confidence": 0.999447226524353,
+        "decision_threshold": 0.300000011920929,
+        "quality_passed": true,
+        "brightness": 108.67857026963495,
+        "contrast": 67.49476602128995,
+        "laplacian_variance": 545.6097237335863,
+        "quality_us": 125359,
+        "preprocess_us": 96967,
+        "inference_us": 527843,
+        "saturated_values": 87,
+        "free_internal": 286447,
+        "free_psram": 5046852,
+        "min_free_internal": 236259,
+        "min_free_psram": 5041728,
+        "model_version": "0.1.0",
+        "firmware_version": "0.2.0",
+        "total_us": 750846,
+        "transfer_ms": 356.3505000201985,
+        "end_to_end_ms": 1009.3641999992542
+      }
+    }
+  ],
+  "device": {
+    "chip": "ESP32-S3",
+    "board": "ESP32-S3 N16R8",
+    "boot_id": "1ce5ce9538820f5d",
+    "firmware_version": "0.2.0",
+    "model_version": "0.1.0",
+    "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+    "idf_version": "v5.4.4",
+    "deployment_sha256": "f32296c1196da61aff1430481e66c9dd938db57e8d98565c926f415dc7dfc167",
+    "esp_dl_version": "3.3.13",
+    "transport": "USB Serial/JTAG",
+    "rx_buffer_bytes": 98304,
+    "uart_baudrate": 921600,
+    "model_loaded": true,
+    "model_error": null,
+    "model_load_us": 655036,
+    "model_bytes": 2438752,
+    "dtype": "int8",
+    "input_shape": [
+      1,
+      160,
+      160,
+      3
+    ],
+    "output_shape": [
+      1,
+      2
+    ],
+    "input_exponent": -6,
+    "output_exponent": -4,
+    "decision_threshold": 0.300000011920929,
+    "normal_upper_bound": 0.20000000298023224,
+    "suspect_lower_bound": 0.4000000059604645,
+    "abstention_policy": "threshold-centered-v1",
+    "quality_gate_version": "laplacian-gray-v1",
+    "confidence_definition": "assigned_class_probability; UNKNOWN=null",
+    "reset_reason": 11,
+    "flash_chip_bytes": 16777216,
+    "app_partition_bytes": 6291456,
+    "app_image_bytes": 3574960,
+    "firmware_sha256": "bab257fda4b57c0f922cc86a8ec76e9037135208c3ba7adda93957eb6711f622",
+    "firmware_hash_kind": "app_elf_sha256",
+    "free_internal": 284611,
+    "free_psram": 5046852,
+    "min_free_internal": 236259,
+    "min_free_psram": 5041728
+  },
+  "status": "PASS"
+}

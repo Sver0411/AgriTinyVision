@@ -1,0 +1,109 @@
+{
+  "created_at": "2026-10-05T18:14:48.935982+00:00",
+  "total_images": 2792,
+  "labels": {
+    "NORMAL": 872,
+    "SUSPECT": 1920
+  },
+  "class_ratios": {
+    "NORMAL": 0.3123209169054441,
+    "SUSPECT": 0.6876790830945558
+  },
+  "splits": {
+    "train": 1964,
+    "test": 417,
+    "val": 411
+  },
+  "split_labels": {
+    "train": {
+      "NORMAL": 619,
+      "SUSPECT": 1345
+    },
+    "test": {
+      "NORMAL": 130,
+      "SUSPECT": 287
+    },
+    "val": {
+      "NORMAL": 123,
+      "SUSPECT": 288
+    }
+  },
+  "source_classes": [
+    "Apple___Apple_scab",
+    "Apple___Cedar_apple_rust",
+    "Apple___healthy",
+    "Pepper,_bell___Bacterial_spot",
+    "Pepper,_bell___healthy",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Potato___healthy",
+    "Tomato___Early_blight",
+    "Tomato___Late_blight",
+    "Tomato___Leaf_Mold",
+    "Tomato___healthy"
+  ],
+  "split_source_labels": {
+    "train": {
+      "Apple___healthy": 182,
+      "Apple___Apple_scab": 187,
+      "Apple___Cedar_apple_rust": 163,
+      "Pepper,_bell___healthy": 160,
+      "Pepper,_bell___Bacterial_spot": 175,
+      "Potato___healthy": 120,
+      "Potato___Early_blight": 153,
+      "Potato___Late_blight": 161,
+      "Tomato___healthy": 157,
+      "Tomato___Early_blight": 178,
+      "Tomato___Late_blight": 171,
+      "Tomato___Leaf_Mold": 157
+    },
+    "val": {
+      "Apple___healthy": 36,
+      "Apple___Apple_scab": 36,
+      "Apple___Cedar_apple_rust": 37,
+      "Pepper,_bell___healthy": 40,
+      "Pepper,_bell___Bacterial_spot": 35,
+      "Potato___healthy": 4,
+      "Potato___Early_blight": 47,
+      "Potato___Late_blight": 30,
+      "Tomato___healthy": 43,
+      "Tomato___Early_blight": 30,
+      "Tomato___Late_blight": 34,
+      "Tomato___Leaf_Mold": 39
+    },
+    "test": {
+      "Apple___healthy": 22,
+      "Apple___Apple_scab": 17,
+      "Apple___Cedar_apple_rust": 40,
+      "Pepper,_bell___healthy": 40,
+      "Pepper,_bell___Bacterial_spot": 30,
+      "Potato___healthy": 28,
+      "Potato___Early_blight": 40,
+      "Potato___Late_blight": 49,
+      "Tomato___healthy": 40,
+      "Tomato___Early_blight": 32,
+      "Tomato___Late_blight": 35,
+      "Tomato___Leaf_Mold": 44
+    }
+  },
+  "missing_split_source_labels": [],
+  "warnings": [],
+  "source_coverage_rule": "Any participating source class absent from train/val/test fails a split audit; unsplit or missing metadata warns.",
+  "dimensions": {
+    "256x256": 2792
+  },
+  "invalid_images": [],
+  "invalid_count": 0,
+  "duplicate_hash_groups": [],
+  "near_duplicate_pairs": [
+    [
+      768,
+      951
+    ]
+  ],
+  "near_hash": "64-bit DCT pHash",
+  "near_distance": 4,
+  "cross_split_leaks": [],
+  "passed": true,
+  "limitation": "pHash is a heuristic; leaf IDs do not guarantee independent plant/scene/capture-session IDs."
+}

@@ -6,7 +6,7 @@ from jsonschema import validate
 
 from . import CLASSES
 from .data.transforms import MEAN, STD
-from .quality import QUALITY_GATE_VERSION, load_quality
+from .quality import ABSTENTION_POLICY, QUALITY_GATE_VERSION, abstention_bounds, load_quality
 from .utils import commit, now, read_json, sha256, write_json
 
 
@@ -17,9 +17,25 @@ def validate_metadata(metadata, schema="docs/metadata.schema.json"):
     primary = "tinyvision.espdl" if metadata["espdl_export"] == "SUCCESS" else "tinyvision.onnx"
     if metadata["sha256"] != metadata["artifact_sha256"][primary]:
         raise ValueError("Primary model hash is inconsistent")
+    lower, upper = abstention_bounds(
+        metadata["decision_threshold"], metadata["quality_gate"]["abstention_margin"]
+    )
+    if (metadata["state_logic"]["normal_upper_bound"], metadata["state_logic"]["suspect_lower_bound"]) != (
+        lower,
+        upper,
+    ):
+        raise ValueError("State boundaries disagree with threshold and margin")
 
 
-def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0", output=None):
+def release(
+    checkpoint,
+    onnx_path,
+    metrics_path,
+    espdl_path=None,
+    version="0.1.0",
+    output=None,
+    quantized_metrics_path=None,
+):
     from .train import load_checkpoint
 
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
@@ -42,12 +58,20 @@ def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0
         or test.get("threshold_source") != "validation"
         or test["decision_threshold"] != cp["threshold"]
         or test.get("model_sha256") != sha256(checkpoint)
+        or test.get("decision_threshold_source") != "validation"
+        or test.get("final_metrics_split") != "test"
+        or test.get("frozen_checkpoint_sha256") != sha256(checkpoint)
+        or test.get("frozen_model_sha256") != sha256(checkpoint)
+        or test.get("system_gate", {}).get("quality_config") != load_quality()
     ):
         raise ValueError("Release needs final test metrics matching the exact checkpoint and threshold")
     quant_report = None
+    quant_test = None
     if espdl_path:
+        from .quantize import validate_quantization_report
+
         p = Path(espdl_path)
-        quant_report = read_json(str(p) + ".quantization.json")
+        quant_report = validate_quantization_report(p, checkpoint, cp["threshold"])
         if (
             not quant_report["status"].startswith("SUCCESS")
             or quant_report["target"] != "esp32s3"
@@ -55,6 +79,24 @@ def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0
             or quant_report["source_sha256"] != sha256(onnx_path)
         ):
             raise ValueError("ESP-DL conversion report missing, failed or mismatched")
+        if not quantized_metrics_path:
+            raise ValueError("Release needs separate final test metrics for the exact quantized artifact")
+        quant_test = read_json(quantized_metrics_path)
+        if (
+            quant_test.get("split") != "test"
+            or quant_test.get("final_metrics_split") != "test"
+            or quant_test.get("decision_threshold_source") != "validation"
+            or quant_test.get("threshold_source") != "validation"
+            or quant_test.get("decision_threshold") != cp["threshold"]
+            or quant_test.get("quantization_selection_split") != "validation"
+            or quant_test.get("model_sha256") != sha256(p)
+            or quant_test.get("checkpoint_sha256") != sha256(checkpoint)
+            or quant_test.get("frozen_checkpoint_sha256") != sha256(checkpoint)
+            or quant_test.get("frozen_model_sha256") != sha256(p)
+            or quant_test.get("quantization_report_sha256") != sha256(str(p) + ".quantization.json")
+            or quant_test.get("system_gate", {}).get("quality_config") != load_quality()
+        ):
+            raise ValueError("Quantized final test metrics missing, stale or selected using test")
     env = read_json(Path(checkpoint).parent / "environment.json")
     artifacts = {"tinyvision.onnx": sha256(onnx_path)}
     if espdl_path:
@@ -70,6 +112,16 @@ def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0
         "channels": 3,
         "classes": list(CLASSES),
         "decision_threshold": cp["threshold"],
+        "decision_threshold_source": "validation",
+        "quantization_selection_split": "validation" if espdl_path else "not_applicable",
+        "final_metrics_split": "test",
+        "state_logic": {
+            "policy": ABSTENTION_POLICY,
+            "normal_upper_bound": abstention_bounds(cp["threshold"], load_quality()["abstention_margin"])[0],
+            "suspect_lower_bound": abstention_bounds(cp["threshold"], load_quality()["abstention_margin"])[1],
+            "comparison_dtype": "float32",
+            "margin_source": "provisional engineering default; not test-tuned; field recalibration required",
+        },
         "quality_gate_version": QUALITY_GATE_VERSION,
         "quality_gate": load_quality(),
         "quantization": "int8" if espdl_path else "fp32",
@@ -107,7 +159,14 @@ def release(checkpoint, onnx_path, metrics_path, espdl_path=None, version="0.1.0
             if extra.exists():
                 shutil.copy2(extra, out / ("tinyvision" + suffix))
     write_json(out / "metadata.json", metadata)
-    write_json(out / "metrics.json", {"fp32": test, "espdl_int8_simulation": quant_report})
+    write_json(
+        out / "metrics.json",
+        {
+            "fp32": test,
+            "quantization_validation": quant_report,
+            "espdl_int8_simulation": quant_test,
+        },
+    )
     (out / "labels.txt").write_text("\n".join(CLASSES) + "\n", encoding="utf-8")
     (out / "README.md").write_text(
         f"# AgriTinyVision v{version}\n\nESP-DL export: {metadata['espdl_export']}\n\nPENDING HARDWARE VALIDATION\n\nPublic grouped subset; field effectiveness is unverified. See metadata for preprocessing and thresholds.\n\nThe .espdl binary targets ESP32-S3 only. Host quantized simulation is not MCU evidence.\n",

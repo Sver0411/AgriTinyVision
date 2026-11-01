@@ -1,0 +1,36 @@
+{
+  "compiled": true,
+  "mode": "camera",
+  "transport": "UART0 bridge",
+  "target": "esp32s3",
+  "idf": "5.4.4",
+  "esp_dl": "3.3.13",
+  "project_version": "0.2.0",
+  "firmware_bytes": 3584560,
+  "firmware_bin_sha256": "c1c53154cbceda1454fac51a1d1e4eb0aee3d1f08bb2ed636a135feaa8e3e911",
+  "firmware_elf_sha256": "14d0a2dc4f0f6cce534a357def272da1caff83c00ee06366cf3f45ccba327831",
+  "sdkconfig_sha256": "5d732af23c79b2d855f9f28d2ffb1512df32e45cc69a0ef8fd41a9601a31b0f7",
+  "model_bytes": 2438752,
+  "model_sha256": "bfda065ad95c3c3458d3c135b4c4b4575bdad6a31d2445b9283065d3851af3fa",
+  "configured_flash_size": "16MB",
+  "flash_payloads": [
+    {
+      "offset": "0x0",
+      "bytes": 20928,
+      "sha256": "13abd907ec828f948c4e6eb5627c1da02f0781530ea95e302290618d6475cd75"
+    },
+    {
+      "offset": "0x10000",
+      "bytes": 3584560,
+      "sha256": "c1c53154cbceda1454fac51a1d1e4eb0aee3d1f08bb2ed636a135feaa8e3e911"
+    },
+    {
+      "offset": "0x8000",
+      "bytes": 3072,
+      "sha256": "fabcbebf733457e9706b46544b2a1cb9672a8e1ce626f5dc7d7e6fb4738d5b0e"
+    }
+  ],
+  "compiled_flash_payload_bytes": 3608560,
+  "hardware_status": "PENDING",
+  "build_directory": "D:\\File\\AgriTinyVision\\build-camera"
+}

@@ -10,7 +10,7 @@ import torch
 
 from agritinyvision.data.dataset import open_rgb
 from agritinyvision.data.transforms import preprocessing
-from agritinyvision.quality import load_quality, quality_gate
+from agritinyvision.quality import abstention_bounds, decide, load_quality, quality_gate
 from agritinyvision.train import load_checkpoint
 from agritinyvision.utils import read_json, sha256, write_json
 
@@ -34,17 +34,20 @@ def main():
     x.permute(0, 2, 3, 1).contiguous().numpy().astype("<f4").tofile(destination / "fixture_input.bin")
     q = load_quality()
     gate = quality_gate(im, q)
-    text = f"#pragma once\n#define FIXTURE_WIDTH {c['input_size']}\n#define FIXTURE_HEIGHT {c['input_size']}\n#define FIXTURE_THRESHOLD {cp['threshold']:.8f}f\n#define FIXTURE_MIN_CONFIDENCE {q['min_confidence']:.8f}f\n#define FIXTURE_FP32_PROBABILITY {p:.8f}f\n#define FIXTURE_QUALITY_PASSED {int(gate['passed'])}\n"
+    lower, upper = abstention_bounds(cp["threshold"], q["abstention_margin"])
+    text = f"#pragma once\n#define FIXTURE_WIDTH {c['input_size']}\n#define FIXTURE_HEIGHT {c['input_size']}\n#define FIXTURE_THRESHOLD {cp['threshold']:.9g}f\n#define FIXTURE_ABSTENTION_MARGIN {q['abstention_margin']:.9g}f\n#define FIXTURE_NORMAL_UPPER_BOUND {lower:.9g}f\n#define FIXTURE_SUSPECT_LOWER_BOUND {upper:.9g}f\n#define FIXTURE_FP32_PROBABILITY {p:.9g}f\n#define FIXTURE_QUALITY_PASSED {int(gate['passed'])}\n"
     (destination / "fixture_config.h").write_text(text)
     shutil.copy2(run / "tinyvision.espdl", destination / "tinyvision.espdl")
     write_json(
-        "reports/firmware_fixture.json",
+        "reports/firmware_fixture_final_patch.json",
         {
             "source_split": "train",
             "source_path": str(path),
             "layout": "NHWC float32 normalized little endian",
             "fp32_probability": p,
             "quality": gate,
+            "state_logic": decide(p, cp["threshold"], gate, q["abstention_margin"]),
+            "model_sha256": sha256(destination / "tinyvision.espdl"),
             "sha256": sha256(destination / "fixture_input.bin"),
             "hardware_status": "PENDING HARDWARE VALIDATION",
         },

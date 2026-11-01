@@ -1,0 +1,19 @@
+menu "AgriTinyVision"
+config ATV_CAMERA_MODE
+    bool "PC camera serial inference mode (otherwise golden fixture)"
+    default n
+
+choice ATV_TRANSPORT
+    prompt "PC camera transport"
+    default ATV_TRANSPORT_USB_JTAG
+config ATV_TRANSPORT_USB_JTAG
+    bool "Native USB Serial/JTAG"
+config ATV_TRANSPORT_UART
+    bool "USB-UART bridge (UART0)"
+endchoice
+
+config ATV_UART_BAUDRATE
+    int "UART0 baud rate (USB Serial/JTAG ignores baud rate)"
+    default 921600
+    range 9600 3000000
+endmenu

@@ -14,12 +14,18 @@ dependencies = ["torch>=2.5,<3", "torchvision>=0.20,<1", "numpy>=1.26,<3", "Pill
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "ruff>=0.9"]
 esp = ["esp-ppq"]
+camera = ["opencv-python>=4.10,<5", "pyserial>=3.5,<4", "matplotlib>=3.9,<4"]
+web = ["Flask>=3.1,<4"]
 
 [project.scripts]
 agritinyvision = "agritinyvision.cli:main"
+agritinyvision-camera = "agritinyvision.pc_camera.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["agritinyvision*"]
+
+[tool.setuptools.package-data]
+"agritinyvision.pc_camera" = ["web_static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

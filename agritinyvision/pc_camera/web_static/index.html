@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="atv-token" content="__TOKEN__">
+  <title>AgriTinyVision · 设备工作台</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="AgriTinyVision 首页"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M25 6C11 4 5 10 8 19c9 4 17-1 17-13Z" stroke="currentColor" stroke-width="2.4"/><path d="m6 26 14-14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span><span>AgriTiny<span class="brand-light">Vision</span></span></a>
+      
+      <a class="nav-item selected" href="#workspace"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>设备工作台<span class="nav-dot"></span></a>
+      <a class="nav-item" href="#experiment"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5zM14 3v5h5M8 12h8M8 16h6"/></svg>实验与记录</a>
+      
+    </aside>
+    <main id="workspace">
+      <header class="page-header"><div><h1>设备工作台<span class="heading-dot"></span></h1></div><div class="session-chip" id="session-chip"><span class="dot"></span><span id="session-label">等待连接</span></div></header>
+      <section class="config-bar" aria-label="连接配置">
+        <label>串口<select id="port" aria-label="串口"><option value="">选择端口</option></select></label>
+        <label>波特率<select id="baudrate"><option>921600</option><option>460800</option><option>115200</option></select></label>
+        <label>摄像头<select id="camera"><option value="0">Camera 0</option><option value="1">Camera 1</option><option value="2">Camera 2</option><option value="3">Camera 3</option></select></label>
+        <label>处理频率<select id="fps"><option value="1">1 FPS</option><option value="0.5">0.5 FPS</option><option value="2">2 FPS</option><option value="5">5 FPS</option></select></label>
+        <label>图像方向<select id="rotation"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label>
+        <label class="mirror"><input id="mirror" type="checkbox">镜像输入</label>
+      </section>
+      <div id="error-banner" class="error-banner" role="alert" hidden></div>
+      <div class="workspace-grid">
+        <section class="card camera-card">
+          <div class="card-heading"><div><h2>实时画面</h2></div><span class="badge" id="camera-badge"><span class="dot"></span>相机未连接</span></div>
+          <div class="camera-view"><img id="preview" alt="电脑摄像头实时预览" hidden><div class="camera-placeholder" id="camera-placeholder"><svg viewBox="0 0 64 64" fill="none"><rect x="11" y="18" width="32" height="28" rx="6" stroke="currentColor" stroke-width="2"/><path d="m43 26 11-6v24l-11-6M24 28l10 8-10 1z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><strong>相机未连接</strong></div><div class="preview-overlay"><span><i class="live-dot"></i><span id="capture-label">相机未连接</span></span><span>模型输入 <b>160 × 160</b></span></div></div>
+          <div class="capture-meta"><span id="capture-size">采集尺寸 —</span><span id="capture-count">采集帧 —</span></div>
+          <div class="control-row"><button class="button secondary" id="camera-toggle">连接相机</button><button class="button secondary" id="device-toggle">连接 ESP32</button><span class="control-spacer"></span><button class="button secondary" id="single">单帧测试</button><button class="button primary" id="start"><span id="start-icon">▶</span><span id="start-label">开始推理</span></button></div>
+        </section>
+        <section class="card result-card"><div class="card-heading"><div><h2>推理结果</h2></div><span class="sequence" id="sequence">帧号 —</span></div>
+          <div class="result-state waiting" id="result-state"><span class="state-icon" id="state-icon">○</span><h3 id="state">等待推理</h3></div>
+          <div class="probability-row"><span><i class="class-dot normal"></i>NORMAL</span><strong id="p-normal">—</strong></div><div class="probability-track"><div id="bar-normal" class="bar normal"></div></div>
+          <div class="probability-row"><span><i class="class-dot suspect"></i>SUSPECT</span><strong id="p-suspect">—</strong></div><div class="probability-track"><div id="bar-suspect" class="bar suspect"></div></div>
+          <div class="decision-details"><div><span>置信度</span><strong id="confidence">—</strong></div><div><span>决策阈值</span><strong id="threshold">—</strong></div><div><span>图像质量门</span><strong id="quality">—</strong></div><div><span>状态原因</span><strong id="reason">—</strong></div></div>
+          
+        </section>
+      </div>
+      <section class="metrics-grid" aria-label="设备性能">
+        <article class="metric-card"><span>图像传输至 ACK</span><strong id="m-transfer">—<small>ms</small></strong></article>
+        <article class="metric-card"><span>MCU 预处理</span><strong id="m-preprocess">—<small>ms</small></strong></article>
+        <article class="metric-card emphasis"><span>MCU 模型推理</span><strong id="m-inference">—<small>ms</small></strong></article>
+        <article class="metric-card"><span>PC 端到端</span><strong id="m-e2e">—<small>ms</small></strong></article>
+        <article class="metric-card"><span>实际处理频率</span><strong id="m-fps">—<small>FPS</small></strong><span id="completed-note" class="metric-note">已完成 0 帧</span></article>
+      </section>
+      <div class="bottom-grid" id="experiment">
+        <section class="card timeline-card"><div class="card-heading"><div><h2>延迟趋势</h2></div><div class="chart-legend"><span><i class="class-dot normal"></i>设备推理</span><span><i class="class-dot line-blue"></i>端到端</span></div></div><div class="chart-wrap"><svg id="latency-chart" viewBox="0 0 640 160" preserveAspectRatio="none" role="img" aria-label="当前会话延迟趋势"><path class="grid-line" d="M0 30H640M0 75H640M0 120H640"/><polyline id="line-e2e" class="line-e2e" points=""/><polyline id="line-inference" class="line-inference" points=""/></svg><div id="chart-empty" class="chart-empty">暂无记录</div><div class="chart-labels"><span id="chart-start">最近 90 帧</span><span id="chart-scale">ms</span></div></div><div class="secondary-metrics"><span>质量检查 <b id="quality-ms">—</b></span><span>MCU 总处理 <b id="total-ms">—</b></span><span>饱和值 <b id="saturation">—</b></span></div></section>
+        <section class="card device-card"><div class="card-heading"><div><h2>设备与模型</h2></div><span class="badge" id="device-badge"><span class="dot"></span>未连接</span></div><div class="device-name"><span class="chip-icon">S3</span><div><strong>ESP32-S3 N16R8</strong><span id="device-transport">USB Serial/JTAG</span></div></div><div class="device-grid"><span>固件 / 模型</span><b id="versions">—</b><span>内部内存空闲</span><b id="ram">—</b><span>PSRAM 空闲</span><b id="psram">—</b><span>模型加载</span><b id="model-load">—</b><span>模型 SHA256</span><b class="hash" id="model-hash">—</b></div></section>
+      </div>
+      <section class="card log-card"><div class="card-heading"><div><h2>会话日志<span class="log-count" id="log-count">0</span></h2></div><div class="log-actions"><button class="text-button" id="clear">清空显示</button><button class="button secondary compact" id="save">保存报告</button><a class="button secondary compact" href="/api/export" id="download">下载实验 ZIP ↗</a></div></div><div id="logs" class="logs" role="log" aria-live="polite"><div class="log-empty">暂无日志</div></div><div class="log-footer"><span class="dot"></span><span id="run-directory">实验记录：等待设备连接</span></div></section>
+      
+    </main>
+  </div>
+</body>
+</html>

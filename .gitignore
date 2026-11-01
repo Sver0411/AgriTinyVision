@@ -6,6 +6,7 @@ __pycache__/
 .cache/
 *.egg-info/
 build/
+build-*/
 dist/
 data/raw/
 data/cache/
@@ -15,6 +16,7 @@ data/local/
 *.onnx
 *.espdl
 *.info
+*.native
 *.npy
 runs/*
 !runs/.gitkeep
@@ -32,3 +34,5 @@ firmware_example/sdkconfig
 firmware_example/sdkconfig.old
 firmware_example/main/fixture_input.bin
 firmware_example/main/fixture_config.h
+firmware_example/main/camera_model_config.h
+firmware_example/main/camera_deployment.json
