@@ -22,7 +22,7 @@ def core_executable(tmp_path_factory):
     zig = ROOT / "tools/host-compiler/ziglang/zig.exe"
     command = [compiler] if compiler else [str(zig), "c++"] if zig.exists() else None
     if command is None:
-        pytest.skip("Install g++/clang++ or set ATV_HOST_CXX for native firmware core tests")
+        pytest.fail("Install g++/clang++ or set ATV_HOST_CXX for native firmware core tests")
     output = tmp_path_factory.mktemp("native") / ("camera-core.exe" if os.name == "nt" else "camera-core")
     subprocess.run(
         [
@@ -105,12 +105,13 @@ def test_cpp_untrusted_header_never_writes_out_of_bounds(core_executable, tmp_pa
     assert "error 3" in output and "packet 1 3 0" in output
 
 
+@pytest.mark.local_artifact
 def test_actual_local_model_inspection(tmp_path):
     from agritinyvision.pc_camera.deployment import prepare
 
     bundle = ROOT / "releases/v0.1.0"
     if not (bundle / "tinyvision.espdl").exists():
-        pytest.skip("Local release artifacts are supplied outside Git")
+        pytest.fail("Selected local_artifact tests require frozen release artifacts outside Git")
     config = prepare(bundle, tmp_path, ROOT / "configs/quality.yaml")
     assert config["tensors"]["input"] == {"shape": [1, 160, 160, 3], "dtype": 3, "exponent": -6}
     assert config["tensors"]["output"] == {"shape": [1, 2], "dtype": 3, "exponent": -4}

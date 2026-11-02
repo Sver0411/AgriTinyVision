@@ -54,6 +54,8 @@ def parse_device(payload):
         raise ProtocolError("invalid model hash")
     for key in ("input_exponent", "output_exponent"):
         number(d.get(key), key, -32, 32)
+        if type(d[key]) is not int:
+            raise ProtocolError(f"integer required for {key}")
     number(d.get("decision_threshold"), "decision_threshold", 0, 1)
     number(d.get("normal_upper_bound"), "normal_upper_bound", 0, 1)
     number(d.get("suspect_lower_bound"), "suspect_lower_bound", 0, 1)
@@ -83,6 +85,11 @@ def parse_result(payload, sequence, device):
     if abs(r["decision_threshold"] - device["decision_threshold"]) > 1e-6:
         raise ProtocolError("decision threshold changed")
     p, n, confidence = (r[k] for k in ("suspect_probability", "normal_probability", "confidence"))
+    if (p is None) != (n is None):
+        raise ProtocolError("partial probability output")
+    if r.get("quality_passed") is False and any(r.get(k) is not None for k in
+            ("normal_probability", "suspect_probability", "confidence", "preprocess_us", "inference_us")):
+        raise ProtocolError("quality rejection must skip normalization and inference")
     if p is None or n is None:
         if r["state"] != "UNKNOWN" or confidence is not None:
             raise ProtocolError("missing probability requires UNKNOWN/null confidence")

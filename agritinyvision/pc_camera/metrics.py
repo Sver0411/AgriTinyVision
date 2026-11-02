@@ -4,6 +4,7 @@ import csv
 import hashlib
 import json
 import platform
+import subprocess
 import time
 from collections import Counter
 from datetime import datetime, timedelta, timezone
@@ -11,6 +12,8 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import numpy as np
+
+from agritinyvision import __version__
 
 from .result_parser import MEMORY, TIMINGS
 
@@ -30,11 +33,15 @@ FIELDS = (
     "contrast",
     "laplacian_variance",
     "transfer_ms",
+    "pc_capture_ms",
+    "pc_preprocess_ms",
+    "serial_roundtrip_ms",
     *TIMINGS,
     "end_to_end_ms",
     "actual_fps",
     *MEMORY,
     "saturated_values",
+    "saturated_fraction",
     "boot_id",
     "error",
 )
@@ -46,6 +53,17 @@ def write_json(path, value):
     )
 
 
+def environment_metadata():
+    root = Path(__file__).resolve().parents[2]
+    git = ["git", "-c", f"safe.directory={root.as_posix()}", "-C", str(root)]
+    try:
+        commit = subprocess.check_output([*git, "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL).strip()
+        dirty = bool(subprocess.check_output([*git, "status", "--porcelain"], text=True, stderr=subprocess.DEVNULL))
+    except (OSError, subprocess.CalledProcessError):
+        commit, dirty = None, None
+    return {"project_version": __version__, "git_commit": commit, "git_dirty": dirty}
+
+
 class RunRecorder:
     def __init__(self, root="runs/hardware", config=None, device=None, evidence="hardware"):
         now = datetime.now(timezone.utc)
@@ -53,6 +71,8 @@ class RunRecorder:
         self.path = Path(root) / now.astimezone(timezone(timedelta(hours=8))).strftime("%Y%m%d_%H%M%S_%f")
         self.path.mkdir(parents=True, exist_ok=False)
         self.metadata = {
+            "schema_version": "experiment-v3",
+            "project": environment_metadata(),
             "started_at": now.isoformat(),
             "evidence": evidence,
             "pc": {"platform": platform.platform(), "python": platform.python_version()},
@@ -60,7 +80,7 @@ class RunRecorder:
             "device": device or {},
         }
         dependencies = {}
-        for package in ("numpy", "Pillow", "opencv-python", "pyserial", "matplotlib"):
+        for package in ("numpy", "Pillow", "opencv-python", "pyserial", "matplotlib", "Flask", "torch", "onnxruntime", "esp-ppq"):
             try:
                 dependencies[package] = version(package)
             except PackageNotFoundError:
@@ -93,6 +113,8 @@ class RunRecorder:
             "elapsed_s": elapsed_s,
             "error": "",
         }
+        if result.get("saturated_values") is not None:
+            row["saturated_fraction"] = result["saturated_values"] / (160 * 160 * 3)
         for writer, f in zip(self.writers, self.files):
             writer.writerow(row)
             f.flush()
@@ -103,7 +125,7 @@ class RunRecorder:
         self.errors.write(f"{stamp} seq={sequence} {message}\n")
         self.errors.flush()
         self.writers[0].writerow(
-            {"timestamp": stamp, "sequence": sequence, "state": "UNKNOWN", "error": message}
+            {"timestamp": stamp, "sequence": sequence, "state": "", "error": message}
         )
         self.files[0].flush()
 
@@ -130,7 +152,8 @@ def generate_report(path, plots=True):
         return [float(r[key]) for r in good if r.get(key) not in ("", None)]
 
     latency = {}
-    for key in ("transfer_ms", "quality_us", "preprocess_us", "inference_us", "total_us", "end_to_end_ms"):
+    for key in ("pc_capture_ms", "pc_preprocess_ms", "serial_roundtrip_ms", "transfer_ms", "quality_us",
+                "preprocess_us", "inference_us", "total_us", "end_to_end_ms"):
         v = values(key)
         latency[key] = (
             {
@@ -164,6 +187,18 @@ def generate_report(path, plots=True):
         "memory": memory,
         "hardware_validation": "RECORDED" if good and meta["evidence"] == "hardware" else "PENDING",
     }
+    saturation = values("saturated_fraction")
+    summary["saturation_fraction"] = {
+        "count": len(saturation), "p50": float(np.percentile(saturation, 50)),
+        "p95": float(np.percentile(saturation, 95)), "maximum": max(saturation),
+    } if saturation else "PENDING"
+    window = max(1, len(good) // 5)
+    summary["latency_trend"] = {}
+    for key in ("inference_us", "end_to_end_ms"):
+        v = values(key)
+        summary["latency_trend"][key] = {"first_window_p50": float(np.median(v[:window])),
+                                         "last_window_p50": float(np.median(v[-window:])),
+                                         "window_frames": min(window, len(v))} if v else "PENDING"
     write_json(path / "latency_report.json", latency)
     write_json(path / "summary.json", summary)
     device = meta["device"]

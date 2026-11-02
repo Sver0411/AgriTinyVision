@@ -43,6 +43,9 @@ def device():
         "normal_upper_bound": float(np.float32(0.2)),
         "suspect_lower_bound": float(np.float32(0.4)),
         "transport": "synthetic test transport",
+        "deployment_sha256": "b" * 64,
+        "abstention_policy": "threshold-centered-v1",
+        "quality_gate_version": "laplacian-gray-v1",
     }
 
 
@@ -207,7 +210,7 @@ class FakeSerial:
 
 
 def test_serial_single_request_and_ack_timings():
-    client = SerialClient("TEST", serial_factory=FakeSerial)
+    client = SerialClient("TEST", serial_factory=FakeSerial, expected_identity=device())
     client.connect()
     r = client.infer(bytes(FRAME_BYTES))
     assert r["sequence"] == 2 and r["state"] == "SUSPECT"
@@ -220,7 +223,7 @@ def test_model_not_loaded_refuses_frames(monkeypatch):
     original = device()
     original.update(model_loaded=False, model_error="rgb_psram_allocation")
     monkeypatch.setitem(globals(), "device", lambda: original)
-    client = SerialClient("TEST", serial_factory=FakeSerial)
+    client = SerialClient("TEST", serial_factory=FakeSerial, expected_identity=device())
     with pytest.raises(DeviceError, match="rgb_psram_allocation"):
         client.connect()
     assert client.serial is None and client.device is None
@@ -230,7 +233,7 @@ def test_model_not_loaded_refuses_frames(monkeypatch):
     "fault,exception", [("sequence", ProtocolError), ("timeout", TimeoutError), ("disconnect", OSError)]
 )
 def test_serial_fault_requires_new_handshake(fault, exception):
-    client = SerialClient("TEST", timeout=0.03, serial_factory=lambda: FakeSerial(fault))
+    client = SerialClient("TEST", timeout=0.03, serial_factory=lambda: FakeSerial(fault), expected_identity=device())
     client.connect()
     with pytest.raises(exception):
         client.infer(bytes(FRAME_BYTES))
@@ -240,7 +243,7 @@ def test_serial_fault_requires_new_handshake(fault, exception):
 
 
 def test_duplicate_sequence_never_generates_another_result():
-    client = SerialClient("TEST", serial_factory=FakeSerial)
+    client = SerialClient("TEST", serial_factory=FakeSerial, expected_identity=device())
     client.connect()
     client.infer(bytes(FRAME_BYTES))
     client.sequence -= 1
@@ -303,7 +306,7 @@ def test_metrics_real_schema_and_pending_report(tmp_path):
 
 
 def test_controller_uses_only_one_inflight_frame(tmp_path):
-    client = SerialClient("TEST", serial_factory=FakeSerial)
+    client = SerialClient("TEST", serial_factory=FakeSerial, expected_identity=device())
     client.connect()
     recorder = RunRecorder(tmp_path, evidence="synthetic-unit-test")
     controller = InferenceController(client, recorder)

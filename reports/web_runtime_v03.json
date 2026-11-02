@@ -1,0 +1,9 @@
+{
+  "status_without_session": 401,
+  "status_with_session": 200,
+  "stop_action": 202,
+  "camera_connected": false,
+  "device_connected": false,
+  "host": "127.0.0.1",
+  "http_port": 8765
+}

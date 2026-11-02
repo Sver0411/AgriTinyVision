@@ -3,6 +3,7 @@
 import threading
 import time
 
+from .device_identity import load_expected_identity, verify_device_identity
 from .protocol import Decoder, MessageType, Packet, ProtocolError, frame_packet
 from .result_parser import parse_device, parse_json, parse_result
 
@@ -12,15 +13,19 @@ class DeviceError(RuntimeError):
 
 
 class SerialClient:
-    def __init__(self, port, baudrate=921600, timeout=30.0, serial_factory=None):
+    def __init__(self, port, baudrate=921600, timeout=30.0, serial_factory=None, expected_identity=None,
+                 bundle="releases/v0.1.0", deployment=None):
         self.port, self.baudrate, self.timeout = port, baudrate, timeout
         self.serial_factory = serial_factory
+        self.evidence = "hardware" if serial_factory is None else "simulated_hardware"
         self.serial = None
         self.device = None
         self.sequence = 0
         self.decoder = Decoder()
         self.pending = []
         self.lock = threading.Lock()
+        self.expected_identity = expected_identity
+        self.bundle, self.deployment = bundle, deployment
 
     def close(self):
         transport, self.serial = self.serial, None
@@ -37,6 +42,7 @@ class SerialClient:
     def connect(self):
         with self.lock:
             self.close()
+            expected = self.expected_identity or load_expected_identity(self.bundle, self.deployment)
             if self.serial_factory is None:
                 import serial
 
@@ -57,6 +63,7 @@ class SerialClient:
                 self.device = parse_device(packet.payload)
                 if not self.device["model_loaded"]:
                     raise DeviceError("Model not loaded: " + str(self.device.get("model_error")))
+                self.device["identity_validation"] = verify_device_identity(self.device, expected)
                 return self.device
             except Exception:
                 self.close()

@@ -36,18 +36,23 @@ def validate_quantization_report(model_path, checkpoint, threshold):
     return report
 
 
+def load_frozen_executor(model_path, report, dev="cpu"):
+    native = Path(str(model_path) + ".native")
+    if report.get("sha256") != sha256(model_path):
+        raise ValueError("Quantized ESP-DL artifact missing or changed")
+    if report.get("simulation_graph_sha256") != sha256(native):
+        raise ValueError("Quantized simulation graph missing or changed")
+    from esp_ppq import TorchExecutor
+    from esp_ppq.api import load_native_graph
+    # Native PPQ files use pickle. Load only locally produced trusted graphs.
+    return TorchExecutor(graph=load_native_graph(str(native)), device=str(dev))
+
+
 def predict_quantized(model_path, loader, dev, report):
     """Read an already frozen artifact; never recalibrate while evaluating test."""
     labels, scores = [], []
     if report["backend"] == "espdl":
-        from esp_ppq import TorchExecutor
-        from esp_ppq.api import load_native_graph
-
-        native = Path(str(model_path) + ".native")
-        if report.get("simulation_graph_sha256") != sha256(native):
-            raise ValueError("Quantized simulation graph missing or changed")
-        # Native PPQ files use pickle. Load only locally produced trusted graphs.
-        executor = TorchExecutor(graph=load_native_graph(str(native)), device=str(dev))
+        executor = load_frozen_executor(model_path, report, dev)
         for x, y in loader:
             with torch.inference_mode():
                 result = executor.forward(x.to(dev))[0]

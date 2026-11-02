@@ -75,8 +75,9 @@ def inspect_espdl(path):
         raise ValueError("Invalid model FlatBuffer") from exc
 
 
-def prepare(bundle, destination="firmware_example/main", quality_path="configs/quality.yaml"):
-    bundle, destination = Path(bundle), Path(destination)
+def deployment_contract(bundle, quality_path="configs/quality.yaml"):
+    """Read and verify the frozen bundle without generating or changing any artifact."""
+    bundle = Path(bundle)
     source = bundle / "tinyvision.espdl"
     sha = hashlib.sha256(source.read_bytes()).hexdigest()
     metadata_path = bundle / "metadata.json"
@@ -132,6 +133,17 @@ def prepare(bundle, destination="firmware_example/main", quality_path="configs/q
     }
     deployment_sha = hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest()
     config["deployment_sha256"] = deployment_sha
+    return config
+
+
+def prepare(bundle, destination="firmware_example/main", quality_path="configs/quality.yaml"):
+    bundle, destination = Path(bundle), Path(destination)
+    config = deployment_contract(bundle, quality_path)
+    source = bundle / "tinyvision.espdl"
+    sha, deployment_sha = config["model_sha256"], config["deployment_sha256"]
+    tensors, pre, quality = config["tensors"], config["preprocessing"], config["quality_gate"]
+    threshold = config["decision_threshold"]
+    lower, upper = config["normal_upper_bound"], config["suspect_lower_bound"]
     destination.mkdir(parents=True, exist_ok=True)
     target = destination / "tinyvision.espdl"
     if source.resolve() != target.resolve():
@@ -140,7 +152,7 @@ def prepare(bundle, destination="firmware_example/main", quality_path="configs/q
         "#pragma once",
         f'#define CAMERA_DEPLOYMENT_SHA256 "{deployment_sha}"',
         f'#define CAMERA_MODEL_SHA256 "{sha}"',
-        f"#define CAMERA_MODEL_VERSION {json.dumps(metadata['version'])}",
+        f"#define CAMERA_MODEL_VERSION {json.dumps(config['model_version'])}",
         f"#define CAMERA_MODEL_BYTES {source.stat().st_size}",
         f"#define CAMERA_INPUT_EXPONENT {tensors['input']['exponent']}",
         f"#define CAMERA_OUTPUT_EXPONENT {tensors['output']['exponent']}",

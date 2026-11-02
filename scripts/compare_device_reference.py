@@ -9,15 +9,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import numpy as np
-
 from agritinyvision.pc_camera.image_preprocess import load_image_bgr, prepare_bgr
 from agritinyvision.pc_camera.metrics import write_json
+from agritinyvision.quantization_analysis import OnnxReference
 
 
 def compare(run, image, bundle):
-    import onnxruntime as ort
-
     run, bundle = Path(run), Path(bundle)
     meta = json.loads((run / "run_metadata.json").read_text(encoding="utf-8"))
     model_meta = json.loads((bundle / "metadata.json").read_text(encoding="utf-8"))
@@ -37,13 +34,7 @@ def compare(run, image, bundle):
         ]
     if not rows:
         raise ValueError("Run has no inferred frame with the identical RGB SHA256")
-    pre = model_meta["preprocessing"]
-    x = (rgb.astype(np.float32) / 255 - np.array(pre["mean"], np.float32)) / np.array(pre["std"], np.float32)
-    x = np.ascontiguousarray(x.transpose(2, 0, 1)[None])
-    session = ort.InferenceSession(str(reference), providers=["CPUExecutionProvider"])
-    logits = np.asarray(session.run(None, {session.get_inputs()[0].name: x})[0], dtype=np.float32).reshape(2)
-    exps = np.exp(logits - logits.max())
-    probability = float(exps[1] / exps.sum())
+    probability = OnnxReference(bundle)(rgb)[1]
     report = {
         "purpose": "independent deployment consistency comparison",
         "evidence": meta["evidence"],

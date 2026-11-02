@@ -20,7 +20,7 @@ Producer: AgriTinyVision. Consumer: `Sver0411/Smart-Agriculture-Edge-AI`, Gatewa
 | README.md | Explicit ESP-DL export and hardware validation status |
 | tinyvision.info / tinyvision.json | Converter tensor layout, exponent/dtype and quantization diagnostics if produced |
 
-Machine-readable metadata schema: [metadata.schema.json](metadata.schema.json). SHA256 identifies the .espdl if present, otherwise the ONNX. `artifact_sha256` binds each model independently. A bundle without a SUCCESS conversion report is never a deployment-ready bundle; successful conversion is still **PENDING HARDWARE VALIDATION**.
+Machine-readable metadata schema: [metadata.schema.json](metadata.schema.json). SHA256 identifies the .espdl if present, otherwise the ONNX. `artifact_sha256` binds each model independently. Conversion and physical validation are separate evidence: the frozen 160 model has the v0.2 hardware results linked below; other candidates require their own device checks.
 
 This contract includes the Final Correctness Patch. The original v0.1.0 release and its old metadata/metrics remain immutable historical evidence. They do not report coverage under the corrected abstention rule. Newly generated bundles require `decision_threshold_source=validation`, `quantization_selection_split=validation` (or not_applicable for FP32-only research), and `final_metrics_split=test`. Conversion evaluates val only; explicit final evaluation requires the frozen checkpoint SHA256 and, for ONNX/INT8, the frozen artifact SHA256. Quantized final reports must bind the validation-only conversion report hash and the exact checkpoint/artifact. Test-based quantization selection or missing provenance fails release validation.
 
@@ -47,7 +47,7 @@ Invalid output includes NaN, Inf and values outside [0,1]. Quality failure has p
 
 The producer computes bounds from decimal configuration values and exports their float32 representations in metadata and the fixture header. Both Python and firmware compare float32 probabilities to these **same exported constants**. Firmware must not independently compute float32 threshold +/- margin, which can shift the lower boundary by one ULP. The actual metadata bounds are approximately 0.20000000298 and 0.40000000596. Validate the original probability before casting; this convention only standardizes state decisions, not all Python/MCU numerical inference.
 
-UNKNOWN is never a third trained class. Decision threshold is selected only on validation and remains 0.30 for the frozen 160 candidate. Margin=0.10 is a provisional engineering default, not test-tuned; field validation recalibration is required. Simple blur/brightness/contrast and threshold abstention cannot detect arbitrary OOD or all no-plant content; those capabilities are not implemented in v0.1. An out-of-domain input may pass. UNKNOWN must be routed to inspection/retry by the Gateway decision engine; never convert it silently to NORMAL.
+UNKNOWN is never a third trained class. Decision threshold is selected only on validation and remains 0.30 for the frozen 160 candidate. Margin=0.10 is a provisional engineering default, not test-tuned. The quality gate measures blur, brightness and contrast; plant presence and complete OOD detection require separate methods. An out-of-domain input may pass. UNKNOWN must be routed to inspection/retry by the Gateway decision engine; never convert it silently to NORMAL.
 
 Suggested result envelope (not an actuator command):
 

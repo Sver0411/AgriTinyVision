@@ -10,7 +10,13 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-      - run: pip install -e '.[dev]'
+      - run: pip install -e '.[camera,web,dev]'
       - run: ruff check agritinyvision scripts tests
-      - run: pytest -q
-# CI uses synthetic fixtures only. No GPU training or public dataset download.
+      - run: pytest -q --strict-markers --junitxml=reports/ci-software.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: software-test-results
+          path: reports/ci-software.xml
+# CI exercises unit, HTTP and simulated transport/native-core tests.
+# Physical devices and frozen model binaries require separately selected local validation.

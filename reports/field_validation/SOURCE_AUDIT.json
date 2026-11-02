@@ -1,0 +1,17 @@
+{
+  "reference_manifest_sha256": "0aef598f000fd1c78984a125f7241e294b96b798c5bfba50381e422d10ee1b03",
+  "reference_samples": 2792,
+  "threshold": "exact file/RGB or pHash Hamming<=4",
+  "overlap": [],
+  "selected_samples": 60,
+  "provenance": {
+    "source_kind": "public_dataset",
+    "dataset": "PlantDoc external test subset",
+    "source_group": "https://github.com/pratikkayal/PlantDoc-Dataset@5467f6012d78d1c446145d5f582da6096f852ae8",
+    "repository": "https://github.com/pratikkayal/PlantDoc-Dataset",
+    "revision": "5467f6012d78d1c446145d5f582da6096f852ae8",
+    "source_manifest_sha256": "9ee45266a6b3703289c71b050922c2820db9f8936ef86d13716228c864294994",
+    "license": "CC-BY-4.0"
+  },
+  "independence": "No source plant/session IDs; conservative batch group"
+}

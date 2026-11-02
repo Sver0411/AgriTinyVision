@@ -1,0 +1,29 @@
+{
+  "samples": 60,
+  "successful": 60,
+  "excluded": 0,
+  "prediction_status": {
+    "ok": 60
+  },
+  "labelled": 60,
+  "annotation_origins": {
+    "dataset_author": 60
+  },
+  "annotation_source": "source",
+  "manual_reviews": 0,
+  "source_labels": 60,
+  "source_kind": "public_dataset",
+  "context": {
+    "source_kind": "public_dataset",
+    "dataset": "PlantDoc external test subset",
+    "source_group": "https://github.com/pratikkayal/PlantDoc-Dataset@5467f6012d78d1c446145d5f582da6096f852ae8",
+    "repository": "https://github.com/pratikkayal/PlantDoc-Dataset",
+    "revision": "5467f6012d78d1c446145d5f582da6096f852ae8",
+    "source_manifest_sha256": "9ee45266a6b3703289c71b050922c2820db9f8936ef86d13716228c864294994",
+    "license": "CC-BY-4.0"
+  },
+  "scene_support_threshold": 5,
+  "batch_sha256": "9bc7731a76ff8598132bc976de115ece856c5447c3f83626827852fbf7d307bc",
+  "manifest_sha256": "641204d297063f73b42defbd94957dc0f3663bfd4af6ae2fbbd9f8c93e9f666c",
+  "annotation_sha256": "59f688044208c0c8a98a4bb3f9b91e1ae3254f67587cae8688fc64aab0af03f6"
+}

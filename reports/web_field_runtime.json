@@ -1,0 +1,12 @@
+{
+  "unauthorized_status": 401,
+  "field_page_status": 200,
+  "batch_id": "20261102_230817_98a40f97",
+  "samples": 60,
+  "manual_annotations": 0,
+  "served_input_file_sha256_matches": true,
+  "browser_previous_next": "PASS",
+  "browser_script_errors": 0,
+  "camera_connected": false,
+  "device_connected": false
+}

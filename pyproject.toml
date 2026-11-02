@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agritinyvision"
-version = "0.1.0"
+version = "0.3.0"
 description = "Reproducible agricultural Tiny Vision model pipeline for Gateway A ESP32-S3"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,6 +29,12 @@ include = ["agritinyvision*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not hardware and not local_artifact'"
+markers = [
+    "hardware: requires an explicitly selected physical ESP32 device",
+    "local_artifact: requires frozen model files supplied outside Git",
+    "simulated_hardware: simulated serial transport or host-compiled firmware core; not physical hardware",
+]
 
 [tool.ruff]
 line-length = 110

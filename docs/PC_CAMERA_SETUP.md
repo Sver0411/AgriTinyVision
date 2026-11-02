@@ -112,3 +112,10 @@ python scripts/run_pc_camera.py --report runs/hardware/RUN_DIRECTORY
 | Model not loaded | 根据设备 model_error 检查模型配置、SHA256、张量和 PSRAM |
 
 硬件测量与验收记录见 [HARDWARE_VALIDATION.md](HARDWARE_VALIDATION.md)。
+
+## v0.3 补充
+
+连接会校验正式包身份，默认 `--bundle releases/v0.1.0`，可指定
+`--deployment firmware_example/main/camera_deployment.json` 验证生成元数据。
+本地 Web 读取接口采用同站会话；先打开首页再访问预览和报告。非回环绑定需要独立
+口令认证，实验对照、脱敏和性能工具见 [v0.3 指南](V03_RELIABILITY.md)。

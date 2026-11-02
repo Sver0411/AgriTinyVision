@@ -2,8 +2,8 @@ import math
 from decimal import Decimal
 
 import numpy as np
+from PIL import Image
 
-from .data.dataset import open_rgb
 from .utils import load_yaml
 
 QUALITY_GATE_VERSION = "laplacian-gray-v1"
@@ -23,11 +23,18 @@ def abstention_bounds(threshold, margin):
 
 def quality_gate(image, config):
     try:
-        im = open_rgb(image) if isinstance(image, (str, bytes)) or hasattr(image, "__fspath__") else image
+        if isinstance(image, (str, bytes)) or hasattr(image, "__fspath__"):
+            with Image.open(image) as source:
+                from PIL import ImageOps
+
+                im = ImageOps.exif_transpose(source).convert("RGB")
+        else:
+            im = image
         if im.mode != "RGB" or min(im.size) < config["min_dimension"]:
             return {"passed": False, "reasons": ["invalid_format_or_size"]}
         # Metrics always computed at the same resolution, before model normalization.
-        a = np.asarray(im.resize((config["metric_size"], config["metric_size"])), dtype=np.float32)
+        a = np.asarray(im.resize((config["metric_size"], config["metric_size"]), Image.Resampling.BILINEAR),
+                       dtype=np.float32)
         gray = a[..., 0] * 0.299 + a[..., 1] * 0.587 + a[..., 2] * 0.114
         lap = gray[:-2, 1:-1] + gray[2:, 1:-1] + gray[1:-1, :-2] + gray[1:-1, 2:] - 4 * gray[1:-1, 1:-1]
         values = {

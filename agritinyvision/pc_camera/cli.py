@@ -18,7 +18,10 @@ def parser():
     p.add_argument("--mirror", action="store_true", help="mirror RGB input (recorded in experiment config)")
     p.add_argument("--fps", type=float, default=1.0)
     p.add_argument("--timeout", type=float, default=30.0)
+    p.add_argument("--bundle", default="releases/v0.1.0", help="frozen model bundle for device identity")
+    p.add_argument("--deployment", help="optional generated camera_deployment.json to verify")
     p.add_argument("--output", default="runs/hardware")
+    p.add_argument("--field-output", default="runs/field_validation", help="opt-in image collection batches")
     p.add_argument("--headless", action="store_true")
     p.add_argument("--host", default="127.0.0.1", help="Web server bind address")
     p.add_argument("--http-port", type=int, default=8765, help="Web interface port")
@@ -36,7 +39,7 @@ def parser():
 
 def headless(args):
     camera = Camera(args.camera)
-    client = SerialClient(args.port, args.baudrate, args.timeout)
+    client = SerialClient(args.port, args.baudrate, args.timeout, bundle=args.bundle, deployment=args.deployment)
     recorder = None
     try:
         device = client.connect()
@@ -49,10 +52,16 @@ def headless(args):
         while count < args.frames or time.perf_counter() - start < args.duration:
             begin = time.perf_counter()
             frame = image if image is not None else camera.read()
+            captured = time.perf_counter()
             rgb = prepare_bgr(frame, args.rotation, args.mirror)
+            prepared = time.perf_counter()
             r = client.infer(rgb.tobytes())
             r["rgb_sha256"] = hashlib.sha256(rgb.tobytes()).hexdigest()
             end = time.perf_counter()
+            r["serial_roundtrip_ms"] = r["end_to_end_ms"]
+            r["pc_capture_ms"] = (captured - begin) * 1000 if image is None else None
+            r["pc_preprocess_ms"] = (prepared - captured) * 1000
+            r["end_to_end_ms"] = (end - begin) * 1000
             r["actual_fps"] = 1 / (end - last)
             last = end
             count += 1

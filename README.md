@@ -1,4 +1,4 @@
-<h1 align="center">AgriTinyVision v0.2</h1>
+<h1 align="center">AgriTinyVision v0.3</h1>
 
 ---
 
@@ -41,7 +41,42 @@ The PC decodes, orients and resizes RGB images with the existing PIL bilinear-an
 
 See [Windows setup](docs/PC_CAMERA_SETUP.md), [USB protocol](docs/USB_PROTOCOL.md), [deployment](docs/HARDWARE_DEPLOYMENT.md) and [hardware results](reports/HARDWARE_V02.md).
 
+## v0.3 reliability and comparison workflow
+
+The Web console and headless runner now verify the connected model against the actual frozen bundle: model SHA256, version, deployment SHA256, tensor shapes/types/exponents, quality contract and decision bounds. A mismatch closes the connection before any frame is sent. The existing v0.2 firmware supplies these fields; its binary and the model remain unchanged. Use `--bundle` to select the experiment bundle and optional `--deployment` to additionally validate a generated deployment JSON.
+
+Controlled image probes share one RGB SHA256 across ONNX FP32, frozen ESP-PPQ simulation and ESP32. Each backend records its own probabilities and timings. Prepare and run a comparison with:
+
+```powershell
+python scripts/prepare_analysis_scenes.py --image PATH_TO_TRAIN_LEAF --source DATASET_ID --label NORMAL --split train --output runs/v03/my-scenes
+python scripts/quantization_analysis.py --manifest runs/v03/my-scenes/manifest.json --bundle releases/v0.1.0 --port COM3 --output runs/v03/my-comparison
+# Add the original trusted, hash-bound frozen PPQ graph when available:
+# --host-model PATH_TO_FROZEN.espdl --host-report PATH_TO_FROZEN.espdl.quantization.json
+python scripts/analyze_performance.py --run RUN_DIRECTORY
+python scripts/export_experiment.py --run RUN_DIRECTORY --public-output NEW_SANITIZED_DIRECTORY
+python -m pytest -q --strict-markers
+# Explicit local artifact and physical-device checks:
+$env:ATV_HARDWARE_PORT='COM3'
+python -m pytest -q -m 'hardware or local_artifact'
+```
+
+The host model requires its adjacent `.native` graph and a matching `simulation_graph_sha256`; only load a trusted locally produced graph. Missing original graphs remain PENDING; comparison never recalibrates or modifies the official model. The ten v0.3 probes cover source-leaf lighting/contrast/blur/color variations plus synthetic non-plant, checker and noise images. Their source leaf belongs to the training split. They measure deployment differences, not field accuracy. Results and the color-permutation disagreement are documented in [quantization analysis](reports/QUANTIZATION_ANALYSIS_V03.md).
+
+| v0.3 validation | Evidence |
+| --- | --- |
+| Model identity and wrong-model refusal | Physical COM3 checks and software mismatch tests |
+| FP32 versus device | Ten controlled probes; eight probability pairs, nine of ten gated states agree |
+| Frozen PPQ comparison for these probes | PENDING: original model's native graph is absent |
+| Web security | Local same-site session, Host/Origin checks, CSRF token and bounded exports; non-loopback binding requires independent password authentication |
+| Reproducibility | Project/Git/source hashes, device identity, dependencies, configuration, start/end time and stage timings |
+| Software / hardware evidence | See [v0.3 validation](docs/V03_VALIDATION.md); simulated transports are kept separate from physical checks |
+| Independent field accuracy / power measurement | PENDING: independent labeled field data / external power instrument |
+
+Local browsing remains at `127.0.0.1`; status, preview and experiment downloads require the same-site console session. Non-loopback binding requires `ATV_WEB_PASSWORD` (at least 16 characters), with browser login username `agri`. The public-data preparation tool creates a separate sanitized directory and never uploads it. See [v0.3 guide](docs/V03_RELIABILITY.md).
+
 ## Method and inference states
+
+The [collection and annotation workspace](http://127.0.0.1:8765/field) adds opt-in lossless photo batches, independent human labels, CSV/ZIP export and frozen three-state evaluation. A first external PlantDoc test subset contains 60 source-labelled images: device binary accuracy 88.33%, accepted coverage 95.00%, accepted accuracy 89.47%, UNKNOWN 3/60. Normal-reference false alarms are 5/12. These figures use dataset-author labels and describe this fixed subset. Human quality review and independent grouped field splits remain PENDING. See the [operation guide](docs/FIELD_VALIDATION.md), [results](docs/FIELD_VALIDATION_RESULTS.md) and [aggregate reports](reports/field_validation/README.md).
 
 ```text
 Plant image → quality gate → compact model → confidence / decision threshold
@@ -82,7 +117,7 @@ These scores come from a curated PlantVillage subset with controlled backgrounds
 | Real ESP32 inference | Golden Fixture and 15 quality/protocol checks passed |
 | PC camera path | 100/100 live-camera frames returned valid device results |
 | Sustained inference | 500/500 fixed-leaf frames in 536.46 seconds, no restarts or first/last free-memory decrease |
-| Software regression | 138 tests passed |
+| v0.2 software regression | 138 tests passed (historical baseline) |
 
 The [first-run report](reports/FIRST_RUN.md) retains the training and host-simulation results. The [v0.2 hardware report](reports/HARDWARE_V02.md) records actual ESP32-S3 measurements: 527.840/527.850 ms inference P50/P95, 286,447 bytes free internal RAM, 5,046,852 bytes free PSRAM and a 3,574,960-byte application image. Model file size, application image size and partition capacity are recorded separately.
 
@@ -145,7 +180,7 @@ Release validation checks model hashes, frozen metrics, ONNX checks, conversion 
 
 ## Limitations and future work
 
-Field evaluation uses independent labeled camera data to measure agricultural screening performance. The published PlantVillage scores and device throughput describe their respective datasets and experiments. Power profiling uses external measurement equipment.
+Independent labeled field validation and external-instrument power measurements are PENDING. The PlantVillage scores describe the controlled dataset; the 536.46-second fixed-image run describes that input and duration. Quality gates check blur, brightness and contrast rather than plant presence or complete OOD coverage. Quantization optimization remains a separate candidate study; v0.3 retains the frozen exponent and thresholds.
 
 ## License
 

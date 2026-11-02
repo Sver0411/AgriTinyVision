@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 
 from PIL import Image
 
+from agritinyvision.field_validation.capture import FieldBatch
+
 from .camera import Camera
 from .inference_controller import InferenceController
 from .metrics import RunRecorder, generate_report, write_json
@@ -26,6 +28,7 @@ ACTIONS = {
     "save",
     "clear_logs",
     "configure",
+    "field_create", "field_capture", "field_start", "field_pause", "field_finish",
 }
 
 
@@ -34,7 +37,8 @@ class CameraService:
         self.config = dict(config)
         self.camera = camera or Camera(config.get("camera", 0))
         self.client = client or SerialClient(
-            config.get("port") or "", config.get("baudrate", 921600), config.get("timeout", 30)
+            config.get("port") or "", config.get("baudrate", 921600), config.get("timeout", 30),
+            bundle=config.get("bundle", "releases/v0.1.0"), deployment=config.get("deployment")
         )
         self.recorder_factory = recorder_factory
         self.recorder = self.controller = self.frame = None
@@ -50,6 +54,12 @@ class CameraService:
         self.history, self.logs = deque(maxlen=90), deque(maxlen=200)
         self.error = ""
         self.next_inference = 0
+        self.capture_ms = self.capture_started = None
+        self.field_batch = None
+        self.field_running = False
+        self.field_interval = 5.0
+        self.next_field = 0
+        self.captured_at = None
 
     def start(self):
         self.thread = threading.Thread(target=self._loop, name="camera-service", daemon=True)
@@ -96,6 +106,10 @@ class CameraService:
                     "logs": list(self.logs),
                     "config": self.config,
                     "run_directory": str(recorder.path) if recorder else None,
+                    "field": {"batch_id": self.field_batch.path.name if self.field_batch else None,
+                              "captures": self.field_batch.count if self.field_batch else 0,
+                              "completed": self.field_batch.completed if self.field_batch else 0,
+                              "running": self.field_running, "interval_s": self.field_interval},
                 }
             )
 
@@ -141,6 +155,9 @@ class CameraService:
             raise ValueError("请先连接摄像头和 ESP32")
 
     def _execute(self, action, payload):
+        if action.startswith("field_"):
+            self._field_execute(action, payload)
+            return
         if payload:
             self._configure(payload)
         if action == "connect_camera":
@@ -151,7 +168,7 @@ class CameraService:
         elif action == "disconnect_camera":
             self.camera.disconnect()
             self._update(
-                camera_connected=False, running=False, frame=None, preview_jpeg=None, last_result=None
+                camera_connected=False, running=False, field_running=False, frame=None, preview_jpeg=None, last_result=None
             )
             self._log("摄像头已断开")
         elif action == "connect_device":
@@ -161,6 +178,9 @@ class CameraService:
                 raise ValueError("请选择 COM 端口")
             self._update(connecting=True, running=False, device_connected=False)
             try:
+                if self.field_batch:
+                    self.field_batch.finish()
+                self._update(field_batch=None, field_running=False)
                 if self.recorder:
                     self.recorder.close()
                 self._update(controller=None, recorder=None)
@@ -182,19 +202,20 @@ class CameraService:
                 self._update(connecting=False)
         elif action == "disconnect_device":
             self.client.close()
-            self._update(device_connected=False, running=False, last_result=None)
+            self._update(device_connected=False, running=False, field_running=False, last_result=None)
             self._log("ESP32 已断开")
         elif action == "start":
             self._require_ready()
-            self._update(running=True, error="")
+            self._update(running=True, field_running=False, error="")
             self.next_inference = 0
             self._log("开始连续推理")
         elif action == "stop":
-            self._update(running=False)
+            self._update(running=False, field_running=False)
             self._log("已暂停，当前帧将完成并记录")
         elif action == "single":
             self._require_ready()
-            if not self.controller.submit(self.frame):
+            self._update(field_running=False)
+            if not self.controller.submit(self.frame, self.capture_ms, self.capture_started):
                 raise ValueError("当前帧处理中，请稍候")
             self._update(error="")
         elif action == "save":
@@ -211,7 +232,10 @@ class CameraService:
 
     def _tick(self):
         if self.camera_connected:
+            self.capture_started = time.perf_counter()
+            self.captured_at = datetime.now(timezone.utc).isoformat()
             frame = self.camera.read()
+            self.capture_ms = (time.perf_counter() - self.capture_started) * 1000
             h, w = frame.shape[:2]
             preview = Image.fromarray(frame[:, :, ::-1])
             preview.thumbnail((800, 600))
@@ -227,7 +251,7 @@ class CameraService:
             try:
                 kind, value = self.controller.events.get_nowait()
                 if kind == "error":
-                    self._update(error=value, running=False, device_connected=False, last_result=None)
+                    self._update(error=value, running=False, field_running=False, device_connected=False, last_result=None)
                     self._log(value, "error")
                 else:
                     with self.lock:
@@ -247,8 +271,11 @@ class CameraService:
             except queue.Empty:
                 pass
         now = time.perf_counter()
+        if self.field_running and now >= self.next_field and not self.busy:
+            if self._field_submit():
+                self.next_field = now + self.field_interval
         if self.running and now >= self.next_inference and self.controller and not self.busy:
-            if self.controller.submit(self.frame):
+            if self.controller.submit(self.frame, self.capture_ms, self.capture_started):
                 self.next_inference = now + 1 / self.config["fps"]
 
     def _loop(self):
@@ -269,6 +296,7 @@ class CameraService:
                 self._update(
                     camera_connected=False,
                     running=False,
+                    field_running=False,
                     frame=None,
                     preview_jpeg=None,
                     last_result=None,
@@ -289,3 +317,51 @@ class CameraService:
         self.camera.disconnect()
         if self.recorder:
             self.recorder.close()
+        if self.field_batch:
+            self.field_batch.finish()
+
+    def _field_submit(self):
+        return self.controller.submit(self.frame, self.capture_ms, self.capture_started, self.field_batch,
+                                      dict(self.config), self.captured_at)
+
+    def _field_execute(self, action, payload):
+        if action == "field_pause":
+            self._update(field_running=False)
+            return
+        if action == "field_finish":
+            self._update(field_running=False)
+            if self.busy:
+                raise ValueError("等待当前帧完成后结束批次")
+            if self.field_batch:
+                self.field_batch.finish()
+            self._update(field_batch=None)
+            return
+        self._require_ready()
+        if action == "field_create":
+            if self.busy:
+                raise ValueError("等待当前帧完成后创建批次")
+            context = payload.get("context")
+            keys = {"plant_id", "session_id", "crop_type", "lighting", "distance", "angle", "background",
+                    "environment", "abnormality_severity", "scene"}
+            if not isinstance(context, dict) or set(context) - keys or any(
+                    not isinstance(v, str) or len(v) > 200 for v in context.values()):
+                raise ValueError("采集条件必须是场景文本，每项至多 200 字符")
+            interval = payload.get("interval_s")
+            if isinstance(interval, bool) or not isinstance(interval, (int, float)) or not 0.2 <= interval <= 3600:
+                raise ValueError("采集间隔应为 0.2～3600 秒")
+            if self.field_batch:
+                self.field_batch.finish()
+            batch = FieldBatch(self.config.get("field_output", "runs/field_validation"), self.device_info,
+                               self.config, context, self.client.evidence)
+            self._update(field_batch=batch, field_interval=interval, field_running=False, running=False)
+            self._log("采集批次已创建：" + batch.path.name)
+            return
+        if self.field_batch is None:
+            raise ValueError("请先创建采集批次")
+        if action == "field_start":
+            self._update(field_running=True, running=False)
+            self.next_field = 0
+        elif action == "field_capture":
+            self._update(running=False)
+            if not self._field_submit():
+                raise ValueError("当前帧处理中，请稍候")

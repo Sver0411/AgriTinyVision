@@ -6,7 +6,7 @@ import zipfile
 
 import numpy as np
 import pytest
-from test_pc_camera import FakeSerial
+from test_pc_camera import FakeSerial, device
 
 from agritinyvision.pc_camera.camera import Camera
 from agritinyvision.pc_camera.metrics import RunRecorder
@@ -51,7 +51,7 @@ def service(tmp_path):
         "output": str(tmp_path),
     }
     s = CameraService(
-        config, Camera(capture_factory=Capture), SerialClient("TEST", serial_factory=FakeSerial), TestRecorder
+        config, Camera(capture_factory=Capture), SerialClient("TEST", serial_factory=FakeSerial, expected_identity=device()), TestRecorder
     )
     yield s
     s.close()
@@ -103,7 +103,6 @@ def test_web_command_queue_is_bounded(service):
 
 @pytest.fixture
 def http(service):
-    pytest.importorskip("flask")
     from agritinyvision.pc_camera.web import create_app
 
     app = create_app(service)

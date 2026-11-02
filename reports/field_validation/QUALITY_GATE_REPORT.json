@@ -1,0 +1,56 @@
+{
+  "status": "PENDING",
+  "n": 0,
+  "confusion_matrix": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      0
+    ]
+  ],
+  "human_axes": [
+    "USABLE",
+    "UNUSABLE"
+  ],
+  "gate_axes": [
+    "PASS",
+    "REJECT"
+  ],
+  "by_quality": {
+    "USABLE": {
+      "n": 0,
+      "rejected": 0,
+      "rejection_rate": null
+    },
+    "BLUR": {
+      "n": 0,
+      "rejected": 0,
+      "rejection_rate": null
+    },
+    "TOO_DARK": {
+      "n": 0,
+      "rejected": 0,
+      "rejection_rate": null
+    },
+    "OVEREXPOSED": {
+      "n": 0,
+      "rejected": 0,
+      "rejection_rate": null
+    },
+    "LOW_CONTRAST": {
+      "n": 0,
+      "rejected": 0,
+      "rejection_rate": null
+    },
+    "OCCLUDED": {
+      "n": 0,
+      "rejected": 0,
+      "rejection_rate": null
+    }
+  },
+  "usable_false_rejection_rate": null,
+  "unusable_false_acceptance_rate": null
+}

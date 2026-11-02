@@ -1,0 +1,1094 @@
+{
+  "lighting": {
+    "UNRECORDED": {
+      "samples": 60,
+      "support": "unrecorded",
+      "reference_samples": 60,
+      "binary_probability_cohort": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "quality_passed_binary": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "accepted": {
+        "n": 57,
+        "confusion_matrix": [
+          [
+            6,
+            5
+          ],
+          [
+            1,
+            45
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8947368421052632,
+        "precision": 0.9,
+        "recall": 0.9782608695652174,
+        "f1": 0.9375,
+        "specificity": 0.5454545454545454,
+        "false_positive_rate": 0.45454545454545453,
+        "false_negative_rate": 0.021739130434782608
+      },
+      "three_state_matrix": [
+        [
+          6,
+          5,
+          1
+        ],
+        [
+          1,
+          45,
+          2
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.95,
+      "unknown_rejection_rate": 0.05,
+      "system_correct_fraction": 0.85,
+      "accepted_error_rate": 0.10526315789473684,
+      "suspect_missed_as_normal_rate": 0.020833333333333332,
+      "suspect_deferred_unknown_rate": 0.041666666666666664,
+      "suspect_not_flagged_rate": 0.0625,
+      "normal_false_alarm_rate": 0.4166666666666667,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 3,
+        "quality_rejected": 0,
+        "probability_rejected": 3,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 1,
+        "boundary_forced_binary_correct_withheld": 2,
+        "forced_binary_error_rate_probability_cohort": 0.1166666666666667,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    }
+  },
+  "distance": {
+    "UNRECORDED": {
+      "samples": 60,
+      "support": "unrecorded",
+      "reference_samples": 60,
+      "binary_probability_cohort": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "quality_passed_binary": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "accepted": {
+        "n": 57,
+        "confusion_matrix": [
+          [
+            6,
+            5
+          ],
+          [
+            1,
+            45
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8947368421052632,
+        "precision": 0.9,
+        "recall": 0.9782608695652174,
+        "f1": 0.9375,
+        "specificity": 0.5454545454545454,
+        "false_positive_rate": 0.45454545454545453,
+        "false_negative_rate": 0.021739130434782608
+      },
+      "three_state_matrix": [
+        [
+          6,
+          5,
+          1
+        ],
+        [
+          1,
+          45,
+          2
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.95,
+      "unknown_rejection_rate": 0.05,
+      "system_correct_fraction": 0.85,
+      "accepted_error_rate": 0.10526315789473684,
+      "suspect_missed_as_normal_rate": 0.020833333333333332,
+      "suspect_deferred_unknown_rate": 0.041666666666666664,
+      "suspect_not_flagged_rate": 0.0625,
+      "normal_false_alarm_rate": 0.4166666666666667,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 3,
+        "quality_rejected": 0,
+        "probability_rejected": 3,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 1,
+        "boundary_forced_binary_correct_withheld": 2,
+        "forced_binary_error_rate_probability_cohort": 0.1166666666666667,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    }
+  },
+  "angle": {
+    "UNRECORDED": {
+      "samples": 60,
+      "support": "unrecorded",
+      "reference_samples": 60,
+      "binary_probability_cohort": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "quality_passed_binary": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "accepted": {
+        "n": 57,
+        "confusion_matrix": [
+          [
+            6,
+            5
+          ],
+          [
+            1,
+            45
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8947368421052632,
+        "precision": 0.9,
+        "recall": 0.9782608695652174,
+        "f1": 0.9375,
+        "specificity": 0.5454545454545454,
+        "false_positive_rate": 0.45454545454545453,
+        "false_negative_rate": 0.021739130434782608
+      },
+      "three_state_matrix": [
+        [
+          6,
+          5,
+          1
+        ],
+        [
+          1,
+          45,
+          2
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.95,
+      "unknown_rejection_rate": 0.05,
+      "system_correct_fraction": 0.85,
+      "accepted_error_rate": 0.10526315789473684,
+      "suspect_missed_as_normal_rate": 0.020833333333333332,
+      "suspect_deferred_unknown_rate": 0.041666666666666664,
+      "suspect_not_flagged_rate": 0.0625,
+      "normal_false_alarm_rate": 0.4166666666666667,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 3,
+        "quality_rejected": 0,
+        "probability_rejected": 3,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 1,
+        "boundary_forced_binary_correct_withheld": 2,
+        "forced_binary_error_rate_probability_cohort": 0.1166666666666667,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    }
+  },
+  "background": {
+    "UNRECORDED": {
+      "samples": 60,
+      "support": "unrecorded",
+      "reference_samples": 60,
+      "binary_probability_cohort": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "quality_passed_binary": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "accepted": {
+        "n": 57,
+        "confusion_matrix": [
+          [
+            6,
+            5
+          ],
+          [
+            1,
+            45
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8947368421052632,
+        "precision": 0.9,
+        "recall": 0.9782608695652174,
+        "f1": 0.9375,
+        "specificity": 0.5454545454545454,
+        "false_positive_rate": 0.45454545454545453,
+        "false_negative_rate": 0.021739130434782608
+      },
+      "three_state_matrix": [
+        [
+          6,
+          5,
+          1
+        ],
+        [
+          1,
+          45,
+          2
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.95,
+      "unknown_rejection_rate": 0.05,
+      "system_correct_fraction": 0.85,
+      "accepted_error_rate": 0.10526315789473684,
+      "suspect_missed_as_normal_rate": 0.020833333333333332,
+      "suspect_deferred_unknown_rate": 0.041666666666666664,
+      "suspect_not_flagged_rate": 0.0625,
+      "normal_false_alarm_rate": 0.4166666666666667,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 3,
+        "quality_rejected": 0,
+        "probability_rejected": 3,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 1,
+        "boundary_forced_binary_correct_withheld": 2,
+        "forced_binary_error_rate_probability_cohort": 0.1166666666666667,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    }
+  },
+  "crop_type": {
+    "Apple": {
+      "samples": 12,
+      "support": "meets_minimum_count",
+      "reference_samples": 12,
+      "binary_probability_cohort": {
+        "n": 12,
+        "confusion_matrix": [
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            8
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "specificity": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0
+      },
+      "quality_passed_binary": {
+        "n": 12,
+        "confusion_matrix": [
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            8
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "specificity": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0
+      },
+      "accepted": {
+        "n": 12,
+        "confusion_matrix": [
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            8
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "specificity": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0
+      },
+      "three_state_matrix": [
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          0,
+          8,
+          0
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 1.0,
+      "unknown_rejection_rate": 0.0,
+      "system_correct_fraction": 1.0,
+      "accepted_error_rate": 0.0,
+      "suspect_missed_as_normal_rate": 0.0,
+      "suspect_deferred_unknown_rate": 0.0,
+      "suspect_not_flagged_rate": 0.0,
+      "normal_false_alarm_rate": 0.0,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 0,
+        "quality_rejected": 0,
+        "probability_rejected": 0,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 0,
+        "boundary_forced_binary_correct_withheld": 0,
+        "forced_binary_error_rate_probability_cohort": 0.0,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    },
+    "Bell pepper": {
+      "samples": 8,
+      "support": "meets_minimum_count",
+      "reference_samples": 8,
+      "binary_probability_cohort": {
+        "n": 8,
+        "confusion_matrix": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.75,
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 0.8,
+        "specificity": 0.5,
+        "false_positive_rate": 0.5,
+        "false_negative_rate": 0.0
+      },
+      "quality_passed_binary": {
+        "n": 8,
+        "confusion_matrix": [
+          [
+            2,
+            2
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.75,
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 0.8,
+        "specificity": 0.5,
+        "false_positive_rate": 0.5,
+        "false_negative_rate": 0.0
+      },
+      "accepted": {
+        "n": 7,
+        "confusion_matrix": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            4
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.7142857142857143,
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 0.8,
+        "specificity": 0.3333333333333333,
+        "false_positive_rate": 0.6666666666666666,
+        "false_negative_rate": 0.0
+      },
+      "three_state_matrix": [
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.875,
+      "unknown_rejection_rate": 0.125,
+      "system_correct_fraction": 0.625,
+      "accepted_error_rate": 0.2857142857142857,
+      "suspect_missed_as_normal_rate": 0.0,
+      "suspect_deferred_unknown_rate": 0.0,
+      "suspect_not_flagged_rate": 0.0,
+      "normal_false_alarm_rate": 0.5,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 1,
+        "quality_rejected": 0,
+        "probability_rejected": 1,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 0,
+        "boundary_forced_binary_correct_withheld": 1,
+        "forced_binary_error_rate_probability_cohort": 0.25,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    },
+    "Potato": {
+      "samples": 8,
+      "support": "meets_minimum_count",
+      "reference_samples": 8,
+      "binary_probability_cohort": {
+        "n": 8,
+        "confusion_matrix": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.875,
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1": 0.9333333333333333,
+        "specificity": null,
+        "false_positive_rate": null,
+        "false_negative_rate": 0.125
+      },
+      "quality_passed_binary": {
+        "n": 8,
+        "confusion_matrix": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            7
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.875,
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1": 0.9333333333333333,
+        "specificity": null,
+        "false_positive_rate": null,
+        "false_negative_rate": 0.125
+      },
+      "accepted": {
+        "n": 7,
+        "confusion_matrix": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "specificity": null,
+        "false_positive_rate": null,
+        "false_negative_rate": 0.0
+      },
+      "three_state_matrix": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          7,
+          1
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.875,
+      "unknown_rejection_rate": 0.125,
+      "system_correct_fraction": 0.875,
+      "accepted_error_rate": 0.0,
+      "suspect_missed_as_normal_rate": 0.0,
+      "suspect_deferred_unknown_rate": 0.125,
+      "suspect_not_flagged_rate": 0.125,
+      "normal_false_alarm_rate": null,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 1,
+        "quality_rejected": 0,
+        "probability_rejected": 1,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 1,
+        "boundary_forced_binary_correct_withheld": 0,
+        "forced_binary_error_rate_probability_cohort": 0.125,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    },
+    "Tomato": {
+      "samples": 32,
+      "support": "meets_minimum_count",
+      "reference_samples": 32,
+      "binary_probability_cohort": {
+        "n": 32,
+        "confusion_matrix": [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            27
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.875,
+        "precision": 0.9,
+        "recall": 0.9642857142857143,
+        "f1": 0.9310344827586207,
+        "specificity": 0.25,
+        "false_positive_rate": 0.75,
+        "false_negative_rate": 0.03571428571428571
+      },
+      "quality_passed_binary": {
+        "n": 32,
+        "confusion_matrix": [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            27
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.875,
+        "precision": 0.9,
+        "recall": 0.9642857142857143,
+        "f1": 0.9310344827586207,
+        "specificity": 0.25,
+        "false_positive_rate": 0.75,
+        "false_negative_rate": 0.03571428571428571
+      },
+      "accepted": {
+        "n": 31,
+        "confusion_matrix": [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            26
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8709677419354839,
+        "precision": 0.896551724137931,
+        "recall": 0.9629629629629629,
+        "f1": 0.9285714285714286,
+        "specificity": 0.25,
+        "false_positive_rate": 0.75,
+        "false_negative_rate": 0.037037037037037035
+      },
+      "three_state_matrix": [
+        [
+          1,
+          3,
+          0
+        ],
+        [
+          1,
+          26,
+          1
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.96875,
+      "unknown_rejection_rate": 0.03125,
+      "system_correct_fraction": 0.84375,
+      "accepted_error_rate": 0.12903225806451613,
+      "suspect_missed_as_normal_rate": 0.03571428571428571,
+      "suspect_deferred_unknown_rate": 0.03571428571428571,
+      "suspect_not_flagged_rate": 0.07142857142857142,
+      "normal_false_alarm_rate": 0.75,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 1,
+        "quality_rejected": 0,
+        "probability_rejected": 1,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 0,
+        "boundary_forced_binary_correct_withheld": 1,
+        "forced_binary_error_rate_probability_cohort": 0.125,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    }
+  },
+  "abnormality_severity": {
+    "UNRECORDED": {
+      "samples": 60,
+      "support": "unrecorded",
+      "reference_samples": 60,
+      "binary_probability_cohort": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "quality_passed_binary": {
+        "n": 60,
+        "confusion_matrix": [
+          [
+            7,
+            5
+          ],
+          [
+            2,
+            46
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8833333333333333,
+        "precision": 0.9019607843137255,
+        "recall": 0.9583333333333334,
+        "f1": 0.9292929292929293,
+        "specificity": 0.5833333333333334,
+        "false_positive_rate": 0.4166666666666667,
+        "false_negative_rate": 0.041666666666666664
+      },
+      "accepted": {
+        "n": 57,
+        "confusion_matrix": [
+          [
+            6,
+            5
+          ],
+          [
+            1,
+            45
+          ]
+        ],
+        "axes": [
+          "NORMAL",
+          "SUSPECT"
+        ],
+        "accuracy": 0.8947368421052632,
+        "precision": 0.9,
+        "recall": 0.9782608695652174,
+        "f1": 0.9375,
+        "specificity": 0.5454545454545454,
+        "false_positive_rate": 0.45454545454545453,
+        "false_negative_rate": 0.021739130434782608
+      },
+      "three_state_matrix": [
+        [
+          6,
+          5,
+          1
+        ],
+        [
+          1,
+          45,
+          2
+        ]
+      ],
+      "truth_axes": [
+        "NORMAL",
+        "SUSPECT"
+      ],
+      "prediction_axes": [
+        "NORMAL",
+        "SUSPECT",
+        "UNKNOWN"
+      ],
+      "accepted_coverage": 0.95,
+      "unknown_rejection_rate": 0.05,
+      "system_correct_fraction": 0.85,
+      "accepted_error_rate": 0.10526315789473684,
+      "suspect_missed_as_normal_rate": 0.020833333333333332,
+      "suspect_deferred_unknown_rate": 0.041666666666666664,
+      "suspect_not_flagged_rate": 0.0625,
+      "normal_false_alarm_rate": 0.4166666666666667,
+      "valid_input_coverage": {
+        "n": 0,
+        "rate": null
+      },
+      "unknown_analysis": {
+        "count": 3,
+        "quality_rejected": 0,
+        "probability_rejected": 3,
+        "other_rejected": 0,
+        "boundary_forced_binary_errors_intercepted": 1,
+        "boundary_forced_binary_correct_withheld": 2,
+        "forced_binary_error_rate_probability_cohort": 0.1166666666666667,
+        "quality_rejection_counterfactual": "not observed: device model was not executed"
+      }
+    }
+  }
+}
