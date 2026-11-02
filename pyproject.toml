@@ -29,6 +29,7 @@ include = ["agritinyvision*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-m 'not hardware and not local_artifact'"
 markers = [
     "hardware: requires an explicitly selected physical ESP32 device",
