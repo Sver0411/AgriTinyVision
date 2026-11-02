@@ -1,13 +1,10 @@
-<h1 align="center">AgriTinyVision</h1>
-
-<p align="center"><strong>面向边缘研究的轻量作物图像异常筛查</strong></p>
-
-<p align="center">图像筛查 · 不确定性拒绝 · INT8 导出</p>
+<h1 align="center">AgriTinyVision v0.2</h1>
 
 ---
 
 <p align="center">
   <a href="#project-overview">概览</a> ·
+  <a href="#pc-摄像头-web-控制台">Web 控制台</a> ·
   <a href="#方法与推理状态">方法</a> ·
   <a href="#主要结果与当前状态">验证状态</a> ·
   <a href="#relationship-to-smart-agriculture-edge-ai">主项目关联</a> ·
@@ -18,7 +15,31 @@
 
 <a id="project-overview"></a>
 
-AgriTinyVision 是面向 ESP32-S3 的轻量作物图像异常筛查研究流程。它使用 PyTorch 训练紧凑分类器，导出 ONNX，再将 INT8 候选转换为 ESP-DL。研究问题是图像是否值得进一步检查，不是疾病诊断。
+AgriTinyVision 包含轻量作物图像分类器的训练、导出和 ESP32-S3 实机部署。v0.2 使用电脑摄像头采集图像，通过 USB 交给 ESP32-S3 N16R8 运行已冻结的 MobileNetV2 160 INT8 模型，由本地 Web 控制台显示结果、设备耗时和内存，并保存实验报告。
+
+## PC 摄像头 Web 控制台
+
+环境：Windows 11、Python 3.10+、电脑摄像头、ESP32-S3 N16R8 和 USB 数据线。固件沿用 ESP-IDF 5.4.4、ESP-DL 3.3.13。
+
+将已有模型包放入 `releases/v0.1.0`，在仓库根目录运行：
+
+```powershell
+python -m pip install -e '.[camera,web,dev]'
+python scripts/run_pc_camera.py --list-ports
+python scripts/prepare_camera_firmware.py --bundle releases/v0.1.0
+# ESP-IDF 5.4.4 PowerShell
+.\scripts\build_firmware.ps1 -Mode Camera -Transport USBJTAG
+# 确认目标端口后手动安装固件
+python "$env:IDF_PATH\tools\idf.py" -C firmware_example -B "$PWD\build-camera" -p COM3 flash
+# 项目 Python 环境：启动 Web 控制台
+python scripts/run_pc_camera.py --port COM3 --camera 0 --fps 1
+```
+
+程序会在电脑浏览器打开 `http://127.0.0.1:8765`。依次点击“连接相机 → 连接 ESP32 → 单帧测试 → 开始推理”。页面提供分类概率、质量拒绝原因、各阶段耗时、延迟趋势、内存、实验报告保存和 ZIP 下载。
+
+电脑负责解码、方向处理、RGB 转换及 PIL 双线性抗锯齿缩放。ESP32 负责质量检查、ImageNet 归一化、按实际 exponent 量化、ESP-DL 推理和状态判定。浏览器 JPEG 预览与 RGB888 模型输入分开处理；ONNX 对照由独立离线脚本执行。
+
+详见 [Windows 设置](docs/PC_CAMERA_SETUP.md)、[USB 协议](docs/USB_PROTOCOL.md)、[硬件部署](docs/HARDWARE_DEPLOYMENT.md)及[实机报告](reports/HARDWARE_V02.md)。
 
 ## 方法与推理状态
 
@@ -35,7 +56,7 @@ AgriTinyVision 是面向 ESP32-S3 的轻量作物图像异常筛查研究流程�
 | `SUSPECT` | 输入通过门控，提示进一步检查 |
 | `UNKNOWN` | 输入被拒绝、不可读、质量不足、输出无效或置信度不足 |
 
-只有 NORMAL 和 SUSPECT 是训练类别。UNKNOWN 是拒绝或不确定结果，**不是第三个训练类别**。质量门控检查清晰度、亮度、对比度、尺寸和解码；置信度使用最大 softmax 概率。这些暂定门控需要田间校准，不是完整的分布外检测器；非植物或陌生图像仍可能得到高置信度预测。
+只有 NORMAL 和 SUSPECT 是训练类别，UNKNOWN 是拒绝状态。沿用 validation 冻结阈值 0.30，当前 threshold-centered 策略导出 float32 的 0.20/0.40 边界：低于下界为 NORMAL，中间区间为 UNKNOWN，达到上界为 SUSPECT。质量失败优先返回 UNKNOWN。置信度表示已分配类别的概率，UNKNOWN 使用 null。规则见[集成契约](docs/INTEGRATION_CONTRACT.md)。
 
 基线为 torchvision MobileNetV2 1.0，使用 ImageNet `IMAGENET1K_V1` 权重并全参数微调。160×160、224×224 共享划分、seed 和训练预算。阈值在验证集选择，候选与阈值在最终测试前冻结。二分类指标与覆盖率、UNKNOWN 比例及通过门控输入的指标分别报告。
 
@@ -57,10 +78,13 @@ AgriTinyVision 是面向 ESP32-S3 的轻量作物图像异常筛查研究流程�
 | PyTorch 训练 / 冻结测试 | 桌面 GPU 已完成 |
 | ONNX 导出 | 与 PyTorch 至少四个相同输入的数值核验 |
 | ESP-PPQ → ESP-DL INT8 | `esp32s3` w8a8 转换；完整测试集主机图仿真 |
-| ESP-IDF 固件示例 | 编译成功，**未运行板端推理** |
-| 板端内存、延迟、相机路径、功耗 | 等待硬件验证 |
+| ESP-IDF 固件 | Fixture、USB Serial/JTAG、UART 分支编译通过 |
+| ESP32 真实推理 | golden Fixture 及 15 项质量/协议检查通过 |
+| PC 摄像头链路 | 实时摄像头 100/100 帧取得有效设备结果 |
+| 连续运行 | 固定叶片 500/500 帧，持续 536.46 秒，无重启或首尾空闲内存下降 |
+| 软件回归 | 138 项测试通过 |
 
-详细结果见[首次运行报告](reports/FIRST_RUN.md)。目标 ESP32-S3 N16R8 配有 16 MB Flash、8 MB PSRAM；转换和算子检查不证明完整模型能够装入并运行。
+训练与主机仿真结果保留在[首次运行报告](reports/FIRST_RUN.md)。[v0.2 实机报告](reports/HARDWARE_V02.md)记录真实设备数据：推理 P50/P95 为 527.840/527.850 ms，内部 RAM 空闲 286,447 bytes，PSRAM 空闲 5,046,852 bytes，app 镜像为 3,574,960 bytes。模型文件、app 镜像及分区容量分别统计。
 
 ## 数据与评估范围
 
@@ -121,7 +145,7 @@ python -m agritinyvision release \
 
 ## 局限与后续工作
 
-板端推理、模型加载时间、内部 RAM/PSRAM、总 Flash、相机预处理延迟及功耗均未验证。PlantVillage 偏差与域迁移意味着高测试分数不能解释为田间疾病识别效果。仍需田间相机数据、独立验证、阈值校准及板端测量；细粒度诊断、分割和严重度估计不在 v0.1 范围。
+田间筛查效果使用独立带标注摄像头数据评估。PlantVillage 指标和设备吞吐量分别对应各自的数据集及实验条件；功耗使用外部测量设备记录。
 
 ## 许可证
 

@@ -1,13 +1,10 @@
-<h1 align="center">AgriTinyVision</h1>
-
-<p align="center"><strong>Lightweight Crop-Image Anomaly Screening for Edge Research</strong></p>
-
-<p align="center">Image Triage · Uncertainty Rejection · INT8 Export</p>
+<h1 align="center">AgriTinyVision v0.2</h1>
 
 ---
 
 <p align="center">
   <a href="#project-overview">Overview</a> ·
+  <a href="#pc-camera-web-console">Web Console</a> ·
   <a href="#method-and-inference-states">Method</a> ·
   <a href="#key-results-and-current-status">Status</a> ·
   <a href="#relationship-to-smart-agriculture-edge-ai">Related System</a> ·
@@ -18,7 +15,31 @@
 
 <a id="project-overview"></a>
 
-AgriTinyVision is a lightweight crop-image anomaly-screening research pipeline targeting ESP32-S3. It trains compact classifiers in PyTorch, exports ONNX, and converts INT8 candidates to ESP-DL. The question is whether an image warrants closer inspection; this is not a disease diagnosis system.
+AgriTinyVision trains compact crop-image classifiers and runs the frozen MobileNetV2 160 INT8 model on ESP32-S3 N16R8. A PC camera supplies images over USB; a local Web console displays the device's predictions, timing and memory measurements, and saves experiment reports.
+
+## PC camera Web console
+
+Requirements: Windows 11, Python 3.10+, a PC camera, ESP32-S3 N16R8 and a USB data cable. Firmware uses ESP-IDF 5.4.4 and ESP-DL 3.3.13.
+
+Place the existing model bundle in `releases/v0.1.0`, then run from the checkout:
+
+```powershell
+python -m pip install -e '.[camera,web,dev]'
+python scripts/run_pc_camera.py --list-ports
+python scripts/prepare_camera_firmware.py --bundle releases/v0.1.0
+# ESP-IDF 5.4.4 PowerShell
+.\scripts\build_firmware.ps1 -Mode Camera -Transport USBJTAG
+# Install manually on the selected port
+python "$env:IDF_PATH\tools\idf.py" -C firmware_example -B "$PWD\build-camera" -p COM3 flash
+# Project Python environment: start the Web console
+python scripts/run_pc_camera.py --port COM3 --camera 0 --fps 1
+```
+
+The application opens `http://127.0.0.1:8765` in the computer's browser. Connect the camera and ESP32, run a single frame, then start continuous inference. The page includes probabilities, quality rejection reasons, device timing, latency history, memory and experiment ZIP download.
+
+The PC decodes, orients and resizes RGB images with the existing PIL bilinear-antialias path. ESP32 performs quality checks, ImageNet normalization, quantization using the actual tensor exponent, ESP-DL inference and state decisions. Browser JPEG previews are separate from the RGB888 model input. ONNX comparison runs through a separate offline script.
+
+See [Windows setup](docs/PC_CAMERA_SETUP.md), [USB protocol](docs/USB_PROTOCOL.md), [deployment](docs/HARDWARE_DEPLOYMENT.md) and [hardware results](reports/HARDWARE_V02.md).
 
 ## Method and inference states
 
@@ -35,7 +56,7 @@ Plant image → quality gate → compact model → confidence / decision thresho
 | `SUSPECT` | Accepted input flagged for further inspection |
 | `UNKNOWN` | Rejected/unreadable/poor-quality input, invalid output, or insufficient confidence |
 
-Only NORMAL and SUSPECT are trained classes. UNKNOWN is a rejection or uncertainty outcome, **not a third training class**. Quality checks use sharpness, brightness, contrast, image size, and decoding; confidence uses maximum softmax probability. These provisional gates need field calibration and are not a complete out-of-distribution detector. Plant-free or unfamiliar images can still receive confident predictions.
+Only NORMAL and SUSPECT are trained classes. UNKNOWN is a rejection state. The frozen validation threshold is 0.30, with the current threshold-centered policy exporting float32 bounds of 0.20 and 0.40: lower probabilities yield NORMAL, the middle interval yields UNKNOWN, and upper probabilities yield SUSPECT. Quality failure takes priority. Confidence is the assigned class probability; UNKNOWN has null confidence. Details are in the [integration contract](docs/INTEGRATION_CONTRACT.md).
 
 The baseline is torchvision MobileNetV2 1.0 with ImageNet `IMAGENET1K_V1` weights and full fine-tuning. The 160×160 and 224×224 variants share split, seed, and epoch budget. Thresholds are selected on validation data; candidate and threshold are frozen before final test evaluation. Binary metrics are reported separately from coverage, UNKNOWN rate, and accepted-input metrics.
 
@@ -57,10 +78,13 @@ These scores come from a curated PlantVillage subset with controlled backgrounds
 | PyTorch training / frozen test evaluation | Completed on desktop GPU |
 | ONNX export | Numerical checks against at least four identical PyTorch inputs |
 | ESP-PPQ → ESP-DL INT8 | Converted for `esp32s3` w8a8; full-test host graph simulation |
-| ESP-IDF firmware example | Build successful; **no board inference run** |
-| Device memory, latency, camera path, power | Pending hardware validation |
+| ESP-IDF firmware | Fixture, USB Serial/JTAG and UART branches compiled |
+| Real ESP32 inference | Golden Fixture and 15 quality/protocol checks passed |
+| PC camera path | 100/100 live-camera frames returned valid device results |
+| Sustained inference | 500/500 fixed-leaf frames in 536.46 seconds, no restarts or first/last free-memory decrease |
+| Software regression | 138 tests passed |
 
-The [first-run report](reports/FIRST_RUN.md) retains detailed results. The target ESP32-S3 N16R8 has 16 MB Flash and 8 MB PSRAM; conversion and operator checks do not prove the complete model fits or runs there.
+The [first-run report](reports/FIRST_RUN.md) retains the training and host-simulation results. The [v0.2 hardware report](reports/HARDWARE_V02.md) records actual ESP32-S3 measurements: 527.840/527.850 ms inference P50/P95, 286,447 bytes free internal RAM, 5,046,852 bytes free PSRAM and a 3,574,960-byte application image. Model file size, application image size and partition capacity are recorded separately.
 
 ## Data and evaluation scope
 
@@ -121,7 +145,7 @@ Release validation checks model hashes, frozen metrics, ONNX checks, conversion 
 
 ## Limitations and future work
 
-Board inference, model load time, internal RAM/PSRAM, total Flash, camera preprocessing latency, and power remain unvalidated. PlantVillage bias and domain shift prevent interpreting high test scores as farm disease-recognition performance. Field camera data, independent validation, threshold calibration, and board measurements are required; fine-grained diagnosis, segmentation, and severity estimation are outside v0.1.
+Field evaluation uses independent labeled camera data to measure agricultural screening performance. The published PlantVillage scores and device throughput describe their respective datasets and experiments. Power profiling uses external measurement equipment.
 
 ## License
 
