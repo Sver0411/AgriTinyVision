@@ -185,3 +185,18 @@ Independent labeled field validation and external-instrument power measurements 
 ## License
 
 The code is licensed under the [MIT License](LICENSE). Dataset images, pretrained weights, and other external materials remain subject to their respective terms; the repository's code license does not relicense those materials.
+
+## Field Validation Summary
+
+![Confusion Matrix](reports/field_validation/CONFUSION_MATRIX.png)
+
+![Scenario Comparison](reports/field_validation/SCENARIO_COMPARISON.png)
+
+## Part of the 4-Layer AIoT Research Stack
+
+`AgriTinyVision` belongs to **L4 · Resilience & CPS Validation** of a reproducible AIoT systems stack:
+
+- **L1 · Reliable Sensing:** [SensorTrust](https://github.com/Sver0411/SensorTrust) (C11 zero-allocation sensor health monitoring)
+- **L2 · Adaptive Observation:** [AdaptiveSense](https://github.com/Sver0411/AdaptiveSense) · [TAIS](https://github.com/Sver0411/TAIS) (closed-loop trust-aware scheduling & boundary analysis)
+- **L3 · Freshness & Lossy Links:** [EventGuard-LoRa](https://github.com/Sver0411/EventGuard-LoRa) · [NetAdapt-IoT](https://github.com/Sver0411/NetAdapt-IoT) · [IoT-MPQUIC-Scheduler](https://github.com/Sver0411/IoT-MPQUIC-Scheduler)
+- **L4 · Resilience & CPS Validation:** [EdgeFaultLab](https://github.com/Sver0411/EdgeFaultLab) · [TinyEdgeBench](https://github.com/Sver0411/TinyEdgeBench) · [Smart-Agriculture-Edge-AI](https://github.com/Sver0411/Smart-Agriculture-Edge-AI) · [AgriTwin-CPS](https://github.com/Sver0411/AgriTwin-CPS)
