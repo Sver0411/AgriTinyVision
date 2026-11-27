@@ -1,0 +1,10 @@
+name,series,up_mbps,down_mbps,rtt_ms,distance_m
+forest_14.27m,COMMECT_forestry_snapshot,179.0,536.0,14.0,14.27
+forest_45.01m,COMMECT_forestry_snapshot,176.0,540.0,26.0,45.01
+forest_64.2m,COMMECT_forestry_snapshot,174.0,581.0,15.0,64.2
+forest_71.94m,COMMECT_forestry_snapshot,159.0,527.0,15.0,71.94
+forest_132.12m,COMMECT_forestry_snapshot,152.0,624.0,12.0,132.12
+forest_192.05m,COMMECT_forestry_snapshot,41.0,321.0,13.0,192.05
+forest_207.33m,COMMECT_forestry_snapshot,27.0,410.0,18.0,207.33
+forest_250.46m,COMMECT_forestry_snapshot,11.0,213.0,16.0,250.46
+forest_285.44m,COMMECT_forestry_snapshot,8.0,133.4,27.0,285.44

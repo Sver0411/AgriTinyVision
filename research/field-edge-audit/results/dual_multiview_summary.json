@@ -1,0 +1,22 @@
+[
+  {
+    "cohort": "Cornell1353",
+    "n": 1353,
+    "original_fp": 215,
+    "original_fn": 34,
+    "new_fp": 83,
+    "new_fn": 38,
+    "both_lower": false,
+    "jpeg_bytes": 26528371
+  },
+  {
+    "cohort": "Kashmir384",
+    "n": 384,
+    "original_fp": 81,
+    "original_fn": 4,
+    "new_fp": 4,
+    "new_fn": 75,
+    "both_lower": false,
+    "jpeg_bytes": 4546050
+  }
+]

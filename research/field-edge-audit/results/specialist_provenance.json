@@ -1,0 +1,31 @@
+{
+  "source_model": "https://huggingface.co/facebook/dinov2-small",
+  "converted_model": "https://huggingface.co/Xenova/dinov2-small/tree/c2bb04a51fab207c420665f1946016107bffc701",
+  "model_sha256": "83141175ec78b4ff9a2bb58a4c7c264ba0054d1c2e122e5a8114b79a8d4179ea",
+  "preprocessing_sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828",
+  "embedding": "raw CLS, last_hidden_state[:,0,:]",
+  "classification": "L2-normalized float64 raw CLS, sklearn L2 logistic regression, C=1, fixed threshold p>=0.5",
+  "fit_source": "PlantDoc official train, apple/bell_pepper/potato/tomato",
+  "training_images_before_payload_dedup": 1242,
+  "fit_rows": 1237,
+  "fit_source_paths_sha256": "b95655419306b5b478ca35b86eac4be09b51ebd850030b272beb18710decc84e",
+  "sklearn": "1.9.1",
+  "onnxruntime": "1.32.0",
+  "python": "3.12.14",
+  "coef_sha256": "51b1cfb8fb941728e4da1f6d2fbd43e52ce7bb19790d0da02e55aed5dba0efbb",
+  "n_iter": 44,
+  "data": {
+    "plantdoc": {
+      "n": 1478,
+      "feature_dim": 384,
+      "npz_sha256": "740f7ea15b1c39ca28e320b6029e49aebc428e0ddcbb528edf1e7bce3eeedeeb",
+      "seconds": 192.08206983283162
+    },
+    "fgvc": {
+      "n": 1821,
+      "feature_dim": 384,
+      "npz_sha256": "eb3f12de8bb73b64edd2b3327e23e897304223f030a55872bdb6234982039287",
+      "seconds": 285.9956086250022
+    }
+  }
+}

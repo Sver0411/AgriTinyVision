@@ -1,0 +1,80 @@
+{
+  "model_sha256": "350c32d88d19eb16dca7d905036d2c99a716a3938b91f52715349e43ee6ab909",
+  "commits": {
+    "agritinyvision": "16e7a2fdec43c02258f22e85b085ac269345e124",
+    "plantdoc": "5467f6012d78d1c446145d5f582da6096f852ae8",
+    "plantvillage": "7f7ecc7e1eaca78107e3affe7cb5abd9427e139a"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "onnxruntime": "1.32.0",
+    "pillow": "12.3.0",
+    "numpy": "2.5.5",
+    "host": "arm64",
+    "provider": "CPUExecutionProvider",
+    "intra_threads": 1,
+    "inter_threads": 1
+  },
+  "rows_per_reference_source": {
+    "plantdoc_train": 2342,
+    "plantvillage_train": 1964,
+    "plantvillage_test": 417,
+    "plantvillage_val": 411
+  },
+  "cohorts": {
+    "official_test": {
+      "n": 236,
+      "healthy": 90,
+      "suspect": 146,
+      "binary_correct": 194,
+      "accepted": 222,
+      "accepted_correct": 184,
+      "quality_rejected": 2
+    },
+    "public_hardware_60": {
+      "n": 60,
+      "healthy": 12,
+      "suspect": 48,
+      "binary_correct": 54,
+      "accepted": 59,
+      "accepted_correct": 53,
+      "quality_rejected": 0
+    },
+    "dedup_test": {
+      "n": 222,
+      "healthy": 89,
+      "suspect": 133,
+      "binary_correct": 180,
+      "accepted": 208,
+      "accepted_correct": 170,
+      "quality_rejected": 2
+    },
+    "dedup_disjoint_from_60": {
+      "n": 167,
+      "healthy": 77,
+      "suspect": 90,
+      "binary_correct": 131,
+      "accepted": 154,
+      "accepted_correct": 122,
+      "quality_rejected": 2
+    },
+    "dedup_four_crops": {
+      "n": 121,
+      "healthy": 25,
+      "suspect": 96,
+      "binary_correct": 110,
+      "accepted": 119,
+      "accepted_correct": 108,
+      "quality_rejected": 0
+    }
+  },
+  "source_classes": 27,
+  "pair_matches_by_reference_source": {
+    "plantdoc_train": 15
+  },
+  "max_archived_fp32_probability_difference": 5.066394805908203e-07,
+  "archived_fp32_state_disagreements": 0,
+  "fp32_vs_board_state_disagreements": 4,
+  "host_inference_median_ms": 15.2580205,
+  "analysis_seconds": 45.39661362487823
+}

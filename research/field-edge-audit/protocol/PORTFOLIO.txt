@@ -1,0 +1,22 @@
+选题与已有项目的关系
+
+审查基于 Sver0411 的公开仓库清单、主页项目表和相关研究仓库的实验说明。主页以 Paper 链接列出 TAIS、IoT-MPQUIC-Scheduler 和 NetAdapt-IoT，按用户要求排除这三项。主页链接用于识别项目，期刊发表状态以作者正式发表记录为准。
+https://github.com/Sver0411
+
+1. AgriTinyVision，选入本项目。可取得冻结 ONNX 权重、训练图像清单、真实 ESP32-S3 的逐图 INT8 日志和重建输入哈希。基于这些资产可逐图验证换精度、换后端、改变传输字节、更新本地分类头分别改变哪些错误。原项目的模型、实机运行和已报告准确率归原项目。新项目负责新增数据来源、源文件检查、通信对照、外部迁移、权重序列化和重放。
+https://github.com/Sver0411/AgriTinyVision
+
+2. EventGuard-LoRa，第二候选。值得研究“知道 ACK 到达后，什么时候继续重传才有收益”。96 组硬件日志贯穿事件、发包和回执，但原有注入日历依赖已采取的动作，替代策略下真实信道是否成功不可完全观测。需要用公开无线轨迹为反事实设界，先越过普通 ACK 停止重传的基线。未混用其中的硬件吞吐数来代替照片上传测量。
+https://github.com/Sver0411/EventGuard-LoRa
+
+3. AgriTwin-CPS 与 AgriXAI-Reliability，第三候选。研究温室数字孪生在观测中断后“何时应该放弃模型建议”有实际应用价值。前者已有受控模拟和外部观测一致性，后者报告 WUR 部分成功与 Horti-M3 跨季未达门槛。这些数据更适合检验预测，缺少真实干预下的反事实水量、产量或控制效果。要获得纯计算的控制结论，应至少在两个独立来源的孪生模型或有动作记录的真实数据上排除自证。
+https://github.com/Sver0411/AgriTwin-CPS
+https://github.com/Sver0411/AgriXAI-Reliability
+
+4. SensorTrust、AdaptiveSense、EdgeSense-AIoT、EdgeFaultLab 在漂移、跨节点一致性和故障注入上有实验基础。它们可提供压力测试工具，但将这些组件串接起来不能独立证实一种新机制。TinyEdgeBench 的实测是特定轻量工作负载，不能替代本项目图像推理的功耗/延时。Smart-Agriculture-Edge-AI 展示的传输和模拟动作不能作为真实作物干预效果。
+https://github.com/Sver0411/SensorTrust
+https://github.com/Sver0411/AdaptiveSense
+https://github.com/Sver0411/EdgeSense-AIoT
+https://github.com/Sver0411/EdgeFaultLab
+https://github.com/Sver0411/TinyEdgeBench
+https://github.com/Sver0411/Smart-Agriculture-Edge-AI

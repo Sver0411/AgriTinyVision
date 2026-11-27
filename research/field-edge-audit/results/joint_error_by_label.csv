@@ -1,0 +1,10 @@
+site,source_label,error_type,n,before,after,fixed,introduced
+cornell,scab,fn,450,21,4,17,0
+cornell,multiple_diseases,fn,67,1,4,0,3
+cornell,rust,fn,459,12,11,8,7
+cornell,healthy,fp,377,215,137,108,30
+kashmir,Alternaria,fn,128,1,23,0,22
+kashmir,Apple_Mosaic,fn,128,3,2,3,2
+kashmir,Healthy,fp,128,81,25,56,0
+LatviaAll,Publisher-negative,fp,207,195,83,112,0
+LatviaAll,Scab,fn,983,118,334,32,248

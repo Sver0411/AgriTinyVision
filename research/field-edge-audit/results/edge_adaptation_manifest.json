@@ -1,0 +1,27 @@
+{
+  "n_sources": 1821,
+  "status_count": {
+    "test": 1353,
+    "label_pool": 450,
+    "same_component": 18
+  },
+  "test_healthy": 377,
+  "test_diseased": 976,
+  "pool_healthy": 128,
+  "pool_diseased": 322,
+  "n_packed_heads": 240,
+  "n_decoded_decisions": 324720,
+  "max_decoded_score_delta": 8.881784197001252e-16,
+  "n_single_class_draws": 2,
+  "max_original_head_reconstruction_logit_error": 8.106231689453125e-06,
+  "frozen_score_unit": "p_suspect; threshold float32 0.30",
+  "trained_score_unit": "signed logit; threshold 0",
+  "sklearn": "1.9.1",
+  "numpy": "2.5.5",
+  "python": "3.12.14",
+  "features_sha256": {
+    "edge_fgvc.npz": "2f7609d60fcdf157f10ecc711951a62f0333e82df7b5b9faf32562a3e9ba2267",
+    "dino_fgvc.npz": "eb3f12de8bb73b64edd2b3327e23e897304223f030a55872bdb6234982039287"
+  },
+  "split_sha256": "c5d62254aa030930d564e08003880bd8db8d15c1a41682a636648f528920843f"
+}

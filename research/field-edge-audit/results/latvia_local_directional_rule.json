@@ -1,0 +1,53 @@
+{
+  "protocol_sha256": "0f75919fa714da31816b727fd1aca0b850c6fafd8d0469434ff9a89f7548bf6a",
+  "split_sha256": "f7237ed963ee653d0c4aabb79857ad39c1576c389418a4f2c4aba52048028330",
+  "cornell_rule_sha256": "87d077cbbd389e1c3ccea4b16cb9c15b376cbc22102685b937865ab3f649e548",
+  "source_balanced_head_sha256": "a7d7bf069ecd49ae3cecf68ffc893d5292423e69b209287607ff7a11a134088e",
+  "rule": {
+    "rescue": true,
+    "retract": true,
+    "edge_lower": 0.0,
+    "edge_upper": 0.949999988079071,
+    "rescue_cutoff": 0.5,
+    "retract_cutoff": 0.10000000149011612
+  },
+  "binary_sha256": "20c403f387021459280bcc23ebc16eb8857cda0f48cdde33f1338d2e727eb80e",
+  "grid_index": 42,
+  "grid_n": 475,
+  "n_primary": 0,
+  "n_strict": 38,
+  "selection_tier": "both_counts_strict",
+  "calibration_labels": 611,
+  "calibration_jpeg_bytes": 5489979,
+  "calibration_upload_bytes": 5497922,
+  "deployment_update_bytes": 22,
+  "baseline": {
+    "fp": 128,
+    "fn": 69,
+    "true_rescues": 0,
+    "false_rescues": 0,
+    "true_retractions": 0,
+    "false_retractions": 0,
+    "retractions": 0,
+    "query_count": 0,
+    "jpeg_bytes": 0,
+    "inference_upload_bytes": 0,
+    "inference_reply_bytes": 0,
+    "inference_total_bytes": 0
+  },
+  "selected": {
+    "fp": 126,
+    "fn": 56,
+    "true_rescues": 14,
+    "false_rescues": 0,
+    "true_retractions": 2,
+    "false_retractions": 1,
+    "retractions": 3,
+    "query_count": 177,
+    "jpeg_bytes": 1509586,
+    "inference_upload_bytes": 1511002,
+    "inference_reply_bytes": 2124,
+    "inference_total_bytes": 1513126
+  },
+  "calibration_paths_sha256": "0815e3dd459f2e49c87fc65664738b30ddcbdc8bceb6855fa9d5eb6677c00fdc"
+}

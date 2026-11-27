@@ -1,0 +1,513 @@
+{
+  "csv": {
+    "results/directional_predictions.csv": {
+      "fields": [
+        "reference"
+      ],
+      "id_key": "path",
+      "n": 1353
+    },
+    "results/dual_multiview_predictions.csv": {
+      "fields": [
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 1353
+    },
+    "results/edge_adaptation_split.csv": {
+      "fields": [
+        "source_label",
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 1821
+    },
+    "results/fgvc_backend.csv": {
+      "fields": [
+        "source_label",
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 3642
+    },
+    "results/fgvc_edge.csv": {
+      "fields": [
+        "source_label",
+        "true_diseased"
+      ],
+      "id_key": "source_path",
+      "n": 1821
+    },
+    "results/matched_collaboration_predictions.csv": {
+      "fields": [
+        "reference"
+      ],
+      "id_key": "source_path",
+      "n": 9471
+    },
+    "results/matched_collaboration_scores.csv": {
+      "fields": [
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 1803
+    },
+    "results/second_backbone_source_images.csv": {
+      "fields": [
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 1821
+    },
+    "results/specialist_balanced.csv": {
+      "fields": [
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 1821
+    },
+    "results/specialist_predictions.csv": {
+      "fields": [
+        "source_label",
+        "y"
+      ],
+      "id_key": "source_path",
+      "n": 1821
+    }
+  },
+  "fine": {
+    "results/dual_existing.csv": {
+      "fields": [
+        "baseline_fn",
+        "baseline_fp",
+        "delta_fn",
+        "delta_fp",
+        "fn",
+        "fp",
+        "locked_dual_on_both_cohorts",
+        "locked_threshold",
+        "strict_dual",
+        "test_oracle_dual_possible",
+        "test_oracle_fp_at_min_fn",
+        "test_oracle_min_fn",
+        "test_oracle_strict_fp_cap"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 444
+    },
+    "results/edge_adaptation_metrics.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "false_negative",
+        "false_positive",
+        "sensitivity",
+        "specificity",
+        "true_negative",
+        "true_positive"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 300
+    },
+    "results/esp_head_drift.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 120
+    },
+    "results/joint_budget_runs.csv": {
+      "fields": [
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 480
+    },
+    "results/matched_collaboration_sweep.csv": {
+      "fields": [
+        "both_strict",
+        "fn",
+        "fp",
+        "half_fn"
+      ],
+      "mechanism": "threshold enumeration",
+      "n": 888
+    },
+    "results/published_cascade_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp",
+        "paired_delta_acc_pp",
+        "paired_delta_ba_pp",
+        "proposed_accuracy",
+        "proposed_balanced_accuracy",
+        "proposed_only_correct",
+        "router_only_correct"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 2880
+    },
+    "results/published_defer_default.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 120
+    },
+    "results/published_defer_partial_32/published_defer_default.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 120
+    },
+    "results/published_defer_partial_32/published_defer_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 1680
+    },
+    "results/published_defer_partial_64/published_defer_default.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 120
+    },
+    "results/published_defer_partial_64/published_defer_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 1680
+    },
+    "results/published_defer_partial_8/published_defer_default.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 120
+    },
+    "results/published_defer_partial_8/published_defer_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 1680
+    },
+    "results/published_defer_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 1680
+    },
+    "results/published_edgeboost_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 360
+    },
+    "results/published_gatekeeper_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "corrected_over_proposed",
+        "fn",
+        "fp",
+        "paired_delta_acc_pp",
+        "paired_delta_ba_pp",
+        "proposed_accuracy",
+        "proposed_balanced_accuracy",
+        "spoiled_over_proposed"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 2400
+    },
+    "results/rural_deadline_runs.csv": {
+      "fields": [
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 1600
+    },
+    "results/second_backbone_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "corrected",
+        "fn",
+        "fp",
+        "sensitivity",
+        "specificity",
+        "spoiled"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 6240
+    },
+    "results/sensitivity64_metrics.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "calibration_sensitivity",
+        "false_negative",
+        "false_positive",
+        "n_calibration_true_positive",
+        "sensitivity",
+        "specificity",
+        "threshold",
+        "true_negative",
+        "true_positive"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 160
+    },
+    "results/specialist_scalar.csv": {
+      "fields": [
+        "full_accuracy",
+        "full_balanced_accuracy",
+        "full_sensitivity",
+        "full_specificity",
+        "scalar_accuracy",
+        "scalar_balanced_accuracy",
+        "scalar_sensitivity",
+        "scalar_specificity"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 60
+    },
+    "results/streaming_published_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 4200
+    },
+    "results/streaming_runs.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "fn",
+        "fp"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 12000
+    },
+    "results/upload_routing.csv": {
+      "fields": [
+        "accuracy",
+        "balanced_accuracy",
+        "calls",
+        "correct",
+        "fn",
+        "fp",
+        "net_correct",
+        "regressions",
+        "repairs",
+        "sensitivity",
+        "specificity",
+        "tn",
+        "tp",
+        "used_bytes"
+      ],
+      "mechanism": "repeated paired reference evaluations",
+      "n": 1320
+    }
+  },
+  "local_feature_caches": [
+    "data/features/dino_fgvc.npz",
+    "data/features/dual_mv_cornell.npz",
+    "data/features/edge_fgvc.npz",
+    "data/features/latvia.npz"
+  ],
+  "npz": {
+    "results/dual_fusion_predictions.npz": {
+      "cornell_y": {
+        "dtype": "<i8",
+        "ids": "cornell_path"
+      }
+    },
+    "results/edge_adaptation_predictions.npz": {
+      "test_y": {
+        "dtype": "|u1",
+        "ids": "test_paths"
+      }
+    },
+    "results/joint_budget_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_cascade_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_cascade_crossfit.npz": {
+      "y": {
+        "dtype": "<i8",
+        "ids": "paths"
+      }
+    },
+    "results/published_cascade_deployment_margins.npz": {
+      "cornell_y": {
+        "dtype": "|u1",
+        "ids": "cornell_paths"
+      }
+    },
+    "results/published_defer_decisions_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_partial_32/published_defer_decisions_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_partial_32/published_defer_scores_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_partial_64/published_defer_decisions_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_partial_64/published_defer_scores_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_partial_8/published_defer_decisions_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_partial_8/published_defer_scores_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_defer_scores_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_edgeboost_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/published_gatekeeper_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/second_backbone_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "paths"
+      }
+    },
+    "results/sensitivity64_predictions.npz": {
+      "test_y": {
+        "dtype": "|u1",
+        "ids": "test_paths"
+      }
+    },
+    "results/specialist_scalar_predictions.npz": {
+      "test_y": {
+        "dtype": "|u1",
+        "ids": "test_paths"
+      }
+    },
+    "results/streaming_decisions_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    },
+    "results/streaming_inputs_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "paths"
+      }
+    },
+    "results/streaming_published_cornell.npz": {
+      "y": {
+        "dtype": "|u1",
+        "ids": "source_path"
+      }
+    }
+  },
+  "order_statistics": {
+    "results/sensitivity64_predictions.npz": {
+      "fields": [
+        "pred",
+        "threshold"
+      ],
+      "reason": "Exact positive-class calibration order statistic",
+      "retained": [
+        "native_pred",
+        "native_threshold"
+      ],
+      "withheld_operating_point": "target95"
+    }
+  },
+  "version": 2
+}

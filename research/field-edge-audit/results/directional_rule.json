@@ -1,0 +1,83 @@
+{
+  "protocol": "protocol/DUAL_DIRECTIONAL.md",
+  "protocol_sha256": "bdd9633366bcce67ffa149ac6fcd09b63641d4c0df4917dbce5e3e5c6e53ec4b",
+  "rule": {
+    "rescue": true,
+    "retract": true,
+    "edge_lower": 0.0,
+    "edge_upper": 1.0,
+    "rescue_cutoff": 0.5,
+    "retract_cutoff": 0.30000001192092896
+  },
+  "binary_sha256": "87d077cbbd389e1c3ccea4b16cb9c15b376cbc22102685b937865ab3f649e548",
+  "source_balanced_head_sha256": "a7d7bf069ecd49ae3cecf68ffc893d5292423e69b209287607ff7a11a134088e",
+  "source_model": "PlantDoc source-balanced binary DINO, without Cornell category training",
+  "selection_tier": "half_fn_and_strict_fp",
+  "grid_index": 46,
+  "grid_n": 475,
+  "n_primary": 4,
+  "n_strict": 106,
+  "edge_rescue_lower": [
+    0.0,
+    0.05,
+    0.2
+  ],
+  "edge_retract_upper": [
+    0.4,
+    0.7,
+    0.95,
+    1.0
+  ],
+  "remote_rescue_min": [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    0.95
+  ],
+  "remote_retract_max": [
+    0.5,
+    0.4,
+    0.3,
+    0.2,
+    0.1,
+    0.05
+  ],
+  "fit_n": 450,
+  "fit_paths_sha256": "4c88fb5ac3a7b49a0b1e4870b90fa74d98da49a8c8f0d284bb0e91d1d4d6423e",
+  "fit_healthy": 128,
+  "fit_diseased": 322,
+  "baseline": {
+    "fp": 83,
+    "fn": 15,
+    "true_rescues": 0,
+    "false_rescues": 0,
+    "true_retractions": 0,
+    "false_retractions": 0,
+    "retractions": 0,
+    "query_count": 0,
+    "jpeg_bytes": 0,
+    "inference_upload_bytes": 0,
+    "inference_reply_bytes": 0,
+    "inference_total_bytes": 0
+  },
+  "selected": {
+    "fp": 60,
+    "fn": 5,
+    "true_rescues": 12,
+    "false_rescues": 11,
+    "true_retractions": 34,
+    "false_retractions": 2,
+    "retractions": 36,
+    "query_count": 450,
+    "jpeg_bytes": 3026011,
+    "inference_upload_bytes": 3029611,
+    "inference_reply_bytes": 5400,
+    "inference_total_bytes": 3035011
+  },
+  "calibration_upload_bytes": 3031861,
+  "calibration_jpeg_bytes": 3026011,
+  "rule_file_bytes": 22,
+  "deployment_update_bytes": 22
+}

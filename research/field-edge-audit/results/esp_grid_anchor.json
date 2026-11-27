@@ -1,0 +1,15 @@
+{
+  "embedded_fixture_expected_q": [
+    58,
+    -59
+  ],
+  "embedded_fixture_observed_q": [
+    56,
+    -62
+  ],
+  "board_n": 60,
+  "board_hard_agreements": 59,
+  "median_abs_score_error": 0.00017202697285828572,
+  "max_abs_score_error": 0.2042524426705209,
+  "config_sha256": "b10bc87a05c8efadb7afd7abcb8f23e79c0c1f7d04c168a7f0b92d1c3e9634bd"
+}

@@ -1,0 +1,99 @@
+{
+  "upstream_repo": "https://github.com/ravinet/mahimahi",
+  "upstream_revision": "f1346c38c415abfc98626dd82450f49a57033603",
+  "upstream_license": "GPL-3.0-or-later per debian/copyright Files: *; repository COPYING is GNU GPL v3",
+  "sources": {
+    "ATT-LTE-driving": {
+      "up": {
+        "sha256": "d58a640b9bccd131a421bff6eaf727aba324d9258b35009655bbf68e087b9b29",
+        "file_bytes": 483248,
+        "slots": 70336,
+        "first_ms": 831,
+        "last_ms": 1012472,
+        "url": "https://raw.githubusercontent.com/ravinet/mahimahi/f1346c38c415abfc98626dd82450f49a57033603/traces/ATT-LTE-driving.up"
+      },
+      "down": {
+        "sha256": "73c58f41bf7a3f0fac82810ca61307521be1cf6b77a0e98093fd340bddfd161f",
+        "file_bytes": 2306644,
+        "slots": 338895,
+        "first_ms": 0,
+        "last_ms": 786112,
+        "url": "https://raw.githubusercontent.com/ravinet/mahimahi/f1346c38c415abfc98626dd82450f49a57033603/traces/ATT-LTE-driving.down"
+      }
+    },
+    "TMobile-LTE-driving": {
+      "up": {
+        "sha256": "556620f1c11a61c7766678b08325ef4fc8d1bd774fbc98fb96854ae3d3795b61",
+        "file_bytes": 5102284,
+        "slots": 762370,
+        "first_ms": 934,
+        "last_ms": 474999,
+        "url": "https://raw.githubusercontent.com/ravinet/mahimahi/f1346c38c415abfc98626dd82450f49a57033603/traces/TMobile-LTE-driving.up"
+      },
+      "down": {
+        "sha256": "d48ff134fc29c36cc3c3dee203464246bd698f0faede42534a27b0cbe3057055",
+        "file_bytes": 3443315,
+        "slots": 505078,
+        "first_ms": 0,
+        "last_ms": 474609,
+        "url": "https://raw.githubusercontent.com/ravinet/mahimahi/f1346c38c415abfc98626dd82450f49a57033603/traces/TMobile-LTE-driving.down"
+      }
+    },
+    "Verizon-EVDO-driving": {
+      "up": {
+        "sha256": "6055d60d234030035f59475dc1d39d99e7c2817b9fa5d485f1f0710b1aae2075",
+        "file_bytes": 520867,
+        "slots": 74768,
+        "first_ms": 1056,
+        "last_ms": 1064718,
+        "url": "https://raw.githubusercontent.com/ravinet/mahimahi/f1346c38c415abfc98626dd82450f49a57033603/traces/Verizon-EVDO-driving.up"
+      },
+      "down": {
+        "sha256": "60c9cd7b5d8be7d89d3807052a043f54787958f04cfd4c6c16fcdac6e2c3b9da",
+        "file_bytes": 321953,
+        "slots": 46065,
+        "first_ms": 0,
+        "last_ms": 1062016,
+        "url": "https://raw.githubusercontent.com/ravinet/mahimahi/f1346c38c415abfc98626dd82450f49a57033603/traces/Verizon-EVDO-driving.down"
+      }
+    }
+  },
+  "synthetic_check": {
+    "slot_bytes": 1500,
+    "slot_every_ms": 10,
+    "start_ms": 0,
+    "upload_bytes": 3001,
+    "download_bytes": 1501,
+    "expected_upload_ms": 30,
+    "expected_download_ms": 20,
+    "observed_total_ms": 50
+  },
+  "rows": 9600,
+  "summary_groups": 48,
+  "seeds": 20,
+  "phases_eighths": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "horizons": [
+    1,
+    10,
+    100,
+    1353
+  ],
+  "budgets": [
+    32,
+    128
+  ],
+  "trace_wraps": 0,
+  "all_runs_inside_common_observed_span": true,
+  "test_order_sha256": "6cd4da41e9f012a43dbe9a649935ce4996dd26286a4dac012a0fbc3ac6ea5892",
+  "workload_source_sha256": {
+    "fgvc_backend.csv": "cb3ba4dc0a371ff6100ca3d74d39bbae3bc3e193e1343cbe24bfc32b473560f5",
+    "edge_adaptation_metrics.csv": "ffc4eeac722a29e9fef43605baa572cecfaf149c8cd523186d6437c53570112e",
+    "edge_adaptation_predictions.npz": "c95479ea42ea726243789f06b8dd69685dae294a777ddb8655c10bfbd8a8168f"
+  }
+}

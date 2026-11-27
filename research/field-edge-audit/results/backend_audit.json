@@ -1,0 +1,109 @@
+{
+  "definition": "y=1 denotes disease; prediction uses unconditional 38-class disease mass >= 0.5",
+  "groups": {
+    "plantdoc_official_test_all": {
+      "224": {
+        "n": 236,
+        "healthy": 90,
+        "diseased": 146,
+        "tn": 63,
+        "fp": 27,
+        "fn": 4,
+        "tp": 142,
+        "accuracy": 0.8686440677966102,
+        "auroc": 0.9382800608828006,
+        "jpeg_bytes_total": 1825416,
+        "jpeg_bytes_mean": 7734.813559322034,
+        "jpeg_bytes_median": 7672.0
+      },
+      "112": {
+        "n": 236,
+        "healthy": 90,
+        "diseased": 146,
+        "tn": 60,
+        "fp": 30,
+        "fn": 9,
+        "tp": 137,
+        "accuracy": 0.8347457627118644,
+        "auroc": 0.8896499238964992,
+        "jpeg_bytes_total": 672392,
+        "jpeg_bytes_mean": 2849.1186440677966,
+        "jpeg_bytes_median": 2816.5
+      }
+    },
+    "plantdoc_official_test_target4": {
+      "224": {
+        "n": 131,
+        "healthy": 25,
+        "diseased": 106,
+        "tn": 14,
+        "fp": 11,
+        "fn": 3,
+        "tp": 103,
+        "accuracy": 0.8931297709923665,
+        "auroc": 0.8679245283018868,
+        "jpeg_bytes_total": 1085234,
+        "jpeg_bytes_mean": 8284.229007633588,
+        "jpeg_bytes_median": 8297.0
+      },
+      "112": {
+        "n": 131,
+        "healthy": 25,
+        "diseased": 106,
+        "tn": 11,
+        "fp": 14,
+        "fn": 6,
+        "tp": 100,
+        "accuracy": 0.8473282442748091,
+        "auroc": 0.7807547169811321,
+        "jpeg_bytes_total": 398454,
+        "jpeg_bytes_mean": 3041.6335877862593,
+        "jpeg_bytes_median": 2991.0
+      }
+    },
+    "fgvc7_labeled": {
+      "224": {
+        "n": 1821,
+        "healthy": 516,
+        "diseased": 1305,
+        "tn": 199,
+        "fp": 317,
+        "fn": 49,
+        "tp": 1256,
+        "accuracy": 0.7990115321252059,
+        "auroc": 0.8428628708901363,
+        "jpeg_bytes_total": 12295378,
+        "jpeg_bytes_mean": 6751.99231191653,
+        "jpeg_bytes_median": 6468.0
+      },
+      "112": {
+        "n": 1821,
+        "healthy": 516,
+        "diseased": 1305,
+        "tn": 160,
+        "fp": 356,
+        "fn": 128,
+        "tp": 1177,
+        "accuracy": 0.7342119714442614,
+        "auroc": 0.7171819774867089,
+        "jpeg_bytes_total": 4793088,
+        "jpeg_bytes_mean": 2632.1186161449755,
+        "jpeg_bytes_median": 2541.0
+      }
+    }
+  },
+  "matched_board_60": {
+    "224": {
+      "both_correct": 52,
+      "board_only_correct": 1,
+      "backend_only_correct": 3,
+      "both_wrong": 4
+    },
+    "112": {
+      "both_correct": 49,
+      "board_only_correct": 4,
+      "backend_only_correct": 3,
+      "both_wrong": 4
+    }
+  }
+}

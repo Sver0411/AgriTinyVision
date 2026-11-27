@@ -1,0 +1,16 @@
+left,right_source,right,match,hamming
+test/Blueberry leaf/blueberry-leaves-normal-above-and-iron-deficient-below-bgahf8.jpg,plantdoc_train,train/Blueberry leaf/blueberry-leaves-normal-above-and-iron-deficient-below-bgahf8.jpg,file,0
+test/Corn Gray leaf spot/IMG_42231.jpg,plantdoc_train,train/Corn leaf blight/IMG_42231.jpg,file,0
+test/Corn leaf blight/2015070295153021.jpg,plantdoc_train,train/Corn Gray leaf spot/2015070295153021.jpg,file,0
+test/Corn leaf blight/corn-gray-leaf-spot-f4.jpg,plantdoc_train,train/Corn Gray leaf spot/corn-gray-leaf-spot-f4.jpg,file,0
+test/Potato leaf early blight/backus-056-potato-blight.jpg,plantdoc_train,train/Potato leaf late blight/backus-056-potato-blight.jpg,file,0
+test/Potato leaf early blight/earlyblightpotato.jpg,plantdoc_train,train/Tomato Early blight leaf/earlyblightpotato.jpg,pixels,0
+test/Potato leaf late blight/1421_0.jpeg?itok=FMtmgePj.jpg,plantdoc_train,train/Potato leaf early blight/1421_0.jpeg?itok=FMtmgePj.jpg,file,0
+test/Potato leaf late blight/5816740026_d42ef24413_Phytophthora-Infestans.jpg,plantdoc_train,train/Potato leaf early blight/5816740026_d42ef24413_Phytophthora-Infestans.jpg,file,0
+test/Potato leaf late blight/5816740026_d42ef24413_Phytophthora-Infestans.jpg,plantdoc_train,train/Tomato leaf late blight/tomato-late-blight-foliar-lesions_Scot-Nelson_CC-BY-SA-2.0.jpg,perceptual,0
+test/Potato leaf late blight/irish-blight-symptoms-on-potato-leaves-atmf8b.jpg,plantdoc_train,train/Potato leaf early blight/irish-blight-symptoms-on-potato-leaves-atmf8b.jpg,file,0
+test/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg,plantdoc_train,train/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg,file,0
+test/Tomato leaf bacterial spot/07.17.18-Common_Tomato_Diseases_Canker-258x300.jpg,plantdoc_train,train/Tomato leaf bacterial spot/bacterial-canker3x2400-2ia1kgd.jpg,perceptual,0
+test/Tomato leaf bacterial spot/tomato_V8.jpg,plantdoc_train,train/Tomato Septoria leaf spot/tomato_V8.jpg,file,0
+test/Tomato leaf late blight/18c.jpg,plantdoc_train,train/Tomato leaf late blight/late_blight1.jpg,perceptual,2
+test/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg,plantdoc_train,train/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg,file,0

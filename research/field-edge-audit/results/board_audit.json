@@ -1,0 +1,233 @@
+{
+  "source_revision": "16e7a2fdec43c02258f22e85b085ac269345e124",
+  "plantdoc_revision": "5467f6012d78d1c446145d5f582da6096f852ae8",
+  "n": 60,
+  "crop_counts": {
+    "apple": 12,
+    "bell pepper": 8,
+    "potato": 8,
+    "tomato": 32
+  },
+  "class_counts": {
+    "Apple Scab Leaf": 4,
+    "Apple leaf": 4,
+    "Apple rust leaf": 4,
+    "Bell_pepper leaf": 4,
+    "Bell_pepper leaf spot": 4,
+    "Potato leaf early blight": 4,
+    "Potato leaf late blight": 4,
+    "Tomato Early blight leaf": 4,
+    "Tomato Septoria leaf spot": 4,
+    "Tomato leaf": 4,
+    "Tomato leaf bacterial spot": 4,
+    "Tomato leaf late blight": 4,
+    "Tomato leaf mosaic virus": 4,
+    "Tomato leaf yellow virus": 4,
+    "Tomato mold leaf": 4
+  },
+  "reference_counts": {
+    "SUSPECT": 48,
+    "NORMAL": 12
+  },
+  "source_groups": 1,
+  "source_partitions": {
+    "test": 60
+  },
+  "audit_splits": {
+    "unassigned": 60
+  },
+  "binary_disagreement_n": 1,
+  "three_state_disagreement_n": 4,
+  "board_binary": {
+    "NORMAL": {
+      "NORMAL": 7,
+      "SUSPECT": 5
+    },
+    "SUSPECT": {
+      "NORMAL": 2,
+      "SUSPECT": 46
+    }
+  },
+  "fp32_binary": {
+    "NORMAL": {
+      "NORMAL": 7,
+      "SUSPECT": 5
+    },
+    "SUSPECT": {
+      "NORMAL": 1,
+      "SUSPECT": 47
+    }
+  },
+  "paired_binary_outcomes": {
+    "both_correct": 53,
+    "board_only_correct": 0,
+    "fp32_only_correct": 1,
+    "both_wrong": 6
+  },
+  "mcnemar_two_sided_exact_descriptive": 1.0,
+  "binary_oracle_correct": 54,
+  "binary_oracle_ceiling_gain_by_budget_queries": [
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "frozen_board": {
+    "n": 60,
+    "correct": 51,
+    "wrong": 6,
+    "deferred": 3,
+    "coverage": 0.95,
+    "accuracy_among_accepted": 0.8947368421052632,
+    "correct_fraction_all": 0.85
+  },
+  "frozen_fp32": {
+    "n": 60,
+    "correct": 53,
+    "wrong": 6,
+    "deferred": 1,
+    "coverage": 0.9833333333333333,
+    "accuracy_among_accepted": 0.8983050847457628,
+    "correct_fraction_all": 0.8833333333333333
+  },
+  "route_board_unknown_to_fp32": {
+    "calls": 3,
+    "n": 60,
+    "correct": 54,
+    "wrong": 6,
+    "deferred": 0,
+    "coverage": 1.0,
+    "accuracy_among_accepted": 0.9,
+    "correct_fraction_all": 0.9
+  },
+  "three_state_board": {
+    "NORMAL": {
+      "NORMAL": 6,
+      "UNKNOWN": 1,
+      "SUSPECT": 5
+    },
+    "SUSPECT": {
+      "NORMAL": 1,
+      "UNKNOWN": 2,
+      "SUSPECT": 45
+    }
+  },
+  "three_state_fp32": {
+    "NORMAL": {
+      "NORMAL": 6,
+      "UNKNOWN": 1,
+      "SUSPECT": 5
+    },
+    "SUSPECT": {
+      "NORMAL": 1,
+      "UNKNOWN": 0,
+      "SUSPECT": 47
+    }
+  },
+  "mean_absolute_suspect_score_difference": 0.043206323862250436,
+  "maximum_absolute_suspect_score_difference": 0.5766705721616745,
+  "discordant_samples": [
+    {
+      "image_id": "ec26832f92fa4e3094be9db5e28ff828",
+      "source_class": "Bell_pepper leaf",
+      "reference_label": "NORMAL",
+      "host_fp32_score": "0.06817793846130371",
+      "board_int8_score": "0.2018132209777832",
+      "host_fp32_binary": "NORMAL",
+      "board_int8_binary": "NORMAL",
+      "host_fp32_state": "NORMAL",
+      "board_int8_state": "UNKNOWN"
+    },
+    {
+      "image_id": "f6d371cb5cd346fc943a14672c61c31f",
+      "source_class": "Potato leaf late blight",
+      "reference_label": "SUSPECT",
+      "host_fp32_score": "0.7887393832206726",
+      "board_int8_score": "0.2120688110589981",
+      "host_fp32_binary": "SUSPECT",
+      "board_int8_binary": "NORMAL",
+      "host_fp32_state": "SUSPECT",
+      "board_int8_state": "UNKNOWN"
+    },
+    {
+      "image_id": "598262b4c2c944ce90bc8dbb30b74c99",
+      "source_class": "Tomato leaf",
+      "reference_label": "NORMAL",
+      "host_fp32_score": "0.27149906754493713",
+      "board_int8_score": "0.11279541254043579",
+      "host_fp32_binary": "NORMAL",
+      "board_int8_binary": "NORMAL",
+      "host_fp32_state": "UNKNOWN",
+      "board_int8_state": "NORMAL"
+    },
+    {
+      "image_id": "03fc2fadd30749b4bb7c019720b6efc0",
+      "source_class": "Tomato leaf yellow virus",
+      "reference_label": "SUSPECT",
+      "host_fp32_score": "0.7911986708641052",
+      "board_int8_score": "0.3073580265045166",
+      "host_fp32_binary": "SUSPECT",
+      "board_int8_binary": "SUSPECT",
+      "host_fp32_state": "SUSPECT",
+      "board_int8_state": "UNKNOWN"
+    }
+  ],
+  "interpretation": "The historical external cohort has one conservative source group. Oracle ceilings describe these paired outcomes only. Calls model routing to the recorded FP32 model; no network transfer or external expert is measured."
+}

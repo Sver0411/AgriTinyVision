@@ -1,0 +1,54 @@
+{
+  "plantdoc_all": {
+    "n": 236,
+    "true_negative": 80,
+    "true_positive": 132,
+    "false_positive": 10,
+    "false_negative": 14,
+    "accuracy": 0.8983050847457628,
+    "balanced_accuracy": 0.8964992389649924,
+    "roc_auc": 0.9689497716894977,
+    "average_precision": 0.9814126500996481,
+    "corrected_edge_error": 33,
+    "introduced_edge_error": 15
+  },
+  "plantdoc_dedup_four_crops": {
+    "n": 121,
+    "true_negative": 21,
+    "true_positive": 87,
+    "false_positive": 4,
+    "false_negative": 9,
+    "accuracy": 0.8925619834710744,
+    "balanced_accuracy": 0.8731249999999999,
+    "roc_auc": 0.9479166666666666,
+    "average_precision": 0.9868235419560488,
+    "corrected_edge_error": 7,
+    "introduced_edge_error": 9
+  },
+  "plantdoc_dedup_all": {
+    "n": 222,
+    "true_negative": 79,
+    "true_positive": 121,
+    "false_positive": 10,
+    "false_negative": 12,
+    "accuracy": 0.9009009009009009,
+    "balanced_accuracy": 0.8987074427642139,
+    "roc_auc": 0.9698403311649911,
+    "average_precision": 0.9806321809174283,
+    "corrected_edge_error": 33,
+    "introduced_edge_error": 13
+  },
+  "cornell_all_external": {
+    "n": 1821,
+    "true_negative": 415,
+    "true_positive": 1141,
+    "false_positive": 101,
+    "false_negative": 164,
+    "accuracy": 0.8544755628775398,
+    "balanced_accuracy": 0.8392965339035908,
+    "roc_auc": 0.9297751640975378,
+    "average_precision": 0.9696231018631988,
+    "corrected_edge_error": 286,
+    "introduced_edge_error": 194
+  }
+}

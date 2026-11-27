@@ -1,0 +1,5 @@
+cohort,budget,seeds,original_fp,original_fn,both_strict,strict_fp,strict_fn,original_fallback,fusion_fp_mean,fusion_fn_mean,specificity_mean,sensitivity_mean,images_uploaded_mean,inference_wire_bytes_mean,calibration_wire_bytes_mean
+cornell,128,20,215,34,9,19,9,1,141.4,34.55,0.6249336870026526,0.9646004098360657,1044.4,7005738.75,861243.8
+cornell,450,20,215,34,9,20,9,0,127.5,34.45,0.6618037135278516,0.9647028688524589,1331.95,8995290.55,3033661.0
+kashmir,128,20,81,4,1,19,1,1,33.5,24.55,0.73828125,0.9041015625,310.2,3054084.8,861243.8
+kashmir,450,20,81,4,0,20,0,0,27.1,26.65,0.78828125,0.8958984375,382.6,3768270.45,3033661.0

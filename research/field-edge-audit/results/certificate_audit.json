@@ -1,0 +1,36 @@
+{
+  "max_population": 10,
+  "confidence_level": "19/20",
+  "tail_rule": "retain each one-sided tail strictly above 1/40",
+  "population_budget_design_cells": 4860,
+  "worst_observed": {
+    "disagreement": {
+      "min_coverage": "20/21",
+      "at_N_D_R_b": [
+        10,
+        10,
+        4,
+        5
+      ]
+    },
+    "uniform": {
+      "min_coverage": "20/21",
+      "at_N_D_R_b": [
+        10,
+        10,
+        4,
+        5
+      ]
+    }
+  },
+  "all_ternary_layouts_up_to": 6,
+  "permutation_cases": 1092,
+  "real_hardware_one_label_positive_power": {
+    "disagreement": "1",
+    "uniform": "1/60"
+  },
+  "primary_agreement": {
+    "intervals": 288,
+    "powers": 4860
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "MobileNetV4-Conv-Small e2400 r224 FP32",
+  "scope": "CPU graph plus protocol-byte replay",
+  "protocol_sha256": "cf4f3ee50af0f60cbac1dffd58a6fde70581c1c21ea42cd9ce806814e693c139",
+  "heads": 61,
+  "run_rows": 24960,
+  "source_n": 1237,
+  "calibration_images_per_draw": 128,
+  "calibration_draws": 20,
+  "confidence_cutoff": 0.5,
+  "expert_jpeg_long_edge": 224,
+  "expert_jpeg_quality": 75
+}

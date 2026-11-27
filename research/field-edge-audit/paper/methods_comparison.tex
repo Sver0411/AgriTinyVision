@@ -1,0 +1,44 @@
+\sect{4 \quad Published routing methods at the same byte ceiling}
+We compared published routing rules on the same edge features, remote classifier and test images. Each of 20 draws supplied precisely 128 Cornell labels. All inference queries sent a measured 224-pixel quality-75 JPEG and 20 protocol bytes. This retrospective, batch-sorted comparison used a ceiling of 25\% of the cost of querying every image in the cohort. In the cold-start settings, we debited installation before allocating test queries. Remote annotation required calibration JPEGs, which could also supply expert supervision. The prepaid setting gave every installed router the same inference budget. A router that exceeded its allowance fell back to an affordable updated head, then to the source head if necessary.
+
+\begin{center}\begingroup\footnotesize\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{@{}lrrrrrrrrr@{}}\toprule
+&\multicolumn{3}{c}{Cold, local labels}&\multicolumn{3}{c}{Cold, remote labels}&\multicolumn{3}{c}{Prepaid}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+AgriTinyVision edge, mean BA (\%) & C & K & L & C & K & L & C & K & L\\\midrule
+Updated confidence / EdgeBoost rank&87.06&84.28&54.74&84.76&76.37&53.70&87.26&85.09&54.86\\
+EdgeBoost fixed gate&86.31&83.14&54.05&84.34&76.37&53.47&86.45&84.19&54.19\\
+OvA, class-balanced&85.30&84.28&54.08&85.30&76.37&54.08&87.43&84.98&55.70\\
+CompareConfidence, balanced&85.25&84.28&53.73&85.25&76.37&53.73&87.54&85.11&55.22\\
+Two-stage cost, balanced&83.71&84.28&53.49&83.71&76.37&53.49&84.58&82.27&53.81\\
+Diff-01, 20 epochs&82.17&84.28&53.71&82.17&76.37&53.71&83.05&82.62&55.07\\
+Diff-Prob, 20 epochs&83.41&84.28&53.80&83.41&76.37&53.80&84.52&80.71&55.23\\
+Gatekeeper, $\alpha=.5$&81.11&81.78&53.10&78.58&76.37&51.93&81.75&82.82&53.45\\
+Balanced CE continuation&87.69&84.42&55.41&85.93&76.37&54.38&87.97&85.39&55.64\\
+\bottomrule\end{tabular}\endgroup\end{center}
+{\footnotesize C, K and L denote Cornell ($n=1{,}353$), Kashmir ($384$) and Latvia ($1{,}190$). In Kashmir, cold-start routers requiring all 128 expert outputs could afford only the updated confidence fallback with local labels, or the source-camera fallback with remote labels. The full-feedback learned-router entries include these fallbacks.\par}
+
+Said and Landsiedel's EdgeBoost (\emph{Computer Networks}, 2025)\,\cite{edgeboost} accepts a confident local prediction using a temperature-calibrated top-two probability gap. On the authors' 8,000 stored CIFAR cases, our gate matched their implementation at all seven reported thresholds. For two classes and positive temperature $T$, the gap is $\tanh(|z|/(2T))$, where $z$ is the signed edge logit. Ordering a buffered batch by this gap therefore yields the same ranking as ordering by $|z|$. Across 360 charged operating points, both rankings selected exactly the same images and produced identical decisions. A separately calibrated fixed-threshold gate retained the original threshold semantics and could leave bytes unused.
+
+Verma and Nalisnick's OvA (ICML 2022)\,\cite{ova} and CompareConfidence as implemented by Mozannar et al.\ (AISTATS 2023)\,\cite{cc} compare expert correctness with local class scores. Our binary linear ports share fitted heads and apply different score transformations. Mao et al.'s two-stage cost-sensitive surrogate (ICML 2025)\,\cite{mao} uses out-of-fold local errors and measured cloud errors. The table reports equal class weights in the risk aggregate through inverse-frequency sample weighting, matching balanced accuracy. As a feedback-cost sensitivity, CompareConfidence with all 128 true labels and only 32 expert outputs achieved 86.79/83.27/54.48\% under cold local accounting. With full feedback prepaid, its mean gains over updated confidence were 0.28, 0.02 and 0.36 percentage points. Ties in these learned scores used salted image identifiers to prevent label names in public paths from determining uploads.
+
+Jitkrittum et al.'s Diff-01 and Diff-Prob (NeurIPS 2023)\,\cite{jit} regress the expert's advantage in correctness or true-class probability. We specialized their probability features to two classes and used four-fold local predictions. Twenty epochs on 128 calibration pictures give only 20 full-batch updates. An 800-step, class-balanced sensitivity reached 87.28/83.52/55.84\% for prepaid Diff-Prob. Rabanser et al.'s Gatekeeper (NeurIPS 2025)\,\cite{gate} applies cross-entropy to correct predictions and a penalty for deviation from uniform confidence to errors. We tuned its final layer for 100 steps on the shared labels. Ordinary class-balanced cross-entropy (CE) for the same 100 steps beat the basic confidence rule at identical cold local cost in all three cohorts.
+
+\begin{samepage}\medskip\noindent\textbf{A second edge model.}
+We repeated the experiment using MobileNetV4-Conv-Small (Qin et al., ECCV 2024)\,\cite{vfour}, with public ImageNet weights, the model's 224-pixel preprocessing and a binary head trained on 1,237 PlantDoc source images. We verified all 4,632 original image digests and reconstructed the graph's ImageNet logits from the extracted activations to within $6.9\times10^{-5}$. The 1,280-dimensional representation cost 1,293 bytes per calibration record. The final head occupied 1,294 bytes. The V4 and AgriTinyVision systems differ in source training and preprocessing as well as architecture. These V4 measurements cover CPU graph inference and application traffic.\par\end{samepage}
+
+\begin{center}\begingroup\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}\toprule
+MobileNetV4, cold BA (\%) & Cornell & Kashmir & Latvia & Latvia, later\\
+\midrule
+Source head alone&73.23 / 73.23&73.44 / 73.44&66.20 / 66.20&69.28 / 69.28\\
+Source head + confidence&80.53 / 80.53&83.59 / 83.59&66.58 / 66.58&68.11 / 68.11\\
+Updated head alone&80.73 / 80.73&72.25 / 73.44&58.38 / 58.38&60.49 / 60.49\\
+Updated head + random&81.52 / 81.19&74.38 / 75.38&58.98 / 58.71&61.04 / 60.78\\
+Updated head + confidence&84.65 / 83.61&76.27 / 83.59&59.40 / 58.98&61.82 / 60.66\\
+Gatekeeper&74.42 / 66.45&75.61 / 83.59&59.39 / 56.66&61.66 / 52.56\\
+Balanced CE continuation&84.89 / 83.85&77.91 / 83.59&59.82 / 59.59&62.19 / 61.25\\
+\bottomrule\end{tabular}\endgroup\end{center}
+{\footnotesize Each cell gives local / remote annotation. The later Latvian subset contains 579 of the 1,190 photos. Random review averages 20 fixed orders per calibration draw. All V4 treatments used the same 224-pixel DINO service and the same Cornell calibration identities as above.\par}
+
+With local labels, V4 updating plus confidence routing improved on source-head routing by 4.11 percentage points on Cornell and lost 7.32 points on Kashmir and 7.18 points on Latvia. Paired 95\% resampling intervals were $[1.90,6.37]$, $[-11.62,-2.98]$ and $[-11.44,0.37]$ points, respectively. We resampled pictures within class in Cornell and Kashmir, and whole acquisition dates in Latvia, holding fitted heads and routing decisions fixed. The 20 calibration draws reuse each test pool. The transfer estimates apply to these photographed cohorts.

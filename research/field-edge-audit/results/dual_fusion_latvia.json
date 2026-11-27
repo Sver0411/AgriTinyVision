@@ -1,0 +1,18 @@
+{
+  "cohort": "Latvia",
+  "n": 1190,
+  "budget": 450,
+  "seed": 0,
+  "frozen_deployment_sha256": "0a9f30fc451671206572872672188885155d6bfdef55a0b4f76e81a4f3e74464",
+  "source_features_sha256": "1729670da910cb6fd6b694c87d935756a973710516ff3fd47f042635d518ec3b",
+  "healthy": 207,
+  "diseased": 983,
+  "original_fp": 195,
+  "original_fn": 118,
+  "fusion_fp": 64,
+  "fusion_fn": 404,
+  "images_uploaded": 1190,
+  "inference_jpeg_bytes": 10764280,
+  "inference_application_bytes": 10788080,
+  "both_strict": false
+}

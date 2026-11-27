@@ -1,0 +1,16 @@
+{
+  "threshold": -2.0686368821495895,
+  "uses_frozen_edge": false,
+  "calibration_fpfn": [
+    33,
+    8
+  ],
+  "candidate_calibration_fpfn": [
+    14,
+    4
+  ],
+  "n_fit": 300,
+  "n_cal": 150,
+  "calibration_jpeg_bytes": 8761266,
+  "fit_ids_sha256": "1fd6b5d3fa32abf91106bf8d2fd262581e5c27cb47234f779fd445b0c2539904"
+}

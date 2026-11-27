@@ -17,6 +17,12 @@
 
 AgriTinyVision 包含轻量作物图像分类器的训练、导出和 ESP32-S3 实机部署。电脑摄像头采集图像，通过 USB 交给 ESP32-S3 N16R8 运行已冻结的 MobileNetV2 160 INT8 模型，由本地 Web 控制台显示结果、设备耗时和内存，并保存实验报告。
 
+## 摄像头该用带宽换标注，还是上传照片复核？
+
+这项研究基于 AgriTinyVision 发布的模型和 60 条已有 ESP32-S3 记录，另用 MobileNetV4 复核。实验在三组苹果叶片图像上逐帧决策，把远程标注、安装和后续上传计入同一流量预算。更新在 Cornell 有益，128 张远程标注在 Kashmir 超过预拨额度。使用同一门控规则时，EdgeBoost 与更新头不确定度的选图逐张一致。论文还定位了 Latvia 黑星病漏报出现的环节。
+
+[研究目录与复核说明](research/field-edge-audit/README.md) · [论文 PDF](research/field-edge-audit/paper/manuscript.pdf) · [同预算方法总表](research/field-edge-audit/results/methods_comparison.csv) · [在线已发表方法对照](research/field-edge-audit/results/streaming_published_summary.csv)
+
 ## PC 摄像头 Web 控制台
 
 环境：Windows 11、Python 3.10+、电脑摄像头、ESP32-S3 N16R8 和 USB 数据线。固件沿用 ESP-IDF 5.4.4、ESP-DL 3.3.13。

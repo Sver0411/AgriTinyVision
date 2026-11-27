@@ -1,0 +1,16 @@
+投稿定位（按2025年中国科学院文献情报中心大类分区口径）
+
+截至本次同条件复测，不建议将本稿作为“新协同算法领先现有方法”的成果投 IEEE Transactions on Mobile Computing。二分类 EdgeBoost 产生相同的查询与决策，付费标注的 Cornell 单帧对照中 OvA 略高。MobileNetV4 在两个外部数据集上保留源头更好，Latvia 的按日条件区间仍包含零。稿件能支持的是标注成本、队列方式与错误迁移的可复核研究。新分类头的 MCU 整机开销、实地端到端链路和双口径疾病标注均未得到独立验证。研究还未投稿，不能据此填写“已发表一区 TOP”。
+IEEE 官方范围 https://www.computer.org/digital-library/journals/tm/cfp-ieee-transactions-mobile-computing
+2025年期刊清单 https://lib.qau.edu.cn/content/fwqkdh/9a26517ab3a54017a98da330cf3e5082
+
+IEEE Internet of Things Journal 的范围与传感、嵌入式软件、端侧计算契合。按上述2025口径为计算机科学大类二区 TOP，部分小类一区。可以作为专业方向选项，不应向申请单位填写为大类一区。
+IEEE 官方范围 https://ieee-iotj.org/
+2025年分区核对 https://www.minicod.com/zh/journal-lists/cas/computer-science
+
+Computers and Electronics in Agriculture（农林科学大类一区 TOP）对领域高度相关。出版社明确将依赖已发表数据集开发视觉/学习算法的工作视作早期原型，鼓励作者在受控、可说明的条件下采集数据。这与当前以纯计算完成新实验的偏好形成实际投稿障碍。本文额外生成了逐图通信、分类头和跨数据来源结果，但没有新采集农业照片；不建议仅凭分区将它列为首选。
+Elsevier 官方范围 https://shop.elsevier.com/journals/computers-and-electronics-in-agriculture/0168-1699
+2025年大类表 https://kyc.lsu.edu.cn/2025/0327/c2834a353049/page.htm
+
+自2026年起，中国科学院文献情报中心停止更新分区表。申请用材料宜明确“2025版大类分区”和具体目标期刊。当前本项目为研究稿；期刊投稿、作者署名、同行评审与录用均由后续真实记录确定。
+官方声明 https://cssar.cas.cn/library/dtxx/202604/t20260409_8183275.html

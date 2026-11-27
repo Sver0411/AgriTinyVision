@@ -1,0 +1,75 @@
+{
+  "scope": "Host C99 final-head consistency on saved features; no new device execution",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.5)",
+  "arch": "arm64",
+  "input_dimension": 1280,
+  "head_bytes": 1294,
+  "n_test_vectors": 1353,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "budgets": [
+    8,
+    32,
+    128
+  ],
+  "n_int8_heads": 60,
+  "n_test_decisions": 81180,
+  "counts_per_budget": {
+    "8": 27060,
+    "32": 27060,
+    "128": 27060
+  },
+  "integer_dot_mismatches": 0,
+  "norm_squared_mismatches": 0,
+  "label_mismatches": 0,
+  "max_abs_score_difference": 0.0,
+  "max_observed_abs_dot": 1605306,
+  "max_observed_norm_squared": 2409682,
+  "theoretical_max_abs_dot": 20645120,
+  "theoretical_max_norm_squared": 20645120,
+  "theoretical_bound_for_largest_wire_dimension": 1057014015,
+  "int32_max": 2147483647,
+  "boundary_cases": {
+    "positive_and_negative_extreme_dot": 20645120,
+    "zero_row_score": 0.0,
+    "zero_row_tie_prediction": 1,
+    "malformed_inputs_rejected": [
+      "bad_magic",
+      "little_endian_dimension_swapped",
+      "truncated_head",
+      "extra_head_byte",
+      "truncated_row",
+      "extra_row_byte",
+      "invalid_weight_128",
+      "invalid_activation_128",
+      "nonfinite_scale",
+      "zero_declared_rows"
+    ]
+  },
+  "sha256": {
+    "packed_head.c": "4542ce9ef581273f9d40f1974156157fc1690109e70fb277ca528bb85df90251",
+    "edge_adaptation_heads.zip": "627d42b70a8076ed1bf5c0a8dfe446c331163e43b5821cf2100611d5145a8292",
+    "edge_adaptation_predictions.npz": "c95479ea42ea726243789f06b8dd69685dae294a777ddb8655c10bfbd8a8168f",
+    "edge_fgvc.npz": "2f7609d60fcdf157f10ecc711951a62f0333e82df7b5b9faf32562a3e9ba2267"
+  }
+}

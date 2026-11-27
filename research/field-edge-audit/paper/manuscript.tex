@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,top=22mm,bottom=23mm,left=23mm,right=23mm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,array,graphicx,xcolor,hyperref,fancyhdr}
+\definecolor{teal}{HTML}{09646A}
+\definecolor{ink}{HTML}{24343D}
+\hypersetup{colorlinks=true,urlcolor=teal,citecolor=teal,linkcolor=teal,pdftitle={When does a crop camera benefit from paying for labels?}}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\footnotesize\textcolor{teal}{EDGE AI \enspace / \enspace FIELD IMAGE TRIAGE}}
+\fancyhead[R]{\footnotesize Research manuscript}\fancyfoot[C]{\small\thepage}
+\setlength{\headheight}{15pt}\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlength{\tabcolsep}{6pt}\renewcommand{\arraystretch}{1.16}
+\newcommand{\sect}[1]{\vspace{3pt}\noindent{\large\bfseries\color{teal}#1}\par}
+\newcommand{\subt}[1]{\smallskip\noindent{\bfseries #1}\par}
+\newcommand{\note}[1]{{\footnotesize\emph{#1}\par}}
+\newcommand{\BA}{\mathrm{BA}}
+\urlstyle{same}
+\begin{document}
+{\footnotesize\color{teal}\bfseries RESEARCH ARTICLE \hfill WORKING DRAFT \quad 27 NOVEMBER 2026}\par
+\vspace{4mm}
+{\LARGE\bfseries When does a crop camera benefit\\[2pt] from paying for labels?}\par
+{\large\color{ink}A byte-matched evaluation of online edge--cloud review across apple-leaf collections}\par
+\vspace{3mm}
+\sect{Abstract}
+A crop camera can spend a limited connection on two competing actions: send calibration images for expert annotation and install a new prediction head, or keep its classifier and upload selected observations for review. We compare these actions using real encoded messages, two edge models, a common cloud expert and three image collections. Our primary replay gives a camera a fixed quota before deployment, charges remote annotation to that quota and permits one compressed frame at a time. With 32 calibration labels, the updated MobileNetV2 system reaches 83.03\%, 80.44\% and 53.16\% balanced accuracy on Cornell, Kashmir and Latvia, respectively. With 128 labels it reaches 84.52\%, 73.32\% and 53.54\%. The larger update exhausts the available setup allowance on every Kashmir draw. Under a common online controller, the binary EdgeBoost confidence score produces identical queries to our simple margin, and a published learned deferral rule performs better on Cornell. With MobileNetV4, updating before review improves on frozen-camera review only on Cornell at the retrospective 25\% byte ceiling. On the Latvian scab task, 84.6\% of the extra missed positives arise before an image is sent. These finite-cohort results quantify when paying for a new classifier helps, when the camera should keep its existing head, and how proxy hardware and the definition of disease limit both conclusions.
+
+\sect{1 \quad The decision at the gateway}
+A remote annotator must usually see the leaf before supplying its label. At what point does buying that label leave too little capacity for subsequent alerts? A second uncertainty is the order of arrivals. The camera must decide whether to send the present frame while the severity, scores and JPEG lengths of future frames are unknown. A third is the value of the reply: forwarding a difficult frame helps only if the cloud expert can correct the camera.
+
+Previous work quantified the gap between controlled and field photographs \cite{mohanty}, confidence-based deferral \cite{jit,edgeboost}, embedded updates \cite{tinyol,lin} and scheduling of model specialization on edge GPUs \cite{ekya,remembrall}. We connect the cost of acquiring supervision to the subsequent review decisions. All paired comparisons within each protocol share evaluation identities, the available label draw, the cloud expert and an absolute byte allowance. We trace changes in both false alarms and missed disease. A test against the expert's source-specific reference for a single photograph cannot establish plant health or crop yield.
+
+\newpage
+\sect{2 \quad Inputs, models and comparisons}
+\subt{Device measurements and image sources}
+AgriTinyVision exposes a 160-pixel binary MobileNetV2 and an archived ESP32-S3 INT8 replay \cite{agri}. We joined all 60 board records to PlantDoc source files by identity, checked the hashes of the actual RGB inputs and repeated the FP32 forward pass. Its maximum probability difference from the archived FP32 result was $5.1\times10^{-7}$ and every three-state output matched. We use the published disease-score threshold of 0.30 for forced binary decisions. The upstream band from 0.20 to below 0.40 allows abstention. The main V2 experiments use its exported FP32 backbone on a CPU. We also replay the released ESP-PPQ tensor scales on the host and repeat the evaluation with a MobileNetV4 pipeline. The original 60 records are the only physical-device observations. PlantDoc images were sourced from the internet \cite{singh}.
+
+\begin{center}\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{34mm}rp{99mm}@{}}\toprule
+Evidence & Images & Role in the comparisons\\\midrule
+PlantDoc board replay & 60 & Historical device outputs for 15 source classes across four crops.\\
+PlantDoc target crops & 131 & All eligible official test images. A decontaminated comparison retains 121, including 66 outside the archived board subset and its duplicate components.\\
+Cornell FGVC7 & 1,821 & Expert-labelled apple images. Used as released for frozen inference. A separate target-assisted protocol draws from 450 representatives and tests on 1,353 remaining representatives.\\
+Kashmir stress pool & 384 & Fixed hash sample of 128 images per released class. Every applied head was fitted elsewhere.\\
+Latvian orchard & 1,190 & Whole public archive with scab labels. Used for external replay and a separate early-to-late-date calibration experiment.\\\bottomrule
+\end{tabular}\end{center}
+
+We audited published splits, hashes and candidate near-duplicates. Fourteen of 236 official PlantDoc test files matched training files. Cornell \cite{thapa} had no match against 5,370 audited upstream files at perceptual-hash distance at most four. Image identity screens cannot establish plant-level independence. Kashmir's processed sample lacks parent-leaf identifiers.
+
+\subt{A byte-identical remote comparison}
+We encode oriented images as quality-75 JPEGs at a maximum long edge of 224 pixels. The primary expert is a frozen DINOv2-small \cite{dino} with a class-balanced logistic head fitted to 1,237 distinct PlantDoc training payloads (190 healthy). The same decoded JPEG reaches the same expert for every matched routing policy. Appendix A includes 112-pixel payloads, an independently pretrained MobileNetV2 \cite{mobile}, and an unweighted DINO head. We report balanced accuracy, $\BA=(\mathrm{sensitivity}+\mathrm{specificity})/2$, supplemented by false alarms, misses and ordinary accuracy.
+
+\subt{Shared calibration and service contract}
+For V2, 20 seeded draws of 32 or 128 labels come from a 450-image Cornell calibration bank that excludes all holdout components. The device transmits a signed-byte 1,280-dimensional activation with its scale, label and identifier (1,293 bytes per record). A class-balanced logistic head is returned in 1,294 bytes. The source-trained remote service receives a 224-pixel JPEG with 20 bytes of application fields per query. A cold start charges setup against the same quota as serving. Prepaid results isolate inference after setup and are reported separately. The online replay fixes the quota before the first arrival. The retrospective scheduler instead prices its cap from the complete test batch. Its access to future scores and lengths defines a different scheduling problem.
+
+\newpage
+\input{streaming_results.tex}
+\newpage
+\input{methods_comparison.tex}
+\newpage
+\input{failure_and_deployment.tex}
+
+\sect{Artifact and provenance}
+The accompanying project contains the frozen-experiment specification, per-image decisions and scores, compact fitted heads, aggregate results, source revisions and reconstruction scripts. Obtain the original Cornell references under the competition terms to join the identifiers locally. Raw photographs, restricted feature caches and third-party model weights are obtained separately. It includes the operating-point and source-balancing controls added during analysis. Cornell and Kashmir informed exploratory extensions. The full Latvian archive and chronological holdout were specified before the corresponding outcomes were inspected. There was no public preregistration. The binary labels and pretrained models belong to their original providers. Raw photographs and third-party model weights can be retrieved at their pinned sources. The project includes an independent C99 reader and exhaustive small-pool checks for the cost and audit computations. An AI coding assistant contributed to the computational implementation and drafting. Authorship, affiliations and submission metadata await confirmation by the research team.
+
+\newpage\begingroup\small
+\begin{thebibliography}{24}\setlength{\itemsep}{1.5pt}\setlength{\parskip}{0pt}
+\bibitem{mohanty} S. P. Mohanty, D. P. Hughes and M. Salathé. Using deep learning for image-based plant disease detection. \emph{Frontiers in Plant Science}, 7, 1419, 2016. \href{https://doi.org/10.3389/fpls.2016.01419}{doi:10.3389/fpls.2016.01419}.
+\bibitem{jit} W. Jitkrittum, N. Gupta, A. K. Menon, H. Narasimhan, A. S. Rawat and S. Kumar. When does confidence-based cascade deferral suffice? \emph{NeurIPS}, 2023. \href{https://arxiv.org/abs/2307.02764}{Author manuscript}.
+\bibitem{sawade} C. Sawade, N. Landwehr and T. Scheffer. Active comparison of prediction models. \emph{NeurIPS}, 2012. \href{https://proceedings.neurips.cc/paper/2012/hash/92fb0c6d1758261f10d052e6e2c1123c-Abstract.html}{Proceedings}.
+\bibitem{musgrove} D. Musgrove, A. Radtke and T. Haddad. Discordant pair analysis for sample efficient model evaluation. \emph{Scientific Reports}, 13, 20987, 2023. \href{https://doi.org/10.1038/s41598-023-48017-4}{doi:10.1038/s41598-023-48017-4}.
+\bibitem{tinyol} H. Ren, D. Anicic and T. A. Runkler. TinyOL: TinyML with online-learning on microcontrollers. \emph{IJCNN}, 2021. \href{https://ieeexplore.ieee.org/document/9533927}{IEEE 9533927}.
+\bibitem{lin} J. Lin et al. On-device training under 256KB memory. \emph{NeurIPS}, 2022. \href{https://proceedings.neurips.cc/paper_files/paper/2022/hash/90c56c77c6df45fc8e556a096b7a2b2e-Abstract-Conference.html}{Proceedings}.
+\bibitem{ekya} R. Bhardwaj et al. Ekya: Continuous learning of video analytics models on edge compute servers. \emph{USENIX NSDI}, 2022. \href{https://www.usenix.org/conference/nsdi22/presentation/bhardwaj}{Proceedings}.
+\bibitem{remembrall} M. Ramanujam, Y. Dai, K. Jamieson and R. Netravali. Remembrall: Leaning into memory for accurate video analytics on system-on-chip GPUs. \emph{USENIX NSDI}, 2026. \href{https://www.usenix.org/conference/nsdi26/presentation/ramanujam}{Proceedings}.
+\bibitem{agri} Sver0411. AgriTinyVision, model release v0.1.0 and subsequent fixed-cohort field validation reports. \href{https://github.com/Sver0411/AgriTinyVision/releases/tag/v0.1.0}{Model} and \href{https://github.com/Sver0411/AgriTinyVision/tree/16e7a2fdec43c02258f22e85b085ac269345e124/reports/field_validation}{archived measurements}.
+\bibitem{singh} D. Singh et al. PlantDoc: A dataset for visual plant disease detection. \emph{CoDS-COMAD}, 2020. \href{https://doi.org/10.1145/3371158.3371196}{doi:10.1145/3371158.3371196}.
+\bibitem{thapa} R. Thapa, N. Snavely, S. Belongie and A. Khan. The Plant Pathology Challenge 2020 data set to classify foliar disease of apples. \emph{Applications in Plant Sciences}, 8, e11390, 2020. \href{https://doi.org/10.1002/aps3.11390}{doi:10.1002/aps3.11390}.
+\bibitem{mobile} linkanjarad. MobileNetV2 for plant disease identification, model card and 38-class checkpoint. \href{https://huggingface.co/linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification/tree/c1861579a670fb6232258805b801cd4137cb7176}{Pinned source model}.
+\bibitem{dino} M. Oquab et al. DINOv2: Learning robust visual features without supervision. \emph{Transactions on Machine Learning Research}, 2024. \href{https://arxiv.org/abs/2304.07193}{Author manuscript}.
+\bibitem{mahi} R. Netravali et al. Mahimahi: Accurate record-and-replay for HTTP. \emph{USENIX ATC}, 2015. Capacity traces originally collected with Saturator by K. Winstein, A. Sivaraman and H. Balakrishnan, \emph{NSDI}, 2013. \href{https://github.com/ravinet/mahimahi/tree/f1346c38c415abfc98626dd82450f49a57033603/traces}{Pinned trace collection}.
+\bibitem{yatoo} A. A. Yatoo and A. Sharma. An indigenous dataset for the detection and classification of apple leaf diseases. \emph{Data in Brief}, 53, 110165, 2024. \href{https://doi.org/10.1016/j.dib.2024.110165}{doi:10.1016/j.dib.2024.110165}.
+\bibitem{kodors} S. Kodors et al. Apple scab detection using CNN and transfer learning. \emph{Agronomy Research}, 19(2), 2021. \href{https://doi.org/10.15159/ar.21.045}{doi:10.15159/ar.21.045}. \href{https://www.kaggle.com/datasets/projectlzp201910094/applescablds}{AppleScabLDs leaf archive}.
+\bibitem{edgeboost} N. Said and O. Landsiedel. EdgeBoost: Confidence boosting for resource constrained inference via selective offloading. \emph{Computer Networks}, 269, 111437, 2025. \href{https://doi.org/10.1016/j.comnet.2025.111437}{Journal article} and \href{https://github.com/ds-kiel/EdgeBoost/tree/26abd91857989a542ef67c7fd59f619ee563f458}{author code}.
+\bibitem{ova} R. Verma and E. Nalisnick. Calibrated learning to defer with one-vs-all classifiers. \emph{ICML}, 2022. \href{https://proceedings.mlr.press/v162/verma22c.html}{Proceedings}.
+\bibitem{cc} H. Mozannar et al. Who should predict? Exact algorithms for learning to defer to humans. \emph{AISTATS}, 2023. \href{https://proceedings.mlr.press/v206/mozannar23a.html}{Proceedings}.
+\bibitem{mao} A. Mao, M. Mohri and Y. Zhong. Mastering multiple-expert routing: Realizable $H$-consistency and strong guarantees for learning to defer. \emph{ICML}, 2025. \href{https://proceedings.mlr.press/v267/mao25c.html}{Proceedings}.
+\bibitem{gate} S. Rabanser et al. Gatekeeper: Improving model cascades through confidence tuning. \emph{NeurIPS}, 2025. \href{https://proceedings.neurips.cc/paper_files/paper/2025/hash/1c23f6ce43a7db43dfe31f26ceabfbfe-Abstract-Conference.html}{Proceedings}.
+\bibitem{vfour} D. Qin et al. MobileNetV4: Universal models for the mobile ecosystem. \emph{ECCV}, 2024. \href{https://www.ecva.net/papers/eccv_2024/papers_ECCV/papers/05647.pdf}{Proceedings}.
+\bibitem{forest} Telenor. Radio and network KPI measurements for 5G private network in forest environment. COMMECT, 2025. \href{https://doi.org/10.5281/zenodo.16919567}{Measurements and documentation}.
+\bibitem{esp} Espressif. How to quantize model. \emph{ESP-DL User Guide}. \href{https://docs.espressif.com/projects/esp-dl/en/latest/tutorials/how_to_quantize_model.html}{Exported configuration and test fixtures}.
+\end{thebibliography}\endgroup
+\input{supplementary_results.tex}
+\end{document}

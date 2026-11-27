@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv*/
+data/raw/*
+!data/raw/mahimahi_traces/
+data/backend_jpegs/
+data/fgvc_backend_jpegs/
+*.log
+
+field-edge-audit-artifact.zip
+data/features/latvia.npz

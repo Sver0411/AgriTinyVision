@@ -1,0 +1,36 @@
+{
+  "n": 1190,
+  "archive_bytes": 3456469861,
+  "archive_sha256": "a56f3b825c30d5290094ba67f94a351b861fe583547a150a0c732597c50da6f4",
+  "manifest_sha256": "cf989140652bd94006ae703aba94d19effcf8f395278530b3525f47e5603afb8",
+  "feature_sha256": "1729670da910cb6fd6b694c87d935756a973710516ff3fd47f042635d518ec3b",
+  "exact_source_sha256_matches": 1190,
+  "phash_exact_matches": 1190,
+  "max_phash_bit_difference": 0,
+  "marginal_shapes": {
+    "edge": [
+      1190,
+      1280
+    ],
+    "dino": [
+      1190,
+      384
+    ],
+    "multiview": [
+      1190,
+      1152
+    ],
+    "logits": [
+      1190,
+      2
+    ]
+  },
+  "source_model_head_sha256": "a7d7bf069ecd49ae3cecf68ffc893d5292423e69b209287607ff7a11a134088e",
+  "edge_model_sha256": "350c32d88d19eb16dca7d905036d2c99a716a3938b91f52715349e43ee6ab909",
+  "dino_model_sha256": "83141175ec78b4ff9a2bb58a4c7c264ba0054d1c2e122e5a8114b79a8d4179ea",
+  "numpy": "2.5.5",
+  "pillow": "12.3.0",
+  "onnxruntime": "1.32.0",
+  "index_sha256": "9b191c73b76b7f3d476c0f5aa5d5ce937061422e23fec8b73ef6d1c94d470481",
+  "runtime_s": 809.2139108749107
+}

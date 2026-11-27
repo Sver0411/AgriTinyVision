@@ -1,0 +1,4 @@
+cohort,total,remote_intermediate,intermediate_joint_positive,intermediate_joint_negative,minimum_disagree_any_edge_cutoff,minimum_disagree_any_dino_cutoff
+cornell,1353,250,177,73,171,73
+kashmir,384,85,70,15,79,15
+latvia,1190,468,425,43,390,43

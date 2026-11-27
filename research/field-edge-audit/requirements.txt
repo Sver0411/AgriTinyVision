@@ -1,0 +1,8 @@
+numpy==2.5.5
+scipy==1.18.1
+scikit-learn==1.9.1
+onnxruntime==1.32.0
+onnx==1.23.2
+Pillow==12.3.0
+matplotlib==3.11.2
+pyarrow==26.0.1

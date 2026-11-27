@@ -1,0 +1,28 @@
+\sect{3 \quad One-frame routing with remotely acquired labels}
+Can a camera afford to update its classifier and still send useful photographs as they arrive? We charge each Cornell calibration JPEG sent for human annotation, its feature record, the returned head, and subsequent uploads to the same allowance. At the start of a window with $N$ scheduled arrivals, the camera receives $B=\lfloor Nq\bar b\rfloor$ application bytes. The planning mean $\bar b$ uses the first 32 calibration JPEGs plus 20 bytes per transaction in each draw. At $q=0.25$, the mean grants for Cornell, Kashmir and Latvia are 2,273,844, 645,348 and 1,999,907 bytes, respectively (24.87\%, 17.06\% and 18.54\% of actual full-review traffic). We also replayed $q=0.10$ and $0.50$.
+
+At each arrival the camera can encode and hold one JPEG. The fixed gate uses a cutoff fitted on calibration images. The paced gate adjusts that cutoff after each arrival using remaining bytes, scheduled arrivals and previously observed candidate sizes. Neither gate sees future scores. Latvia follows capture timestamps across 14 dates. Cornell and Kashmir lack usable capture timestamps, so we average five deterministic image-hash orders per draw. Human turnaround time and codec workspace are outside this replay. Checksums and lengths matched for all 2,927 encoded JPEGs. The largest individual payload was 13,205 bytes.
+
+\begin{center}\small
+{\renewcommand{\arraystretch}{1.03}\begin{tabular}{@{}lrrrr@{}}\toprule
+Mean balanced accuracy (\%), $q=0.25$ & Labels & Cornell & Kashmir & Latvia\\\midrule
+\multicolumn{5}{@{}l}{\emph{A. Same 20 calibration draws, remote acquisition charged}}\\
+Updated camera alone & 32 &77.35&77.29&51.12\\
+Updated camera, fixed cutoff &32&82.06&80.09&53.35\\
+Updated camera, paced cutoff &32&83.03&80.44&53.16\\
+Updated camera alone &128&80.01&67.58&52.11\\
+Updated camera, fixed cutoff &128&83.51&73.93&52.80\\
+Updated camera, paced cutoff &128&84.52&73.32&53.54\\\midrule
+\multicolumn{5}{@{}l}{\emph{B. Published routing scores, shared one-frame percentile gate except last row}}\\
+Original camera uncertainty &128&72.33&73.13&50.26\\
+Updated camera uncertainty &128&84.47&73.13&53.26\\
+EdgeBoost margin &128&84.47&73.13&53.26\\
+CompareConfidence &128&84.84&73.13&53.37\\
+One-vs-all deferral &128&85.00&73.13&53.57\\
+Mao et al.\ two-stage deferral &128&83.48&73.13&53.32\\
+EdgeBoost, calibrated fixed cutoff &128&84.55&73.13&54.00\\\bottomrule
+\end{tabular}}\end{center}
+
+With 32 labels, pacing adds 5.68 points over the updated camera on Cornell and 3.15 on Kashmir. Every 32-label update fits. Every 128-label update exceeds the Kashmir allowance and falls back to the original camera. On Latvia, 128-label pacing gives 53.54\% balanced accuracy with 496.4 missed scab cases per draw, versus 118 for the original camera. A stricter policy earns $q\bar b$ bytes per arrival from zero initial credit and saves for installation. Its 128-label results fall to 78.16\%, 67.58\% and 45.35\%, respectively.
+
+Panel B isolates the routing score. After 16 unqueried arrivals, the gate ranks each score against up to 64 past scores, then applies the funded fraction of remaining arrivals. CompareConfidence, one-vs-all and two-stage deferral \cite{cc,ova,mao} use class-balanced linear heads on frozen features, the same 128 images and server, and paid router weights. For a binary logit $z$ and temperature $T>0$, EdgeBoost's margin \cite{edgeboost} $\tanh(|z|/(2T))$ preserves the uncertainty ordering. Both scores produced identical query masks in all 1,320 paired comparisons. EdgeBoost's separate calibration-fitted cutoff retains its original threshold semantics under the same hard cap. One-vs-all led Cornell by 0.53 points over updated uncertainty, while the EdgeBoost cutoff led Latvia by 0.74 points. The experiment supports the value of camera adaptation on Cornell and the affordable Kashmir draws. It provides no evidence of a superior new routing score.

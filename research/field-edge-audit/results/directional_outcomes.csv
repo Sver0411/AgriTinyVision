@@ -1,0 +1,3 @@
+fp,fn,true_rescues,false_rescues,true_retractions,false_retractions,retractions,query_count,jpeg_bytes,inference_upload_bytes,inference_reply_bytes,inference_total_bytes,cohort,n,orig_fp,orig_fn,delta_fp,delta_fn,strict_dual,healthy,diseased,calibration_nonrecurring_bytes,update_nonrecurring_bytes
+137,19,25,30,108,10,118,1353,9114524,9125348,16236,9141584,cornell,1353,215,34,-78,-15,1,377,976,3031861,22
+25,25,3,0,56,24,80,384,3774909,3777981,4608,3782589,kashmir,384,81,4,-56,21,0,128,256,3031861,22

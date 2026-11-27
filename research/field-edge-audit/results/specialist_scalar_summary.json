@@ -1,0 +1,29 @@
+{
+  "test_images": 1353,
+  "source_balanced_zero_target_labels": {
+    "accuracy": 0.8484848484848485,
+    "balanced_accuracy": 0.835560073053007,
+    "sensitivity": 0.8647540983606558,
+    "specificity": 0.8063660477453581
+  },
+  "mean_over_label_draws": {
+    "8": {
+      "scalar_balanced_accuracy": 0.7684532221594121,
+      "full_balanced_accuracy": 0.65357084619733,
+      "scalar_accuracy": 0.8483739837398374,
+      "full_accuracy": 0.711049519586105
+    },
+    "32": {
+      "scalar_balanced_accuracy": 0.832477741661956,
+      "full_balanced_accuracy": 0.7765529878897247,
+      "scalar_accuracy": 0.8422764227642278,
+      "full_accuracy": 0.8011086474501109
+    },
+    "128": {
+      "scalar_balanced_accuracy": 0.8402908531547592,
+      "full_balanced_accuracy": 0.8450979339696483,
+      "scalar_accuracy": 0.8347006651884701,
+      "full_accuracy": 0.845158906134516
+    }
+  }
+}

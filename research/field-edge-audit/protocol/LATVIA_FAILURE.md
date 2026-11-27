@@ -1,0 +1,64 @@
+# Failure analysis on the Latvian scab archive
+
+This is a retrospective explanation of the published-camera benchmark's previously observed external degradation. It was specified after knowing the primary aggregate accuracies. No test image is used to choose a deployable threshold or a training split.
+
+The primary analysis fixes the original local-review 25% full-upload ceiling, all 20 Cornell 128-label INT8 heads, the PlantDoc-balanced 224-pixel DINO remote expert, the exact measured request/reply bytes, the archived query masks and the 20 reference random orderings. Each test image retains its original, update-only, expert and joint decision. Negative and positive repairs and regressions are counted separately, on queried and unqueried records. The AUROC of minus absolute edge margin for detecting an incorrect edge decision measures whether the edge ranks its own errors nearer the front of the upload queue. Disease-score AUROC and class-specific sensitivity and specificity separate ranking and operating-point effects. No claim concerns unobserved pathology.
+
+Two hindsight controls ask distinct questions. A perfect expert acting only on the actual queried frames measures how much the selected examples could profit from review. A perfectly informed router with the existing frozen expert can select any affordable beneficial review. It is charged the same head, per-image bytes, reply bytes and total budget. To optimize finite-population BA exactly, choose the cheapest corrected images per true class, then enumerate the number of affordable negative corrections and select the maximal affordable positive prefix. These reference-label controls quantify room for improvement and cannot be run by the camera.
+
+The Cornell scab-positive and healthy-negative subset retains decisions from the original full-batch scheduler. Its labels control for the mixture of disease categories, although the publishers' negative criteria still differ. For Latvia use all images, one per same-class hash component, each camera device, each capture date, and every leave-one-date-out subset. Subgroup estimates retain original actions with no refitting or budget reallocation upon exclusion. Single-class groups have no defined balanced accuracy or AUROC. Summaries are descriptive across 20 repeated calibration draws on one finite pool.
+
+A diagnostic intervention holds the later nine Latvian capture days (579 images) fixed and replaces the source of edge supervision only. Compare the same archived 128-label Cornell heads with heads fitted to 128 images sampled without replacement from the earliest five Latvian days, holding the architecture, quantization, regularization, decision threshold, frozen remote reviewer, 166,798-byte local-label setup and the 25% full-traffic cap fixed. Draw 20 subsets from sorted early-day hash representatives using the existing seeded NumPy protocol (20261127 + seed). Exclude later images and full original connected components from fitting. Each site supplies its own 128 supervision labels in the respective arm, with no extra target label in evaluation. No future Latvian label goes into either fitted model or a cutoff choice. The temporal split was locked in the previous experiment. This follow-up uses an archive already examined, so it is an out-of-date-split explanatory intervention and does not constitute another prospective external validation.
+
+LatHort describes multi-view sampling and scab-present versus scab-absent labels in its original acquisition study. Mechanical or biological damage, insects, shadows or droplets can appear among images without visible scab. Cornell used an expert-confirmed four-way orchard endpoint. The comparison cannot separate geography, sensor, disease severity, acquisition practice and annotation rules without new data holding those factors fixed. [Kodors et al.](https://agronomy.emu.ee/wp-content/uploads/2021/04/Vol19_No2_Kodors.pdf) · [Thapa et al.](https://vision.cornell.edu/se3/wp-content/uploads/2020/09/aps3.11390.pdf)
+
+## Controlled transport and framing replay
+
+After the preceding error decomposition, we added a paired image-input intervention to test the narrower hypothesis that the lossy 224-long-edge network uplink accounts for the expert's misses. The source-trained DINO weights, head, 0.50 threshold, test identities and image orientation are held fixed. Compare the recorded 224-long-edge quality-75 JPEG, a 448-long-edge quality-75 JPEG and the decoded original camera image under the same shortest-edge resize and 224-centre-crop preprocessing. Each transmission is verified against the respective SHA-256. The network input to the DINO graph remains 224 square in all arms. For the exact same 448 JPEG compare the recorded full-frame, aspect-deforming resize with the centre crop without changing the head. This final intervention changes framing and resize geometry together. Report full-review paired errors, fixed original query mask results, and a paired comparison recalculating the original confidence priority under the same numeric application-byte ceiling. The fixed-mask and full-review arms can consume more traffic. Original-camera measurements use the actual member image bytes, not the whole archive. Do not choose a new method from these diagnostic results.
+
+## What the paired records establish
+
+All values below use the existing 25% upload cap and local labels for Cornell calibration. Counts marked as means average the same held-out images over 20 alternative calibration draws.
+
+| Metric | Cornell | Kashmir | Latvia |
+| --- | ---: | ---: | ---: |
+| Adapted edge disease-score AUROC | .9164 | .8837 | .5276 |
+| Frozen service disease-score AUROC | .9282 | .9177 | .6958 |
+| Edge uncertainty AUROC for identifying its errors | .7966 | .7442 | .4192 |
+| The same error AUROC with equal total weight per true class | .8339 | .7724 | .5097 |
+| Edge uncertainty error AUROC among positive images | .7183 | .6833 | .3681 |
+| Edge uncertainty error AUROC among negative images | .8726 | .8498 | .6464 |
+| Edge accuracy on the chosen uploads | 53.22% | 57.59% | 53.66% |
+| Service accuracy on exactly those uploads | 76.93% | 79.68% | 38.92% |
+
+1. **Label mix alone cannot explain the loss of ranking.** On the Cornell subset containing only 450 scab and 377 healthy test photographs, the edge and service disease-score AUROCs are .9051 and .9547. The corresponding Latvian values are .5276 and .6958. Restricting Cornell to scab changes its positive-case mix but does not make the definition of a Latvian negative identical to a Cornell healthy leaf.
+2. **Most additional misses arise before offload.** Compared with the original camera, an average of 353.80 extra Latvian scab images were missed by the Cornell-trained edge head (118 to 471.80). Review added another 64.55 net misses, reaching 536.35. About 84.6% of the net increase was already present on the updated edge. Within review, 25.50 previously missed scab cases were recovered and 90.05 previously correct scab alerts were lost. Among negative images the router removed 25.95 false positives and introduced 1.50. Comparing selective with random review of the same updated camera gives 3.60 fewer false alarms and 13.47 more misses on average.
+3. **The prevalence changes the metric and the camera's errors are genuinely site-specific.** The joint policy's Latvian specificity improved from 5.80% on the original camera to 64.03%, while sensitivity declined from 88.00% to 45.44%. Holding these two class-specific changes fixed, the difference in ordinary accuracy changes sign at 57.78% positive prevalence. With half of each class these rates give a 7.84-point gain. With the archive's 82.61% positive prevalence they give a 25.03-point loss. These prevalence-standardized contrasts are descriptive thought experiments.
+4. **Correctable images still exist within the cap.** With the actual query mask, a perfect reviewer would raise Latvian BA from 54.74% to 63.67%. A reference-label-aware router using the actual source-trained service can attain 79.95% within the same budget. It can afford every edge error the service would correct on this specific batch in all 20 draws. The remaining average 9.20 false alarms and 350.50 misses are wrong under both experts. These ceilings differ in what they hold fixed and must not be subtracted as separate additive failure effects.
+5. **Device and date strata constrain the explanation.** Retaining one image per hash component gives selection-versus-random gains of .044 percentage points (54.570% versus 54.526%) and uncertainty/error AUROC .4141. The selection gain after omitting any of 14 capture dates ranges from −.08 to +.51 points; after omitting any one of four camera models it ranges from .00 to +.60 points. The largest device group was 841 iPhone SE images, including 734 positive, with joint BA 50.01% compared with 65.33% for 288 Panasonic images, including 215 positive. Weighting ROC evidence by the number of positive–negative pairs within common date and device strata gives edge AUROC .5120 and service AUROC .6659, compared with pooled .5276 and .6958. Only 8.38% of all positive–negative pairs are retained and 11 of 18 date-by-device strata contain both classes. Devices, dates, subjects and disease prevalence are confounded. Date strata containing only one label have undefined BA.
+6. **Changing the edge labels is an intervention, not a general cure.** On the 579 later-day cases, replacing 128 Cornell training labels with 128 earlier Latvian labels at identical setup bytes moved update-only BA from 52.91% to 50.91% and joint BA from 56.31% to 53.69%. The locally supervised head produced 198.85 joint misses versus 263.50 with the transferred head, and 38.45 false positives versus 25.50. Per-draw image identity, both continuous margins, bytes and predictions can be replayed from the dated split and score cache.
+
+To reproduce from the scalar-only bundle, run the following inside the project root.
+
+```sh
+python scripts/latvia_failure.py
+python scripts/latvia_failure_local.py
+python scripts/latvia_failure_transport.py
+python scripts/latvia_failure_figure.py
+python -m unittest discover -s tests -p 'test_latvia_failure.py'
+```
+
+Regenerate the scalar margin inputs from the locally authorized original features using `python scripts/latvia_failure.py --rebuild-margins` followed by `python scripts/latvia_failure_local.py --refit`. Regenerate the transport scores by running `python scripts/latvia_failure_transport.py --extract data/raw/latvia.zip` with the complete previously verified Latvian archive and source weights in the existing cache. In the transport table, `same_selected_images` changes the bytes when the JPEG changes, while `same_byte_ceiling` reruns the sender's identical uncertainty ranking under the original total ceiling. No photo or embedding is distributed in the diagnostic output files.
+
+## Can loss in the JPEG uplink explain the misses?
+
+The image-input replay finished on all 1,190 photographs. With the original camera orientation and unchanged service head, the writer verified each raw-file and 448-JPEG hash. The original archived 224 probabilities were reproduced exactly from stored logits. The 448 centre and original centre conditions add 2,380 frozen network forwards. The 448 whole-frame condition reuses the previously generated token for a resized whole frame.
+
+| Service input | Full-review sensitivity | Full-review BA | Full-review disease AUROC | Joint BA, same chosen images | Mean queries at original 25% byte cap | Joint BA at that cap |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 224 JPEG, centre crop | 29.50% | 60.64% | .6958 | 54.74% | 271.8 | 54.74% |
+| 448 JPEG, centre crop | 36.22% | 64.97% | .7434 | 55.72% | 90.5 | 53.30% |
+| Original camera file, centre crop | 35.20% | 65.18% | .7566 | 55.79% | 1.0 | 52.14% |
+| Same 448 JPEG, resized whole frame | 26.35% | 58.58% | .6676 | 54.00% | 90.5 | 52.73% |
+
+Higher transport resolution improved the service's score ordering under its unchanged centre crop. The frozen expert still missed 637 of the 983 scab-positive images from the original camera files, compared with 693 from the 224-pixel JPEGs. Pre-transmission downsampling and JPEG encoding jointly explain part of the deficit. The network's own 224-pixel input and its learned disease features remain in every condition. Reusing the original selected image identities required 7,751,483 application bytes on average for the 448-pixel stream and 787,612,565 bytes for the original-image stream (rounded). Repacking the original ranking under the 2,697,020-byte cap removed the small BA advantage of the higher-resolution inputs. The observed sensitivity cannot identify lesion size or image-specific causes without lesion-level or severity annotations.

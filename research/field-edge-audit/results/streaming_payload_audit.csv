@@ -1,0 +1,4 @@
+site,verified_payloads,sha256_and_lengths_matched,all_images_single_frame_max_jpeg_bytes,all_images_batch_jpeg_bytes
+cornell,1353,1353,11852,9114524
+kashmir,384,384,12660,3774909
+latvia,1190,1190,13205,10764280

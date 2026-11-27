@@ -1,0 +1,8 @@
+{
+  "competition": "https://www.kaggle.com/competitions/plant-pathology-2020-fgvc7",
+  "archive": "https://api.kaggle.com/v1/datasets/download/piantic/plantpathology-apple-dataset?datasetVersionNumber=1",
+  "label_crosscheck": "https://api.kaggle.com/v1/datasets/download/jagadeeshthogata/plant-pathology-2020-fgvc7/train.csv",
+  "n": 1821,
+  "archive_sha256": "41b4260710a2b56a588cefe167459876c5b1d61d5868fb23a997ec292c03160a",
+  "labels_sha256": "36e531b051e05531128774c1671fb3811a40b18dbd7edc314dc3cbf47aa8f966"
+}

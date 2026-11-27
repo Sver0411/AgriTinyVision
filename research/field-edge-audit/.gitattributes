@@ -1,0 +1,3 @@
+# Preserve the measured artifact byte-for-byte across checkouts.
+*.csv -text whitespace=cr-at-eol
+data/raw/mahimahi_traces/** -text whitespace=cr-at-eol

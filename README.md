@@ -17,6 +17,12 @@
 
 AgriTinyVision trains compact crop-image classifiers and runs the frozen MobileNetV2 160 INT8 model on ESP32-S3 N16R8. A PC camera supplies images over USB; a local Web console displays the device's predictions, timing and memory measurements, and saves experiment reports.
 
+## When does a crop camera benefit from paying for labels?
+
+The Field Edge Audit study compares installing a classifier update with uploading individual observations for review under a shared byte allowance. It uses AgriTinyVision's released model, a second MobileNetV4 edge pipeline, three apple-image cohorts and 60 archived ESP32-S3 records. Remote annotation, streaming decisions and a Latvian scab failure are evaluated explicitly. The update helps on Cornell. Its 128-label setup exceeds the planned Kashmir quota, and binary confidence routing matches the EdgeBoost ranking exactly.
+
+[Research artifact](research/field-edge-audit/README.md) · [Manuscript PDF](research/field-edge-audit/paper/manuscript.pdf) · [Matched results](research/field-edge-audit/results/methods_comparison.csv) · [Online comparison](research/field-edge-audit/results/streaming_published_summary.csv)
+
 ## PC camera Web console
 
 Requirements: Windows 11, Python 3.10+, a PC camera, ESP32-S3 N16R8 and a USB data cable. Firmware uses ESP-IDF 5.4.4 and ESP-DL 3.3.13.

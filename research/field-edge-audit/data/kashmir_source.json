@@ -1,0 +1,8 @@
+{
+  "revision": "38e4c0600bbf962f2379bf1574b8049c801e089d",
+  "url": "https://huggingface.co/datasets/Project-AgML/apple_leaf_disease_classification/resolve/38e4c0600bbf962f2379bf1574b8049c801e089d/data/train-00000-of-00001.parquet",
+  "parquet_sha256": "f21970cd3098ad13a8efe364b7291a436f5fbf32caf8bf7959a3e5cf25ea5eae",
+  "parquet_rows": 5612,
+  "sampled": 384,
+  "sampling": "Lowest SHA256(field-edge-v1/+filename) within each of three source classes, 128 each"
+}

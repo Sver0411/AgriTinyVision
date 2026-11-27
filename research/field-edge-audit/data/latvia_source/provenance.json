@@ -1,0 +1,146 @@
+{
+  "source": "https://www.kaggle.com/datasets/projectlzp201910094/applescablds",
+  "version": 1,
+  "archive_bytes": 3456469861,
+  "archive_sha256": "a56f3b825c30d5290094ba67f94a351b861fe583547a150a0c732597c50da6f4",
+  "labels": {
+    "Healthy": 207,
+    "Scab": 983
+  },
+  "unique_content_sha256": 1189,
+  "identical_content_groups": [
+    [
+      "AppleScabLDs/Scab/IMG_8956 2.JPG",
+      "AppleScabLDs/Scab/IMG_8956.JPG"
+    ]
+  ],
+  "manifest_sha256": "cf989140652bd94006ae703aba94d19effcf8f395278530b3525f47e5603afb8",
+  "license": "CC BY-NC-ND 4.0",
+  "reference_overlap": [
+    {
+      "reference": "plantdoc_test",
+      "reference_n": 236,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    },
+    {
+      "reference": "plantdoc_train",
+      "reference_n": 2342,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    },
+    {
+      "reference": "plantvillage_train",
+      "reference_n": 1964,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    },
+    {
+      "reference": "plantvillage_test",
+      "reference_n": 417,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    },
+    {
+      "reference": "plantvillage_val",
+      "reference_n": 411,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    },
+    {
+      "reference": "cornell",
+      "reference_n": 1821,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    },
+    {
+      "reference": "kashmir",
+      "reference_n": 384,
+      "exact_overlaps": 0,
+      "pHash5_candidate_images": 0,
+      "min_hamming": 12,
+      "paths": []
+    }
+  ],
+  "unit": "Photo. Paper reports that individual leaves could be photographed from several viewpoints.",
+  "negative_label": "Healthy folder signifies absence of visible scab; other biological/mechanical damage may be present.",
+  "published_archive_md5": "3cf7a8b891d28ac56b34b52966959b09",
+  "exif_present": {
+    "exif_datetime_original": 1190,
+    "exif_make": 1190,
+    "exif_model": 1190
+  },
+  "exif_models": {
+    "SM-A515F": 21,
+    "POT-LX1": 40,
+    "iPhone SE": 841,
+    "DMC-TZ6": 288
+  },
+  "exif_date_label_counts": {
+    "2020:06:08": {
+      "Healthy": 35,
+      "Scab": 48
+    },
+    "2020:06:09": {
+      "Scab": 140
+    },
+    "2020:06:16": {
+      "Healthy": 2,
+      "Scab": 4
+    },
+    "2020:06:17": {
+      "Healthy": 94,
+      "Scab": 221
+    },
+    "2020:06:24": {
+      "Healthy": 4,
+      "Scab": 63
+    },
+    "2020:06:25": {
+      "Healthy": 12,
+      "Scab": 22
+    },
+    "2020:06:26": {
+      "Healthy": 8,
+      "Scab": 41
+    },
+    "2020:06:28": {
+      "Healthy": 6,
+      "Scab": 58
+    },
+    "2020:06:29": {
+      "Scab": 140
+    },
+    "2020:07:01": {
+      "Healthy": 31,
+      "Scab": 183
+    },
+    "2020:07:14": {
+      "Healthy": 15,
+      "Scab": 6
+    },
+    "2020:07:23": {
+      "Scab": 8
+    },
+    "2020:08:05": {
+      "Scab": 28
+    },
+    "2020:08:06": {
+      "Scab": 21
+    }
+  },
+  "n_dates_with_both_labels": 9,
+  "blind_index_sha256": "9b191c73b76b7f3d476c0f5aa5d5ce937061422e23fec8b73ef6d1c94d470481"
+}
