@@ -1,193 +1,200 @@
-<h1 align="center">AgriTinyVision v0.3</h1>
+# AgriTinyVision
+
+[English](README.md) | **简体中文**
+
+**面向带宽受限果园相机的 TinyML 作物病害初筛、ESP32-S3 INT8 实机部署与预算摊销源锚定边缘自适应框架（`BASA`）。**
+
+AgriTinyVision 将 **ESP32-S3 N16R8** 端到端嵌入式视觉链路（`MobileNetV2 160×160 INT8`、图像质量门控、`NORMAL` / `SUSPECT` / `UNKNOWN` 三态初筛、SHA256 强校验 USB Web 控制台与受控量化探针）与 **`BASA`（Budget-Amortized Source-Anchored Adaptation）** 统一于同一仓库——在同一字节账本下严格权衡“付费远程农学标注适配本地分类头”与“严格因果单帧云端延后复核”，并提供零堆分配 C99 实机运行时。
+
+[项目概览](#项目概览) · [系统架构](#系统架构) · [BASA 实验结果](#1-basa预算摊销源锚定自适应与-int8-量化审计) · [ESP32-S3 实机数据](#2-esp32-s3-实机基准与-pc-摄像头-web-控制台) · [外部田间验证](#3-外部田间验证与-v03-可靠性探针) · [快速开始](#快速开始) · [COMPAG 论文 (PDF)](research/field-edge-audit/paper/manuscript_compag.pdf)
 
 ---
 
-<p align="center">
-  <a href="#project-overview">概览</a> ·
-  <a href="#pc-摄像头-web-控制台">Web 控制台</a> ·
-  <a href="#方法与推理状态">方法</a> ·
-  <a href="#主要结果与当前状态">验证状态</a> ·
-  <a href="#relationship-to-smart-agriculture-edge-ai">主项目关联</a> ·
-  <a href="README.md">English</a>
-</p>
+## 项目概览
+
+低功耗果园相机在开展叶片病害巡检时同时面临两个耦合瓶颈：**严重的跨果园视觉域漂移**与**极紧的无线上传带宽配额**。在固定通信预算下，端侧相机必须抉择：是花一部分上行字节上传少量本地果园照片购买远程标注以重训轻量分类头，还是冻结出厂分类头、把不确定帧逐帧上传给云端大模型复核？
+
+在 **3 组去污染跨果园苹果叶片数据集**（Cornell、Kashmir 与按日期划分的 Latvia）、**3 条边缘推理管线**（MobileNetV2 FP32、ESP32-S3 主机 INT8 仿真回放、MobileNetV4-Conv-Small）、**16 种基线方法**（13 种固定上限基线 + 3 种同预算截断基线）以及 **ESP32-S3 N16R8 实机芯片实测**上，AgriTinyVision 实现了：
+
+- **预算摊销源锚定自适应（`BASA`）：** 将视界摊销标注预算、无标签分位数分层选样、凸**各向异性源锚定正则（ASAR）**打包为 **1,294 B `EQ01` INT8 分类头**，并配合因果 64 帧滑动分位门控。在全部 **36 组主测试（25% 上行配额）** 中取得全场最高均值平衡准确率（总计 **73.50%**；预拨额度 **74.49%**；零初始赚取额度 **72.52%**），领先 13 种固定上限基线 **+1.46 至 +5.35 pp**，领先 3 种同预算截断基线 **+0.58 至 +0.89 pp**（零初始赚取额度下领先 **+1.14 至 +1.36 pp**）。
+- **稀缺带宽领先与诚实高带宽边界：** 在紧缺的 **10% 上行配额** 下依然稳居第一（**70.49%** vs. `Clamped-CE` **69.40%**），同时诚实披露在宽松的 **50% 上行配额** 下的交叉边界（`Clamped-CE` 以 **75.56%** 略高于 `BASA` 的 **75.29%**）。
+- **微控制器 INT8 量化审计与 ESP32-S3 实机运行：** 实证 ESP32-S3 INT8 量化相对 FP32 会导致多达 **13/45** 组路由器两两排名翻转；在物理 **ESP32-S3 N16R8**（160 MHz，ESP-IDF v5.4.4 / ESP-DL v3.3.13）上，冻结 MobileNetV2 160 INT8 骨干实测 **527.84 ms**（P50）且连续运行 **500/500 帧无重启**，而 BASA 独立 C99 运行时仅增加 **93 µs** 分类头推理 + **41 µs** 流式门控（仅占骨干耗时 **0.025%**）、**1,836 B** 常驻 RAM（占空闲 SRAM **0.64%**）、**0 B** PSRAM 增量，芯片实机 bit 级一致性 **0/16 误差**（主机全队列 **0/81,180**）。
+- **v0.3 SHA256 强校验 PC 摄像头控制台与外部验证：** 发送图像前强制校验板端模型/部署 SHA256、张量 exponent 与决策边界；支持无损田间采集标注；在 60 张外部 PlantDoc 测试子集上达到 **88.33%** 二分类准确率、**95.00%** 接受覆盖率与 **89.47%** 接受准确率。
+
+![BASA 端到端架构与统一字节账本](research/field-edge-audit/paper/figures/compag_basa_arch.png)
 
 ---
 
-<a id="project-overview"></a>
+## 系统架构
 
-AgriTinyVision 包含轻量作物图像分类器的训练、导出和 ESP32-S3 实机部署。电脑摄像头采集图像，通过 USB 交给 ESP32-S3 N16R8 运行已冻结的 MobileNetV2 160 INT8 模型，由本地 Web 控制台显示结果、设备耗时和内存，并保存实验报告。
+```mermaid
+flowchart LR
+    C["果园 / PC 摄像头 RGB"] --> Q["质量门控（模糊 · 曝光 · 对比度）"]
+    Q -->|"拒绝"| U["UNKNOWN"]
+    Q -->|"通过"| B["ESP-DL INT8 骨干（MobileNetV2 160 · 527.8 ms）"]
+    B --> H["ASAR EQ01 INT8 分类头（1,294 B · 93 us）"]
+    H --> G["因果 64 帧滑动门控 + 召回保护（41 us）"]
+    G -->|"高置信"| L["本地判定（NORMAL / SUSPECT）"]
+    G -->|"低置信且有额度"| D["云端复核 / 付费标注统一字节账本"]
+    D -.->|"空中下发 EQ01 分类头更新"| H
+```
 
-## 摄像头该用带宽换标注，还是上传照片复核？
+1. **质量门控与三态初筛（`agritinyvision/` + `firmware_example/`）：** 推理前拦截模糊、过曝或低对比度帧（质量不达标强制输出 `UNKNOWN`）；仅训练 `NORMAL` 与 `SUSPECT` 两类，围绕验证集冻结阈值 `0.30` 导出 `0.20 / 0.40` 区间，中间不确定带安全落入 `UNKNOWN`。
+2. **量化 ESP-DL 骨干（`PyTorch → ONNX → ESP-PPQ → ESP-DL`）：** MobileNetV2 160×160 INT8（`w8a8`，2.44 MB `.espdl`）在 ESP32-S3 N16R8 确定性执行，并支持 v0.3 SHA256 身份核验与受控 FP32/实机对比探针。
+3. **统一字节账本与 ASAR 分类头适配（`research/field-edge-audit/`）：** 在**预拨额度（prepaid）**与**零初始赚取额度（earned）**两种体制下统一核算付费标注与云端复核字节；凸 **ASAR** 将小样本适配锚定到出厂分类方向，防止 MobileNetV4 在跨果园漂移下崩塌，并将更新头压缩至 **1,294 字节 `EQ01`** INT8 包。
+4. **因果流式延后复核与独立 C99 运行时（`c_reference/` + `esp32s3_bench/`）：** 基于 64 帧滑动分位数和可选单侧召回保护完成零前瞻逐帧路由，Python、主机 C99 与 ESP32-S3 芯片实机逐位对齐。
 
-本研究在同一笔通信预算下检验摄像头应该购买当地标签，还是保留原分类头并逐帧复核。三组苹果叶片图像使用 V2、V2 主机模拟量化及 V4，分别运行预拨和零初始额度场景。结果保留自主购买未获优势的条件，以及 Latvia 单独核对的误报和漏报。
+[COMPAG 论文 (PDF)](research/field-edge-audit/paper/manuscript_compag.pdf) · [研究目录与复现指南](research/field-edge-audit/README.md) · [集成契约](docs/INTEGRATION_CONTRACT.md) · [USB 协议](docs/USB_PROTOCOL.md)
 
-[研究目录与复核说明](research/field-edge-audit/README.md) · [论文 PDF](research/field-edge-audit/paper/manuscript.pdf) · [同预算方法总表](research/field-edge-audit/results/purchase/summary.csv) · [在线已发表方法对照](research/field-edge-audit/results/purchase/paired_summary.csv)
+---
 
-## PC 摄像头 Web 控制台
+## 实验结果
 
-环境：Windows 11、Python 3.10+、电脑摄像头、ESP32-S3 N16R8 和 USB 数据线。固件沿用 ESP-IDF 5.4.4、ESP-DL 3.3.13。
+### 1. BASA：预算摊销源锚定自适应与 INT8 量化审计
 
-将已有模型包放入 `releases/v0.1.0`，在仓库根目录运行：
+在 **36 组主测试（25% 上行配额）**（3 果园 × 3 管线 × 2 预算尺度 × 2 资助体制）上对比 13 种固定上限基线与 3 种同预算截断基线：
+
+| 方法类别 | 策略 | 36 组均值平衡准确率 (%) ↑ | 预拨额度 (%) ↑ | 零初始赚取额度 (%) ↑ | 10% 稀缺带宽 (%) ↑ | 50% 宽松带宽 (%) ↑ |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **冻结不适配** | 始终复核 / 冻结门控 | 68.15 – 71.12 | — | — | — | — |
+| **固定上限（13 种）** | 最优固定上限基线 | 68.15 – 72.04 | — | — | — | — |
+| **同预算截断** | `Clamped-OvA` | 72.61 | 73.85 | 71.38 | — | — |
+| **同预算截断** | `Clamped-EB-rank` | 72.73 | 74.16 | 71.30 | — | — |
+| **同预算截断** | `Clamped-CE` | 72.92 | 74.68 | 71.16 | 69.40 | **75.56** *(高带宽边界)* |
+| **本文方法** | **`BASA`（ASAR + 因果门控）** | **73.50** | **74.49** | **72.52** | **70.49** | 75.29 |
+
+![BASA 跨果园与资助体制主对比](research/field-edge-audit/paper/figures/compag_main_comparison.png)
+
+![BASA 消融、ASAR 源锚定与 10%–50% 上行预算扫描](research/field-edge-audit/paper/figures/compag_ablation_and_sweep.png)
+
+![ESP32-S3 INT8 量化路由器排名翻转审计](research/field-edge-audit/paper/figures/compag_precision_ranks.png)
+
+- **零初始额度与稀缺带宽优势：** 在无预借额度的 `earned` 场景下，限制标注开销占比可避免漫长的未适配冷启动期，使 `BASA` 领先全部 3 种同预算截断基线 **+1.14 至 +1.36 pp**。
+- **ASAR 防止现代骨干崩塌：** 小样本下无锚定交叉熵微调易导致 `MobileNetV4` 在漂移果园崩塌，而凸各向异性源锚定在样本少时自动保护预训练排序、在弱源头（`MobileNetV2`）上平滑释放线性适配能力。
+- **量化会改变路由选型：** 在 ESP32-S3 INT8 激活上评估同一果园队列时，多达 **13/45** 组路由器两两排名相对 FP32 发生翻转，说明边缘路由器选型必须在量化精度下验证。
+
+[BASA 汇总结果表](research/field-edge-audit/results/basa/) · [同预算截断基线脚本](research/field-edge-audit/scripts/clamped_baselines.py) · [ESP32-S3 C99 实机基准](research/field-edge-audit/esp32s3_bench/)
+
+---
+
+### 2. ESP32-S3 实机基准与 PC 摄像头 Web 控制台
+
+**ESP32-S3 N16R8**（160 MHz，16 MB Flash，8 MB PSRAM，ESP-IDF v5.4.4，ESP-DL v3.3.13）真实芯片测量与 PlantVillage 基线：
+
+| 模块 / 硬件指标 | 实测数值 | 说明 |
+| :--- | :--- | :--- |
+| **MobileNetV2 160 INT8 骨干（ESP-DL）** | **527.84 ms** (P50) / **527.85 ms** (P95) | 2.44 MB `.espdl`；3.57 MB app 镜像；**500/500 帧**连续运行 536.46 秒无重启 |
+| **ESP32-S3 N16R8 空闲内存** | **286,447 B** SRAM / **5,046,852 B** PSRAM | 实机相机推理固件测量（`v0.2` / `v0.3`） |
+| **BASA 空中分类头数据包（`EQ01`）** | **1,294 B** | 轻量 OTA INT8 分类头更新包 |
+| **BASA 常驻内存（`head` + `gate`）** | **1,836 B**（`1,292 B` + `544 B`） | 占空闲 SRAM **0.64%**；PSRAM 增量 **0 B**（`8,386,188 B` 不变） |
+| **BASA 片上 `EQ01` 解析 / 推理** | **50 µs** / **93 µs** (P50) | 仅占骨干耗时 **0.018%**（1,000 次实测） |
+| **BASA 片上流式门控 / 量化** | **41 µs** / **565 µs** (P50) | 单帧合并额外开销 **134 µs**（占骨干 **0.025%**） |
+| **Bit 级一致性（ESP32-S3 / 主机 C99）** | **0 / 16**（`0.0` 误差）/ **0 / 81,180**（`< 1e-12`） | 与 Python 参考实现零偏差 |
+
+| PlantVillage 受控子集（2,792 图，12 源标签） | 测试准确率 | `SUSPECT` 召回率 | 漏报率 FNR | 产物 |
+| :--- | :---: | :---: | :---: | :--- |
+| MobileNetV2 160 FP32 | 99.76% | 100.00% | 0.00% | 8.88 MB ONNX |
+| MobileNetV2 160 INT8（冻结选型） | 99.52% | 99.65% | 0.35% | 2.44 MB ESP-DL（主机仿真） |
+| MobileNetV2 224 FP32 | 100.00% | 100.00% | 0.00% | 8.88 MB ONNX |
+| MobileNetV2 224 INT8 | 100.00% | 100.00% | 0.00% | 2.51 MB ESP-DL（主机仿真） |
+
+[v0.2 实机硬件报告](reports/HARDWARE_V02.md) · [首次运行报告](reports/FIRST_RUN.md) · [v0.3 量化对比分析](reports/QUANTIZATION_ANALYSIS_V03.md)
+
+---
+
+### 3. 外部田间验证与 v0.3 可靠性探针
+
+本地 Web 控制台（`http://127.0.0.1:8765` 与 `/field` 标注工作台）在发送首帧前强制校验设备模型与部署 SHA256。在首轮 **60 张外部 PlantDoc 测试子集**（来源标注）上，冻结 ESP32-S3 模型取得 **88.33%** 二分类准确率、**95.00%** 接受覆盖率与 **89.47%** 接受准确率（`UNKNOWN` 3/60，正常参考误报 5/12）。在 10 类受控部署探针（光照、对比度、模糊、色彩偏移、非植物与噪声）中，ONNX FP32 与 ESP32-S3 实机在 9/10 组门控状态上完全一致。
+
+![PlantDoc 田间验证混淆矩阵](reports/field_validation/CONFUSION_MATRIX.png)
+
+![PlantDoc 场景对比](reports/field_validation/SCENARIO_COMPARISON.png)
+
+[田间验证操作指南](docs/FIELD_VALIDATION.md) · [实测结果](docs/FIELD_VALIDATION_RESULTS.md) · [v0.3 可靠性指南](docs/V03_RELIABILITY.md) · [v0.3 验收矩阵](docs/V03_VALIDATION.md)
+
+---
+
+## 快速开始
+
+需要 **Python 3.10+**（Windows 11 或 Linux）；硬件链路需 **ESP32-S3 N16R8**、USB 数据线、**ESP-IDF 5.4.4** 与 **ESP-DL 3.3.13**。
+
+**1. 复现 BASA 实验、同预算基线与 C99 一致性测试**
+
+```bash
+cd research/field-edge-audit
+python3 -m pip install -r requirements.txt
+python3 -m pytest -q
+python3 scripts/clamped_baselines.py
+python3 scripts/basa_tail_risk_audit.py
+```
+
+**2. 启动 SHA256 强校验 ESP32-S3 PC 摄像头 Web 控制台（Windows PowerShell）**
 
 ```powershell
 python -m pip install -e '.[camera,web,dev]'
 python scripts/run_pc_camera.py --list-ports
 python scripts/prepare_camera_firmware.py --bundle releases/v0.1.0
-# ESP-IDF 5.4.4 PowerShell
+# 在 ESP-IDF 5.4.4 PowerShell 中编译并烧录：
 .\scripts\build_firmware.ps1 -Mode Camera -Transport USBJTAG
-# 确认目标端口后手动安装固件
 python "$env:IDF_PATH\tools\idf.py" -C firmware_example -B "$PWD\build-camera" -p COM3 flash
-# 项目 Python 环境：启动 Web 控制台
+# 启动 Web 控制台（自动打开 http://127.0.0.1:8765）：
 python scripts/run_pc_camera.py --port COM3 --camera 0 --fps 1
 ```
 
-程序会在电脑浏览器打开 `http://127.0.0.1:8765`。依次点击“连接相机 → 连接 ESP32 → 单帧测试 → 开始推理”。页面提供分类概率、质量拒绝原因、各阶段耗时、延迟趋势、内存、实验报告保存和 ZIP 下载。
-
-电脑负责解码、方向处理、RGB 转换及 PIL 双线性抗锯齿缩放。ESP32 负责质量检查、ImageNet 归一化、按实际 exponent 量化、ESP-DL 推理和状态判定。浏览器 JPEG 预览与 RGB888 模型输入分开处理；ONNX 对照由独立离线脚本执行。
-
-详见 [Windows 设置](docs/PC_CAMERA_SETUP.md)、[USB 协议](docs/USB_PROTOCOL.md)、[硬件部署](docs/HARDWARE_DEPLOYMENT.md)及[实机报告](reports/HARDWARE_V02.md)。
-
-## v0.3 可靠性与对照实验
-
-Web 控制台和命令行现会根据真实冻结模型包核对设备的模型 SHA256、版本、Deployment SHA256、张量形状/类型/exponent、质量契约及决策边界。任一不匹配时，发送图像前关闭连接。现有 v0.2 固件已提供这些字段，固件二进制和模型保持一致。`--bundle` 选择本次实验模型包，`--deployment` 可额外校验生成的部署 JSON。
-
-受控图像使用同一 RGB SHA256 对照 ONNX FP32、冻结 ESP-PPQ 仿真和 ESP32，各后端独立记录概率及耗时。运行方式：
-
-```powershell
-python scripts/prepare_analysis_scenes.py --image PATH_TO_TRAIN_LEAF --source DATASET_ID --label NORMAL --split train --output runs/v03/my-scenes
-python scripts/quantization_analysis.py --manifest runs/v03/my-scenes/manifest.json --bundle releases/v0.1.0 --port COM3 --output runs/v03/my-comparison
-# 取得原始可信、哈希绑定的冻结 PPQ 图后添加：
-# --host-model PATH_TO_FROZEN.espdl --host-report PATH_TO_FROZEN.espdl.quantization.json
-python scripts/analyze_performance.py --run RUN_DIRECTORY
-python scripts/export_experiment.py --run RUN_DIRECTORY --public-output NEW_SANITIZED_DIRECTORY
-python -m pytest -q --strict-markers
-# 显式选择本地模型文件和物理设备检查：
-$env:ATV_HARDWARE_PORT='COM3'
-python -m pytest -q -m 'hardware or local_artifact'
-```
-
-Host 模型需要相邻 `.native` 图和匹配的 `simulation_graph_sha256`；仅加载本地产生的可信图。原图缺失时保留 PENDING，对照工具不重新校准或修改正式模型。本轮十类探针覆盖源叶片的光照、对比度、模糊和颜色变化，以及合成非植物图、棋盘和噪声。源叶片来自训练划分，实验评估部署差异。结果及颜色置换场景的判定分歧见[量化分析](reports/QUANTIZATION_ANALYSIS_V03.md)。
-
-| v0.3 验证项 | 证据 |
-| --- | --- |
-| 模型身份和错误模型拒绝 | COM3 物理设备检查及软件不匹配测试 |
-| FP32 与设备对照 | 十类受控探针；八组概率，十组门控状态中九组一致 |
-| 本轮探针的冻结 PPQ 对照 | PENDING：原模型 native 图缺失 |
-| Web 安全 | 本地同站会话、Host/Origin 检查、CSRF 令牌和有边界的导出；非回环绑定需要独立口令认证 |
-| 可复现记录 | 项目/Git/源码哈希、设备身份、依赖、配置、开始结束时间和分阶段耗时 |
-| 软件 / 硬件证据 | 见 [v0.3 验收](docs/V03_VALIDATION.md)；模拟串口和物理设备分开记录 |
-| 独立田间准确率 / 功耗实测 | PENDING：独立带标注田间数据 / 外部功耗仪 |
-
-本地访问继续使用 `127.0.0.1`；状态、预览和实验下载均要求控制台同站会话。非回环绑定需设置 `ATV_WEB_PASSWORD`（至少 16 字符），浏览器登录用户名为 `agri`。公开数据准备工具创建单独的脱敏目录，不自动上传。详见 [v0.3 指南](docs/V03_RELIABILITY.md)。
-
-## 方法与推理状态
-
-[采集与标注工作台](http://127.0.0.1:8765/field)增加按需保存的无损图像批次、独立人工标签、CSV/ZIP 导出和冻结三状态评价。首轮外部 PlantDoc test 子集含 60 张来源标注图片：设备二分类准确率 88.33%，接受覆盖率 95.00%，接受准确率 89.47%，UNKNOWN 为 3/60；参考正常图片误报 5/12。指标依据数据集作者标签，描述固定子集。人工质量复核和独立 Field 分组划分为 PENDING。详见[操作指南](docs/FIELD_VALIDATION.md)、[实测结果](docs/FIELD_VALIDATION_RESULTS.md)和[汇总报告](reports/field_validation/README.md)。
-
-```text
-作物图像 → 质量门控 → 轻量模型 → 置信度 / 决策阈值
-              │                     │
-              └── 拒绝 → UNKNOWN ←──┘
-                    接受 → NORMAL / SUSPECT
-```
-
-| 结果 | 含义 |
-| --- | --- |
-| `NORMAL` | 输入通过门控，被分类为正常 |
-| `SUSPECT` | 输入通过门控，提示进一步检查 |
-| `UNKNOWN` | 输入被拒绝、不可读、质量不足、输出无效或置信度不足 |
-
-只有 NORMAL 和 SUSPECT 是训练类别，UNKNOWN 是拒绝状态。沿用 validation 冻结阈值 0.30，当前 threshold-centered 策略导出 float32 的 0.20/0.40 边界：低于下界为 NORMAL，中间区间为 UNKNOWN，达到上界为 SUSPECT。质量失败优先返回 UNKNOWN。置信度表示已分配类别的概率，UNKNOWN 使用 null。规则见[集成契约](docs/INTEGRATION_CONTRACT.md)。
-
-基线为 torchvision MobileNetV2 1.0，使用 ImageNet `IMAGENET1K_V1` 权重并全参数微调。160×160、224×224 共享划分、seed 和训练预算。阈值在验证集选择，候选与阈值在最终测试前冻结。二分类指标与覆盖率、UNKNOWN 比例及通过门控输入的指标分别报告。
-
-## 主要结果与当前状态
-
-首次完整流程使用 RTX 4060 Laptop GPU。v0.1 选择 MobileNetV2 160×160：两种尺寸验证结果相近，而 160×160 的卷积/线性 MACs 约为一半。后续测试分数没有改变选择。
-
-| 模型 | 测试准确率 | SUSPECT 召回率 | FNR | 产物或评估方式 |
-| --- | ---: | ---: | ---: | --- |
-| MobileNetV2 160 FP32 | 99.76% | 100.00% | 0.00% | 8,878,502 字节 ONNX |
-| MobileNetV2 160 INT8 | 99.52% | 99.65% | 0.35% | 2,438,752 字节 ESP-DL 模型；主机仿真 |
-| MobileNetV2 224 FP32 | 100.00% | 100.00% | 0.00% | 8,878,502 字节 ONNX |
-| MobileNetV2 224 INT8 | 100.00% | 100.00% | 0.00% | 2,511,296 字节 ESP-DL 模型；主机仿真 |
-
-这些分数来自背景受控的整理后 PlantVillage 子集，不是田间画面。INT8 结果是**主机量化图仿真**，不是 MCU 测量。
-
-| 阶段 | 证据 |
-| --- | --- |
-| PyTorch 训练 / 冻结测试 | 桌面 GPU 已完成 |
-| ONNX 导出 | 与 PyTorch 至少四个相同输入的数值核验 |
-| ESP-PPQ → ESP-DL INT8 | `esp32s3` w8a8 转换；完整测试集主机图仿真 |
-| ESP-IDF 固件 | Fixture、USB Serial/JTAG、UART 分支编译通过 |
-| ESP32 真实推理 | golden Fixture 及 15 项质量/协议检查通过 |
-| PC 摄像头链路 | 实时摄像头 100/100 帧取得有效设备结果 |
-| 连续运行 | 固定叶片 500/500 帧，持续 536.46 秒，无重启或首尾空闲内存下降 |
-| v0.2 软件回归 | 138 项测试通过（历史基线） |
-
-训练与主机仿真结果保留在[首次运行报告](reports/FIRST_RUN.md)。[v0.2 实机报告](reports/HARDWARE_V02.md)记录真实设备数据：推理 P50/P95 为 527.840/527.850 ms，内部 RAM 空闲 286,447 bytes，PSRAM 空闲 5,046,852 bytes，app 镜像为 3,574,960 bytes。模型文件、app 镜像及分区容量分别统计。
-
-## 数据与评估范围
-
-实验使用[官方 PlantVillage 数据集](https://github.com/spMohanty/PlantVillage-Dataset)的 2,792 张 raw/color 图像，覆盖苹果、甜椒、马铃薯、番茄及 12 个源标签，每标签最多 240 张。这不是完整数据集，排除灰度与分割变体。新标签须在 [label_mapping.yaml](configs/label_mapping.yaml)显式映射。
-
-Manifest 记录源/二元标签、叶片 ID、哈希和划分。叶片 ID、完全重复和近重复关联图像先分组，再确定性划分。缺少可靠植株、拍摄会话和场景 ID，意味着不能排除所有泄漏。原始图像不进入 Git。详见[数据指南](data/README.md)和[审计](reports/dataset_audit.md)。
-
-## 快速开始与复现
-
-需要 Python 3.10+，流程支持 Windows/Linux。训练和 GPU 评估默认使用 CUDA，需要 CPU 时显式传入 `--allow-cpu`。先安装匹配平台的 PyTorch wheel，再安装项目依赖。首次运行使用 Windows 11、Python 3.12.15、PyTorch 2.11.0+cu128。
+**3. 复现 PlantVillage 训练、ONNX 导出与 ESP-DL INT8 量化**
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-# Windows activation: .venv\Scripts\activate
-python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-python -m pip install -e '.[dev]'
-python -m pip install esp-ppq
-python -m agritinyvision.doctor --output reports/environment.json
-```
-
-复现锁定环境时先安装适合的 CUDA wheel，再使用 [requirements-lock.txt](requirements-lock.txt)。其他平台选择兼容 wheel，并重新运行环境检查。
-
-准备、审计数据并训练两种基线尺寸：
-
-```bash
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -e '.[dev]' esp-ppq
 python scripts/download_plantvillage.py
-python -m agritinyvision prepare-data
-python -m agritinyvision audit
-python -m agritinyvision preflight --config configs/train_mobilenetv2_160.yaml
+python -m agritinyvision prepare-data && python -m agritinyvision audit
 python -m agritinyvision train --config configs/train_mobilenetv2_160.yaml --output runs/baseline160
-python -m agritinyvision train --config configs/train_mobilenetv2_224.yaml --output runs/baseline224
-```
-
-开展新实验时，在独立实验副本中将[已发布的选择记录](reports/candidate_selection.json)保存在输出路径之外，再于测试前运行 `python scripts/select_candidate.py`。该命令拒绝覆盖现有选择记录，也拒绝在已有测试报告后重新选择。不用测试分数调整训练、阈值或门控。评估、推理、导出并量化所选候选：
-
-```bash
 python -m agritinyvision evaluate --checkpoint runs/baseline160/best.pt
-python -m agritinyvision infer --checkpoint runs/baseline160/best.pt --image /path/to/leaf.jpg
 python -m agritinyvision export --checkpoint runs/baseline160/best.pt --format onnx
 python -m agritinyvision quantize --checkpoint runs/baseline160/best.pt --model runs/baseline160/tinyvision.onnx
-python -m agritinyvision release \
-  --checkpoint runs/baseline160/best.pt \
-  --onnx runs/baseline160/tinyvision.onnx \
-  --metrics runs/baseline160/test_metrics.json \
-  --espdl runs/baseline160/tinyvision.espdl
 ```
 
-转换路径为 PyTorch → ONNX → ESP-PPQ → ESP-DL。ONNX 使用 batch 1、NCHW FP32、opset 18、两个 logits。INT8 校准使用 256 张分层训练图像，无随机增强；完整测试图仿真保留 FP32 验证阈值。静态算子检查依据 [ESP-DL 支持列表](https://github.com/espressif/esp-dl/blob/master/operator_support_state.md)。
+**4. 运行 v0.3 受控 FP32 与 ESP32 对照探针及回归测试**
 
-可选 `quantize --backend onnx` 属于桌面 ONNX Runtime 比较，`benchmark` 也仅用于桌面。断点续训使用 `train --resume runs/baseline160/last.pt --config configs/train_mobilenetv2_160.yaml`，要求配置与 manifest 一致。更多流程见[首次运行报告](reports/FIRST_RUN.md)及 CLI `--help`。
+```powershell
+python scripts/prepare_analysis_scenes.py --image PATH_TO_LEAF --source DATASET_ID --label NORMAL --split train --output runs/v03/my-scenes
+python scripts/quantization_analysis.py --manifest runs/v03/my-scenes/manifest.json --bundle releases/v0.1.0 --port COM3 --output runs/v03/my-comparison
+python -m pytest -q --strict-markers
+```
 
-发布核验模型哈希、冻结指标、ONNX 数值检查、转换报告与元数据。失败保留原始错误；没有 ESP-DL 的研究包标记导出 PENDING，不伪造模型。Checkpoint/二进制不进入 Git，拟以 Release 资产发布。[集成契约](docs/INTEGRATION_CONTRACT.md)和[固件指南](firmware_example/README.md)定义预处理、张量布局和硬件验收。可选检查：`python -m pytest -q` 和 `python -m ruff check agritinyvision scripts tests`。
+[Windows 摄像头配置](docs/PC_CAMERA_SETUP.md) · [硬件部署文档](docs/HARDWARE_DEPLOYMENT.md) · [固件说明](firmware_example/README.md)
 
-## Relationship to Smart-Agriculture-Edge-AI
+---
 
-[Smart-Agriculture-Edge-AI](https://github.com/Sver0411/Smart-Agriculture-Edge-AI) 是关联系统项目和未来视觉集成目标。AgriTinyVision 的相机/模型路径尚未接入主系统实际板端视觉控制闭环；网关控制、LoRa、接管和同步属于独立系统工作。
+## 仓库目录
 
-## 局限与后续工作
+| 目录 | 说明 |
+| :--- | :--- |
+| `agritinyvision/` | 核心 Python 包：数据准备、MobileNetV2 训练、ONNX 导出、ESP-PPQ 量化、Web 控制台与 USB 通信客户端 |
+| `firmware_example/` | ESP-IDF 5.4.4 / ESP-DL 3.3.13 ESP32-S3 固件（Fixture、USB Serial/JTAG、UART 推理与质量门控） |
+| `research/field-edge-audit/` | **BASA** 论文（`manuscript_compag.tex`/`.pdf`）、统一字节账本仿真器、截断与尾风险审计、C99 参考实现（`c_reference/`）及 ESP32-S3 片上基准固件（`esp32s3_bench/`） |
+| `configs/`, `data/` | 标签映射（`label_mapping.yaml`）、训练配置（`160×160` / `224×224`）及数据划分审计规范 |
+| `scripts/`, `tests/` | CLI 工具、v0.3 量化探针脚本与软硬件回归测试套件 |
+| `docs/`, `reports/` | 集成契约、USB 协议、v0.2/v0.3 实机验收报告及 PlantDoc 外部田间验证汇总 |
 
-独立带标注田间验证和外部仪器功耗实测为 PENDING。PlantVillage 分数对应受控数据集，536.46 秒固定图片实验对应该输入和时段。质量门控检查模糊、亮度和对比度；植物存在性与完整 OOD 检测需要独立方法。量化优化作为单独候选研究，v0.3 保留冻结 exponent 和阈值。
+---
 
-## 许可证
+## 范围与局限性
 
-代码采用 [MIT License](LICENSE)。数据集图像、预训练权重及其他外部材料仍受各自条款约束，仓库代码许可证不会重新授权这些材料。
+- **主机仿真与整机射频功耗：** BASA 的 `EQ01` 分类头、量化内核与流式门控已在 ESP32-S3 N16R8 物理芯片上实测验证（`134 µs`，`0/16` 零误差），但 3,000+ 跨果园 V2 特征网格仍基于主机 ESP-PPQ 仿真，无线发射期间的外部仪器功耗测量留待后续田间试验。
+- **高带宽交叉边界：** 在 50% 宽松上行配额下，同预算截断交叉熵（`Clamped-CE`）略优于 `BASA`（**75.56%** vs. **75.29%**），明确界定 `BASA` 的核心优势区位于 10–25% 稀缺/中等带宽与零初始赚取额度体制。
+- **受控数据集与独立田间标注：** PlantVillage 分数对应受控背景，60 张 PlantDoc 子集沿用数据集作者标签；更大规模人工复核跨果园田间划分持续推进中。质量门控检查模糊、亮度与对比度，而非完整植物存在性或全分布外检测。
+- **与 `Smart-Agriculture-Edge-AI` 的系统边界：** AgriTinyVision 专注边缘视觉模块，未来对接 [Smart-Agriculture-Edge-AI](https://github.com/Sver0411/Smart-Agriculture-Edge-AI)；网关闭环控制与 LoRa 容灾由下列独立仓库维护。
+
+---
+
+## 许可证与关联 AIoT 研究栈
+
+项目代码与文档采用 [MIT License](LICENSE)。外部数据集（PlantVillage、PlantDoc、Cornell、Kashmir、Latvia）与预训练权重仍遵循其原始许可协议。
+
+`AgriTinyVision` 位于可复现四层 AIoT 系统研究栈的 **L4 · 韧性与信息物理验证层**：
+
+- **L1 · 可信感知：** [SensorTrust](https://github.com/Sver0411/SensorTrust)
+- **L2 · 自适应观测：** [AdaptiveSense](https://github.com/Sver0411/AdaptiveSense) · [TAIS](https://github.com/Sver0411/TAIS)
+- **L3 · 新鲜度与有损链路：** [EventGuard-LoRa](https://github.com/Sver0411/EventGuard-LoRa) · [NetAdapt-IoT](https://github.com/Sver0411/NetAdapt-IoT) · [IoT-MPQUIC-Scheduler](https://github.com/Sver0411/IoT-MPQUIC-Scheduler)
+- **L4 · 韧性与信息物理验证：** [EdgeFaultLab](https://github.com/Sver0411/EdgeFaultLab) · [TinyEdgeBench](https://github.com/Sver0411/TinyEdgeBench) · [Smart-Agriculture-Edge-AI](https://github.com/Sver0411/Smart-Agriculture-Edge-AI) · [AgriTwin-CPS](https://github.com/Sver0411/AgriTwin-CPS) · [AgriTinyVision](https://github.com/Sver0411/AgriTinyVision)
