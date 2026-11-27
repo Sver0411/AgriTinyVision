@@ -1,17 +1,14 @@
 # Field Edge Audit
 
-**远程打标和逐帧复核共用同一笔流量时，更新摄像头值得吗？** 本研究基于 AgriTinyVision 的 160 像素 MobileNetV2 和 60 条历史 ESP32-S3 记录，另用 MobileNetV4-Conv-Small 复查跨模型可迁移性。全文、代码和可分发结果已整合到 AgriTinyVision 的研究目录。
+研究以 AgriTinyVision 的已发布摄像头为起点。新一轮实验让摄像头在不知道评估标签的情况下，用同一字节账本选择购买当地标签或把带宽留给逐帧复核。真实图片与 JPEG 成本覆盖 Cornell、Kashmir 和 Latvia，涵盖原 V2、V2 的 ESP32-S3 主机量化代理和 V4。原有 60 条硬件记录给量化敏感性提供参考。
 
-| 在线主结果，平衡准确率 | Cornell（1,353 张） | Kashmir（384 张） | Latvia（1,190 张） |
-| --- | ---: | ---: | ---: |
-| 远程打标 32 张，逐帧按剩余预算上传 | 83.03% | 80.44% | 53.16% |
-| 远程打标 128 张，同一调度规则 | 84.52% | 73.32% | 53.54% |
+- [修订稿 PDF](paper/manuscript.pdf) · [自主购买协议](protocol/PURCHASE_STUDY.md) · [同预算配对对照](results/purchase/paired_summary.csv) · [主实验汇总](results/purchase/summary.csv)
+- [Latvia 逐图误报与漏报](results/purchase/latvia_recall_primary.csv) · [来源分数与阈值诊断](results/purchase/backbone_diagnostic.csv) · [定量复现实验](protocol/QUANTIZATION_RANKS.md)
+- [端云流程](results/purchase/purchase_decision_flow.pdf) · [跨骨干及额度方式图](results/purchase/paired_effects.pdf)
 
-每个站点和抽样的所有方法使用同一笔预拨字节额度。名义 25% 按采集计划和校准 JPEG 均值确定，分别相当于当地实际完整流量的 24.87%、17.06%、18.54%。Kashmir 所有 128 标签更新都付不起，回退到原摄像头。换用同一个历史分位数门控器，EdgeBoost 二分类排序与更新头不确定度逐图相同，Cornell 上 OvA 为 85.00%，简单不确定度为 84.47%。Latvia 新增漏诊中约 84.6% 出现在端侧换头阶段。新数据来自计算实验。
+在主预算的 36 个三站点、三数值管线、两种标注上限和两种额度条件中，自主购买策略只在 8 个条件中胜过同标签、同安装费用的 EdgeBoost 排名对照。在从零攒流量且允许买 32 张的 180 次决策中，全部购买 16 张，随后有 149 次保留原头。Latvia 的 V2 后期照片上，保留原警报并复核部分阴性，无需购买标签即可将 49 张漏报降至 31 张，同时保持 67 张误报。
 
-- [修订稿 PDF](paper/manuscript.pdf) · [流式规则和复现](protocol/STREAMING.md) · [流式已发表方法对照](results/streaming_published_summary.csv)
-- [同预算方法对比总表](results/methods_comparison.csv) · [第二套端模型](protocol/SECOND_BACKBONE.md) · [标签费用](results/annotation_mix.csv)
-- [Latvia 逐阶段诊断](protocol/LATVIA_FAILURE.md) · [上行分辨率对照](results/latvia_failure_transport.csv) · [硬件代理与链路回放](protocol/DEVICE_AND_LINK.md)
+在公开目录用 Python 标准库运行 `python3 scripts/verify_purchase_results.py` 可复核主结论。恢复逐例参考标签或重跑模型时，使用下方数据说明和 [新实验的私有缓存生成协议](protocol/PURCHASE_COHORTS.md)；新逐运行记录分站分骨干保存在 `results/purchase/`，合并表可从分片生成。旧实验相关的索引和复核路径仍列于下方。
 
 ## 公开数据与复核
 

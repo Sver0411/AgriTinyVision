@@ -107,7 +107,9 @@ def unpack(blob):
     return weights
 
 
-def train_routes(x, target, y, seed, balanced):
+def train_routes(x, target, y, seed, balanced, steps=800):
+    if steps not in (20, 800):
+        raise ValueError("Expected the published or extended optimization horizon")
     weights = initialize(seed)
     first = [np.zeros_like(w) for w in weights]
     second = [np.zeros_like(w) for w in weights]
@@ -115,7 +117,7 @@ def train_routes(x, target, y, seed, balanced):
     if balanced:
         sample_weights = len(y) / (2 * np.bincount(y.astype(int))[y.astype(int)])
     saved = {}
-    for step in range(1, 801):
+    for step in range(1, steps + 1):
         _, grads = objective_gradients(x, target, sample_weights, weights)
         for k, grad in enumerate(grads):
             first[k] = .9 * first[k] + .1 * grad

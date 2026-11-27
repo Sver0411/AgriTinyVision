@@ -19,9 +19,9 @@ AgriTinyVision trains compact crop-image classifiers and runs the frozen MobileN
 
 ## When does a crop camera benefit from paying for labels?
 
-The Field Edge Audit study compares installing a classifier update with uploading individual observations for review under a shared byte allowance. It uses AgriTinyVision's released model, a second MobileNetV4 edge pipeline, three apple-image cohorts and 60 archived ESP32-S3 records. Remote annotation, streaming decisions and a Latvian scab failure are evaluated explicitly. The update helps on Cornell. Its 128-label setup exceeds the planned Kashmir quota, and binary confidence routing matches the EdgeBoost ranking exactly.
+The Field Edge Audit study compares buying target-site labels with keeping the camera and reviewing individual observations. Three apple-image cohorts share a byte ledger across two backbone families and a V2 host INT8 approximation. The main replay includes both prepaid and zero-initial-credit grants and reports when an update fails to beat review under the same budget.
 
-[Research artifact](research/field-edge-audit/README.md) · [Manuscript PDF](research/field-edge-audit/paper/manuscript.pdf) · [Matched results](research/field-edge-audit/results/methods_comparison.csv) · [Online comparison](research/field-edge-audit/results/streaming_published_summary.csv)
+[Research artifact](research/field-edge-audit/README.md) · [Manuscript PDF](research/field-edge-audit/paper/manuscript.pdf) · [Matched results](research/field-edge-audit/results/purchase/summary.csv) · [Online comparison](research/field-edge-audit/results/purchase/paired_summary.csv)
 
 ## PC camera Web console
 

@@ -1,0 +1,14 @@
+{
+  "protocol/PURCHASE_STUDY.md": "613abfc8dae43c6fd60f10a518928418549f39bc7bdabd43369ebbee9685dd8b",
+  "protocol/PURCHASE_POLICY.md": "94e541906479b439486cc43b501c535f073d1b8000416035910807763b826599",
+  "protocol/PURCHASE_INFERENCE.md": "d03db0f5349395b869834ca22d72dcd075a97c5f34227a1285a22a29e2e6fd2c",
+  "protocol/PURCHASE_LATVIA.md": "feee15cecd86a2898c22b67de7cbebf62af0622ccb490f85d5f7947d7a4fe09a",
+  "scripts/purchase_policy.py": "6297465194d898431e6b63b34197f4fef3a7388879c6bd2fb81b47dabc2f791a",
+  "scripts/purchase_experiment.py": "f9f07aeb407a219e3faf23ce6a369f5ce4b7556d99acb98667a08f838cb65f9d",
+  "c_reference/purchase_stream.c": "3cd9971126f970746bf31a47f9601423e58bcfe3a2f2afbd03e906a82ac83fbe",
+  "verified_post_lock_replay": {
+    "scope": "Static byte quote before acquisition, no numerical or decision changes",
+    "script_sha256": "37f661b047358e6d62fdb3396a310bd0f64c62edd57ae9f4e7786a2e8d886121",
+    "identical_csv_and_prediction_shards": 18
+  }
+}

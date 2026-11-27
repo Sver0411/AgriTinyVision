@@ -75,6 +75,21 @@
       "n": 1821
     }
   },
+  "derived_files": {
+    "results/purchase/runs.csv": {
+      "shards": [
+        "results/purchase/runs_cornell_v2.csv",
+        "results/purchase/runs_cornell_v2grid.csv",
+        "results/purchase/runs_cornell_v4.csv",
+        "results/purchase/runs_kashmir_v2.csv",
+        "results/purchase/runs_kashmir_v2grid.csv",
+        "results/purchase/runs_kashmir_v4.csv",
+        "results/purchase/runs_latvia_v2.csv",
+        "results/purchase/runs_latvia_v2grid.csv",
+        "results/purchase/runs_latvia_v4.csv"
+      ]
+    }
+  },
   "fine": {
     "results/dual_existing.csv": {
       "fields": [
@@ -509,5 +524,55 @@
       "withheld_operating_point": "target95"
     }
   },
-  "version": 2
+  "purchase": {
+    "results/acquisition_quantization_replay_runs.csv": {
+      "fields": [
+        "fp",
+        "fn",
+        "balanced_accuracy",
+        "accuracy"
+      ],
+      "identity": "source_path",
+      "mask": "results/acquisition_quantization_cornell_masks.npz",
+      "n": 5280,
+      "row_index": "cornell_order"
+    },
+    "results/purchase/runs_cornell_v2.csv": {
+      "fields": [
+        "fp",
+        "fn",
+        "ba",
+        "accuracy"
+      ],
+      "identity": "test_id",
+      "mask": "results/purchase/masks_cornell_v2.npz",
+      "n": 33600,
+      "row_index": "mask_row"
+    },
+    "results/purchase/runs_cornell_v2grid.csv": {
+      "fields": [
+        "fp",
+        "fn",
+        "ba",
+        "accuracy"
+      ],
+      "identity": "test_id",
+      "mask": "results/purchase/masks_cornell_v2grid.npz",
+      "n": 33600,
+      "row_index": "mask_row"
+    },
+    "results/purchase/runs_cornell_v4.csv": {
+      "fields": [
+        "fp",
+        "fn",
+        "ba",
+        "accuracy"
+      ],
+      "identity": "test_id",
+      "mask": "results/purchase/masks_cornell_v4.npz",
+      "n": 33600,
+      "row_index": "mask_row"
+    }
+  },
+  "version": 3
 }

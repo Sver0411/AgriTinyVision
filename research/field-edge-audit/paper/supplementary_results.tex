@@ -1,101 +1,17 @@
-
 \newpage
-\sect{Appendix A \quad What does uploading actually fix?}
-For a fixed pair of classifiers on identical inputs, a repair is an edge error corrected by the backend. A regression is a correct edge decision spoiled by the backend. Full replacement changes the number correct by repairs minus regressions. The physical board results, CPU edge reference and data-source cohorts have separate denominators.
-
-\begin{center}\small
-\begin{tabular}{@{}llrrrr@{}}\toprule
-Cohort & Final decision & Correct & Repairs & Regressions & BA (\%)\\\midrule
-Board (60) & ESP32-S3 & 53 & -- & -- & 77.08\\
- & MobileNet, 224 px & 55 & 3 & 1 & 82.29\\
- & MobileNet, 112 px & 52 & 3 & 4 & 76.04\\\midrule
-Clean PlantDoc (121) & Edge reference & 110 & -- & -- & 80.96\\
- & MobileNet, 224 px & 107 & 3 & 6 & 76.44\\
- & DINO, unweighted & 103 & 2 & 9 & 66.96\\
- & DINO, balanced & 108 & 7 & 9 & 87.31\\\midrule
-Cornell (1,821) & Edge reference & 1,464 & -- & -- & 68.34\\
- & MobileNet, 112 px & 1,337 & 67 & 194 & 60.60\\
- & MobileNet, 224 px & 1,455 & 92 & 101 & 67.41\\
- & DINO, unweighted & 1,390 & 110 & 184 & 58.30\\
- & DINO, balanced & 1,556 & 286 & 194 & 83.93\\\bottomrule
-\end{tabular}\end{center}
-\note{Every Cornell 224-pixel row incurs 12,295,378 JPEG bytes. Sending the 112-pixel versions uses 4,793,088 bytes. The 60 physical records are a subset of the PlantDoc data and are never added to a larger sample count.}
-
-The frozen board and its FP32 counterpart disagreed on one binary decision, where FP32 was correct. Six errors were common to both. Routing the three board abstentions to the FP32 model resolved all three, leaving six errors on the complete batch. Precision escalation alone had little opportunity to repair this cohort. For the 224-pixel MobileNet, the apparent advantage on the small board cohort changes sign on clean PlantDoc and on Cornell.
-
-The strongest intervention at fixed image cost was at the server. On Cornell, balancing the DINO training loss changed the healthy false-positive count from 430 to 101 and the disease false-negative count from 1 to 164. AUROC changed only from 0.927 to 0.930. Much of the practical change is the operating point. With the balanced server and a 10\% uplink budget on Cornell, buffering images and prioritizing edge scores closest to 0.30 yielded 31 additional correct decisions. Cheapest-first lost one. A label-aware selection could gain 186 at this budget. The repository includes 30 random orderings and the full 5--100\% budget sweep.
-
-\subt{How much adjudication establishes the sign?}
-After shadow inference, let $D$ be the number of binary disagreements in $N$ records and $R$ the number favouring the remote model. The change in batch accuracy is $(2R-D)/N$. Drawing a fixed uniform sample without replacement from those $D$ records gives an exact hypergeometric interval for $R$. On Cornell, 50 disagreement labels would establish the negative sign for the 112-pixel MobileNet with probability 97.70\%, compared with 13.20\% for 50 uniformly selected frames. For the near-tied 224-pixel MobileNet the same probabilities were only 3.91\% and 0.62\%. These are retrospective design powers conditional on the fully labelled batch. They include no savings in shadow uploads and confer no guarantees on future images.
-
-\newpage
-\sect{Appendix B \quad Sending a new decision head}
-We group Cornell images by perceptual-hash connected component before sampling. Eighteen additional component members are omitted. A stable hash partitions 1,803 representatives into a 450-image label bank and a 1,353-image holdout containing 377 healthy and 976 diseased images. Each of 20 seeded draws supplies nested samples of 8, 32 and 128 bank images. Every target-assisted method uses exactly those labels. No holdout label is used in fitting or threshold selection. The same holdout is reused across draws, so dispersion measures sensitivity to the choice of calibration images.
-
-A camera can transmit the 1,280-dimensional pre-classifier activation for each labelled image. We quantize activations symmetrically to signed bytes with a per-image scale. The service decodes the records, normalizes the features and fits class-balanced logistic regression. We return a signed-byte weight vector, dimension, scale, bias and format identifier, totalling 1,294 bytes. Training records cost 1,293 bytes each including identifier and label. In comparison, the scalar method fits the original logit margin, the FP32 control transmits full features, and the remote model fits its 384-dimensional DINO head to the same labelled examples. Two eight-label draws contained only one class. A constant prediction was retained in each affected fit.
-
-\begin{center}\small
-\begin{tabular}{@{}lrrr|rr@{}}\toprule
-&\multicolumn{3}{c}{Mean BA (\%) by label budget} &\multicolumn{2}{c}{128 labels (\%)}\\
-Decision rule & 8 & 32 & 128 & Accuracy & AUROC $\times100$\\\midrule
-Frozen edge &69.74&69.74&69.74&81.60&76.84\\
-Edge margin only &63.59&72.26&72.01&75.27&76.84\\
-Adapted edge, INT8 head &68.48&77.35&80.01&82.74&91.64\\
-Adapted edge, FP32 head &68.51&77.36&80.03&82.75&91.64\\
-Remote DINO, full target head &65.36&77.66&84.51&84.52&92.57\\
-Remote DINO, source score recalibrated &76.85&83.25&84.03&83.47&92.54\\\bottomrule
-\end{tabular}\end{center}
-\note{A source-balanced DINO head needs no Cornell labels and achieves 83.56\% BA on this same holdout. Eight labels were insufficient for the edge update on average. Supplementary files give counts by draw.}
-
-\begin{center}\includegraphics[width=.96\linewidth]{figures/adaptation.pdf}\end{center}
-\note{Figure B1. Lines give means over the 20 draws. Shading gives the interquartile range. The same fitted heads are applied unchanged to the processed Kashmir pool. Dashed lines correspond to the source-balanced remote model.}
-
-The INT8 head improves the score ordering. With 128 labels the mean AUROC increases by 14.80 points over the unchanged edge. The one-dimensional edge control retains its prior ordering at 32 and 128 labels. The independent host C99 implementation decoded all 60 packed INT8 heads and matched the Python class decisions on all 81,180 head--image pairs.
-
-\newpage
-\sect{Appendix C \quad When does an update use less communication?}
-With labels available at the camera, 32 labelled activations and one returned head cost 42,670 bytes. At 128 labels the cost is 166,798 bytes. If a remote reviewer must inspect each calibration photograph, we charge its measured JPEG and identifier as well. The corresponding mean costs are 257,402 and 1,026,890 bytes. The fully remote target-fitted DINO pipeline reuses the same calibration images for review and training and processes every holdout picture. Its mean exchange totals 9,356,348 and 10,001,804 bytes, respectively, including application-level requests and replies. It achieves a higher mean BA at 128 labels. These costs are specific to 1,353 subsequent images.
-
-\subt{A lower bound for the image-based alternative}
-To avoid choosing a weak routing baseline, give a router the true class and let it choose the cheapest correcting option on every original edge error. The enlarged menu includes 112- and 224-pixel MobileNet, plus both DINO source heads at 224 pixels. Agreements and regressions can be skipped. Sort correcting payload sizes separately for healthy and diseased edge errors and form prefix costs $C_0(i)$ and $C_1(j)$. With $n_0,n_1$ examples per class, the minimum cost of a BA gain $g$ is
+\sect{Supplement \quad Fixed-pool cost and alert trade-offs}
+\subt{The value of labels already on the camera}
+The historical Cornell experiment compared a fitted INT8 head alone with the cheapest set of correctly repairing cloud predictions on the fixed 1,353-image holdout. For a required gain $g$ in balanced accuracy, divide correctable edge errors by true class, sort each set by request size, and form prefix costs $C_0(i)$ and $C_1(j)$. The exact bound is
 \[
- \min_{i,j}\; C_0(i)+C_1(j) \quad\text{subject to}\quad
-               i/(2n_0)+j/(2n_1)\geq g.
+ \min_{i,j} C_0(i)+C_1(j)\quad
+ \text{subject to}\quad i/(2n_0)+j/(2n_1)\ge g .
 \]
-For given correction counts the cheapest prefixes attain the minimum, since replacing an expensive correctable image with a cheaper one of its class preserves BA. Enumerating the healthy prefix and the shortest feasible diseased prefix solves the finite problem. Exhaustive assignment on 72 small pools verified the implementation. The comparator even omits network headers and replies, favouring image routing.
+Replacing expensive correcting images by cheaper same-class images preserves the gain, so enumeration of the prefix pairs suffices. The truth-aware selection sees the evaluation labels. It is a finite-pool reference whose cost applies only to the tested fixed menu.
 
-\begin{center}\includegraphics[width=.90\linewidth]{figures/oracle.pdf}\end{center}
-\note{Figure C1. Bytes over the entire holdout to match each fitted INT8 head's achieved BA. An oracle can use labels to choose uploads. The two update curves differ only in where calibration images are reviewed.}
+With 128 labels already present, the head costs 166,798 bytes, compared with a mean 1,026,890 bytes if every calibration photograph is uploaded for annotation. It beats the truth-aware cost in 20 of 20 draws with local labels, 9 of 20 with 32 of the 128 reviewed remotely, and zero when all are reviewed remotely. At 32 labels the analogous costs are 42,670 and 257,402 bytes, and the fully remote update beats the bound in 8 of 20 draws. The thresholds and assumptions differ from the prospective controller in Sections 3--4.
 
-At 32 labels the median oracle cost was 217,018 bytes, compared with 42,670 for local review. At 128 it was 376,441 bytes, compared with 166,798. When all labels were available at the camera, the update beat the bound in all 20 draws at both budgets. Sending every calibration image to the annotator changed those counts to 8 of 20 at 32 labels and zero at 128. With 32 of 128 images sent, only 9 of 20 updates remained cheaper, declining to zero with 64 sent. The comparator covers the stated frozen menu and baseline edge. Models with different features, on-camera reweighting, or new encodings would require their own bound.
+\subt{Full remote review can move errors in opposite directions}
+A historical policy used 450 Cornell calibration images to fit one cloud score threshold to rescue negative edge decisions and another to retract positive decisions. With full remote review, the frozen policy reduced Cornell false positives/misses from 215/34 to 137/19. In Kashmir it changed 81/4 to 25/25. In the full Latvian archive it changed 195/118 to 83/334. These comparisons hold the thresholds fixed across sites and charge the separately reported full inference traffic. Section 5 instead uses the later nine Latvian dates with target calibration available.
 
-\subt{Batch service under recorded cellular capacity}
-Three paired Mahimahi uplink/downlink traces \cite{mahi} provide 1,500 bytes per opportunity, with five initial phases. For 1,353 pending images, the update finished all 1,200 paired transfers sooner. For one image it won 600, tied 80 and lost 520. On AT\&T driving LTE with remote labels, median service for update versus full review was 8.294 versus 6.879 s (one pending image) or 8.294 versus 87.656 s (1,353). These are capacity-only estimates. Section 6 evaluates RTT, retransmission, outages, processing and deadlines separately.
-
-\newpage
-\sect{Appendix D \quad Which operating conditions change the answer?}
-\subt{A deployment that prioritizes sensitivity}
-The 128-label INT8 head increased healthy specificity from 42.97\% to 73.86\% on Cornell. Disease sensitivity declined from 96.52\% to 86.17\%. An operator for whom a missed lesion is much worse than an extra inspection would value these changes differently. We therefore divide each 128-label draw into 64 fitting and 64 threshold-calibration examples. For each fitted score we choose the largest threshold that accepts at least 95\% of calibration positives, using the inclusive order statistic. Between 41 and 51 positives contributed to each selected threshold.
-
-\begin{center}\small
-\begin{tabular}{@{}lrrrr@{}}\toprule
-Held-out operation & Sens. (\%) & Spec. (\%) & BA (\%) & Draws at 95\% sens.\\\midrule
-Frozen published cutoff &96.52&42.97&69.74&20/20$^{*}$\\
-Original margin, calibrated cutoff &94.09&48.62&71.35&9/20\\
-INT8 head, default cutoff &86.09&69.95&78.02&0/20$^{\dagger}$\\
-INT8 head, calibrated cutoff &94.19&53.28&73.73&11/20\\
-DINO target head, calibrated cutoff &92.07&64.97&78.52&2/20\\\bottomrule
-\end{tabular}\end{center}
-\note{$^{*}$The frozen classifier is repeated unchanged on the common holdout. $^{\dagger}$The default-cutoff entry is taken from the same 64-label fitting experiment as the calibrated entry.}
-
-Adjusting only the original score threshold and fitting a scalar logistic function before thresholding gave identical decisions in all 20 runs. At the calibrated operating point, the adapted edge provided higher mean specificity than the margin-only baseline at similar average sensitivity. Individual fitted-head sensitivities ranged from 86.17\% to 98.57\%. A target sensitivity on the calibration panel did not certify it on the held-out images.
-
-\subt{Transfer without local refitting}
-The third collection comprises apple images acquired in Jammu and Kashmir \cite{yatoo}. A pinned public mirror has 5,612 processed rows with three classes. We took the 128 lowest salted filename hashes in each class. The 384 selected files had unique SHA-256 values and no perceptual match within the pool or against 7,191 checked source files, including Cornell. The originating collection uses augmentation, and parent photograph identities are unavailable in the mirror. Counts describe a finite processed-image pool. Sampling equal counts per source class gives twice as many diseased as healthy images in the binary task.
-
-Transferred 128-label INT8 heads achieved 78.91\% mean BA versus 67.58\% for the frozen edge. Specificity rose from 36.72\% to 78.48\%, while sensitivity fell from 98.44\% to 79.34\%. Ordinary accuracy changed from 77.86\% to 79.05\%. A DINO head fitted to the same Cornell labels achieved 78.05\% BA on transfer. The source-balanced DINO model reached 83.40\% with no Cornell labels. These estimates apply to the V2 pipeline with supervision already available. The source-balanced remote model supplies the common expert for the experiments in Sections 3--5.
-
-\subt{Scope of the device and network measurements}
-Archived hardware validates the starting device model for only one fixed cohort. The preceding experiment fitted and evaluated heads on features of the frozen FP32 graph. Section 6 quantifies sensitivity to its numerical approximation. Their compute and energy on the deployed INT8 backbone remain unmeasured. Image-source labels are proxies for visible abnormality, with unknown plant-level groupings. Measured payloads and historical network traces support communication comparisons. Neither establishes end-to-end field latency, disease prevalence, yield improvement or effects of acting on an alert. For this camera and these collections, the operational choice turns on the reviewer location, cost of a miss, and number of future images over which one can amortize an update.
-
-\input{collaboration_results.tex}
+\begin{center}\includegraphics[width=.95\linewidth]{figures/joint_errors.pdf}\end{center}
+\note{Figure S1. Left, the shaded region marks a reduction in both error rates. Right, fixed-pool probability that both errors fall when eligible photographs are independently sent with probability $q$. Each curve is conditional on the existing images and decisions.}

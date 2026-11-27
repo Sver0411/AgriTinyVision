@@ -81,6 +81,135 @@ REPLAY.update(ALL_CORNELL | {"published_defer_default.csv"})
 SENSITIVITY_CACHE = "sensitivity64_predictions.npz"
 
 
+PURCHASE = Path("results/purchase")
+PURCHASE_BACKBONES = ("v2", "v2grid", "v4")
+PURCHASE_SITES = ("cornell", "kashmir", "latvia")
+HISTORICAL_RUNS = "results/acquisition_quantization_replay_runs.csv"
+PURCHASE_FIELDS = ("fp", "fn", "ba", "accuracy")
+
+
+def purchase_spec(name):
+    """Known result schemas. Each public decision bit has a single local reference join."""
+    path = Path(name)
+    for backbone in PURCHASE_BACKBONES:
+        if path == PURCHASE / f"runs_cornell_{backbone}.csv":
+            return dict(mask=str(PURCHASE / f"masks_cornell_{backbone}.npz"),
+                        identity="test_id", fields=list(PURCHASE_FIELDS), row_index="mask_row")
+    if name == HISTORICAL_RUNS:
+        return dict(mask="results/acquisition_quantization_cornell_masks.npz", identity="source_path",
+                    fields=["fp","fn","balanced_accuracy","accuracy"], row_index="cornell_order")
+    return None
+
+
+def redact_purchase(src, dst, spec):
+    count = 0
+    with src.open(newline="") as source, dst.open("w",newline="") as target:
+        reader = csv.DictReader(source)
+        if not set(spec["fields"]).issubset(reader.fieldnames or ()):
+            raise ValueError(f"Changed acquisition result schema: {src.name}")
+        writer = csv.DictWriter(target,fieldnames=reader.fieldnames)
+        writer.writeheader()
+        for row in reader:
+            if row["site"] == "cornell":
+                if any(row[k]=="" for k in spec["fields"]):
+                    raise ValueError("Cannot export already-redacted purchase data")
+                row.update({k:"" for k in spec["fields"]})
+                count += 1
+            elif spec["row_index"] != "cornell_order":
+                raise ValueError("A Cornell-only purchase shard contained another site")
+            writer.writerow(row)
+    if not count:
+        raise ValueError("Cornell acquisition result contains no protected rows")
+    return {**spec, "n":count}
+
+
+def purchase_identity(path, file_digest):
+    return hashlib.sha256(b"crop-purchase-id-v1/" + bytes.fromhex(file_digest) +
+                          hashlib.sha256(path.encode()).digest()).hexdigest()
+
+
+def rebuild_purchase(root, index, labels):
+    """Restore all restricted run metrics from published decisions and the official label join."""
+    by_path, by_id = {}, {}
+    for r in read_rows(root / "results/fgvc_edge.csv"):
+        path = r["source_path"]
+        truth = labels[Path(path).stem] != "healthy"
+        by_path[path] = truth
+        by_id[purchase_identity(path, r["file_sha256"])] = truth
+    if len(by_path) != len(by_id) or len(by_path) != len(labels):
+        raise ValueError("Cornell source paths or opaque identities are not unique")
+    for name, spec in index["purchase"].items():
+        expected = purchase_spec(name)
+        if not expected or any(spec[k] != v for k,v in expected.items()):
+            raise ValueError("Unknown acquisition result reconstruction")
+        mask_path=root/spec["mask"]
+        if mask_path.resolve()!=mask_path or not mask_path.is_file():
+            raise ValueError("Missing acquisition decision archive")
+        with np.load(mask_path,allow_pickle=False) as z:
+            ids=z[spec["identity"]]
+            lookup=by_path if spec["identity"]=="source_path" else by_id
+            y=np.array([lookup[k] for k in ids],dtype=bool)
+            packed=z["pred"]
+            if packed.shape!=(spec["n"], (len(y)+7)//8) or len(set(ids))!=len(ids):
+                raise ValueError("Acquisition decision masks and identifiers do not match the declared shard")
+            fp,fn = np.empty(spec["n"],int),np.empty(spec["n"],int)
+            for start in range(0,len(packed),512):
+                stop=min(start+512,len(packed))
+                pred=np.unpackbits(packed[start:stop],axis=1,count=len(y)).astype(bool)
+                fp[start:stop]=pred[:,~y].sum(1)
+                fn[start:stop]=(~pred[:,y]).sum(1)
+            if spec["row_index"] == "cornell_order":
+                fingerprints=[hashlib.sha256(bytes(r)).hexdigest() for r in packed]
+        n_neg,n_pos=int((~y).sum()),int(y.sum())
+        path=root/name
+        temp=path.with_suffix(".joining")
+        count=0
+        with path.open(newline="") as source, temp.open("w",newline="") as target:
+            reader=csv.DictReader(source)
+            writer=csv.DictWriter(target,fieldnames=reader.fieldnames)
+            writer.writeheader()
+            for row in reader:
+                if row["site"]=="cornell":
+                    historical=spec["row_index"]=="cornell_order"
+                    idx=count if historical else int(row["mask_row"])
+                    if idx!=count or (historical and row["predictions_sha256"]!=fingerprints[idx]):
+                        raise ValueError("Acquisition decision row alignment failed")
+                    fpc,fnc=int(fp[idx]),int(fn[idx])
+                    row["fp"],row["fn"]=fpc,fnc
+                    row["balanced_accuracy" if historical else "ba"]=1-.5*(fpc/n_neg+fnc/n_pos)
+                    row["accuracy"]=((len(y)-fpc-fnc)/len(y) if historical else 1-(fpc+fnc)/len(y))
+                    count+=1
+                writer.writerow(row)
+        if count != spec["n"]:
+            temp.unlink()
+            raise ValueError("Wrong number of reconstructed acquisition rows")
+        temp.replace(path)
+
+
+def join_windows(root, index):
+    """The merged purchase table is a byte-for-byte concatenation of the restored shards."""
+    name=str(PURCHASE/"runs.csv")
+    if name not in index.get("derived_files",{}):
+        return
+    shards=[str(PURCHASE/f"runs_{site}_{backbone}.csv") for site in PURCHASE_SITES for backbone in PURCHASE_BACKBONES]
+    if index["derived_files"] != {name:{"shards":shards}}:
+        raise ValueError("Unknown combined purchase file")
+    destination=root/name
+    temp=destination.with_suffix(".joining")
+    header=None
+    with temp.open("wb") as target:
+        for shard in shards:
+            with (root/shard).open("rb") as stream:
+                first=stream.readline()
+                if header is None:
+                    target.write(first)
+                    header=first
+                elif first!=header:
+                    raise ValueError("Inconsistent shard header")
+                shutil.copyfileobj(stream,target)
+    temp.replace(destination)
+
+
 def cornell_row(row):
     return any(
         "cornell" in row.get(k, "").lower() or "fgvc" in row.get(k, "").lower()
@@ -494,7 +623,9 @@ def export(target):
             "Export from the original private workspace, not a redacted or partially restored staging copy"
         )
     index = dict(
-        version=2,
+        version=3,
+        purchase={},
+        derived_files={},
         csv={},
         npz={},
         fine={},
@@ -503,11 +634,20 @@ def export(target):
     )
     for path in inputs():
         name = path.relative_to(ROOT).as_posix()
+        if name == str(PURCHASE/"runs.csv"):
+            index["derived_files"][name]={"shards":[str(PURCHASE/f"runs_{site}_{backbone}.csv")
+                                                    for site in PURCHASE_SITES for backbone in PURCHASE_BACKBONES]}
+            continue
         if name in EXCLUDED or name == INDEX:
             continue
         dst = target / name
         dst.parent.mkdir(parents=True, exist_ok=True)
-        if path.suffix == ".csv":
+        purchase=purchase_spec(name)
+        if purchase:
+            if not (ROOT/purchase["mask"]).is_file():
+                raise ValueError(f"Missing reconstruction masks for {name}")
+            index["purchase"][name]=redact_purchase(path,dst,purchase)
+        elif path.suffix == ".csv":
             fine = fine_export(path, dst)
             if fine:
                 index["fine"][name] = fine
@@ -536,9 +676,9 @@ def export(target):
 
 def restore(root, official):
     index = json.loads((root / INDEX).read_text())
-    if index.get("version") not in (1, 2):
+    if index.get("version") not in (1, 2, 3):
         raise ValueError("Unrecognized public data index")
-    for section in ("csv", "npz", "fine", "order_statistics"):
+    for section in ("csv", "npz", "fine", "order_statistics", "purchase"):
         for name in index.get(section, {}):
             path = root / name
             if (
@@ -630,6 +770,9 @@ def restore(root, official):
         tmp = path.with_suffix(".joining.npz")
         np.savez_compressed(tmp, **data)
         tmp.replace(path)
+    if index.get("purchase"):
+        rebuild_purchase(root, index, labels)
+    join_windows(root,index)
     if index.get("fine"):
         if root.resolve() == ROOT.resolve():
             restore_fine(root, index)

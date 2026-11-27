@@ -1,0 +1,4 @@
+backbone,images,positives,negatives,native_fp,native_fn,guard_min_fp,guard_max_fn,guard_specificity_ceiling,guard_ba_ceiling_with_perfect_sensitivity
+v2,579,507,72,67,49,67,49,0.06944444444444442,0.5347222222222222
+v2grid,579,507,72,67,68,67,68,0.06944444444444442,0.5347222222222222
+v4,579,507,72,12,227,12,227,0.8333333333333334,0.9166666666666666
