@@ -1,0 +1,38 @@
+{
+  "idf_version": "v5.4.4",
+  "chip_model": 9,
+  "cores": 2,
+  "cpu_mhz": 160,
+  "dim": 1280,
+  "head_wire_bytes": 1294,
+  "fixture_rows": 16,
+  "mismatches": 0,
+  "max_abs_err": 0.0,
+  "iters": 1000,
+  "eq01_head_struct_bytes": 1292,
+  "stream_gate_struct_bytes": 544,
+  "internal_heap_before": 387603,
+  "internal_heap_after": 371263,
+  "psram_before": 8386188,
+  "psram_after": 8386188,
+  "parse_us": [
+    50,
+    50,
+    50
+  ],
+  "infer_us": [
+    93,
+    93,
+    99
+  ],
+  "quant_us": [
+    565,
+    573,
+    573
+  ],
+  "gate_us": [
+    41,
+    45,
+    45
+  ]
+}
